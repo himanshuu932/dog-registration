@@ -1,0 +1,205 @@
+/* Navbar.css */
+
+/* Core Navbar Styles */
+.navbar {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #e2e3e5;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 0 1rem;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+.navbar--gov {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar__container {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 60px;
+}
+
+.navbar__logo .gov-logo {
+  color: #005ea5;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* Hamburger (mobile) */
+.hamburger {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0.5rem;
+}
+.hamburger span {
+  background-color: #333;
+  display: block;
+  height: 2px;
+  width: 20px;
+}
+
+/* Navigation Menu */
+.navbar__menu {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.navbar__menu.show {
+  display: block;
+}
+
+.nav-item {
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 0.5rem;
+  transition: background-color 0.2s;
+}
+.nav-item:hover {
+  background-color: #e2e3e5;
+  border-radius: 4px;
+}
+
+/* Government style accent */
+.nav-item--gov {
+  color: #005ea5;
+  font-weight: 500;
+}
+
+/* Actions container */
+.navbar__actions {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+}
+
+/* Notification */
+.notif {
+  position: relative;
+}
+.notif__icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+}
+.notif__icon {
+  color: #005ea5;
+}
+.notif__badge {
+  background-color: #d4351c;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 0.65rem;
+  height: 16px;
+  line-height: 16px;
+  position: absolute;
+  right: -6px;
+  top: -6px;
+  text-align: center;
+  width: 16px;
+}
+.notif__dropdown {
+  background-color: #fff;
+  border: 1px solid #e2e3e5;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0;
+  position: absolute;
+  right: 0;
+  top: 28px;
+  width: 220px;
+  z-index: 1001;
+}
+.notif__item,
+.notif__empty {
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+}
+.notif__item:hover {
+  background-color: #f1f1f1;
+}
+.notif__empty {
+  color: #6c757d;
+  text-align: center;
+}
+
+/* Language Toggle */
+.lang-toggle-container {
+  align-items: center;
+  display: flex;
+  gap: 0.25rem;
+}
+.lang-toggle__label {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.lang-toggle {
+  background-color: #e2e3e5;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+}
+.lang-toggle span {
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+.lang-toggle .active {
+  color: #005ea5;
+  font-weight: 600;
+}
+
+/* Auth button */
+.btn--gov {
+  background-color: #005ea5;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  transition: background-color 0.2s;
+}
+.btn--gov:hover {
+  background-color: #004080;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+  .navbar__menu {
+    background-color: #f8f9fa;
+    border-top: 1px solid #e2e3e5;
+    left: 0;
+    padding: 1rem;
+    position: absolute;
+    top: 60px;
+    width: 100%;
+    display: none;
+    flex-direction: column;
+  }
+  .navbar__menu.show {
+    display: flex;
+  }
+  .navbar__actions {
+    gap: 0.5rem;
+  }
+}
