@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const authController = require("../controllers/authController");
+const {sendEmailOtp, verifyEmailOtp, sendPhoneOtp, verifyPhoneOtp, login, getProfile} = require("../controllers/authController.js");
 
-router.post("/send-email-otp", authController.sendEmailOtp);
-router.post("/verify-email-otp", authController.verifyEmailOtp);
-router.post("/send-phone-otp", authController.sendPhoneOtp);
-router.post("/verify-phone-otp", authController.verifyPhoneOtp);
-router.post("/login", authController.login);
-router.get("/profile", authController.getProfile);
+router.post("/send-email-otp", sendEmailOtp);
+router.post("/verify-email-otp", verifyEmailOtp);
+router.post("/send-phone-otp", sendPhoneOtp);
+router.post("/verify-phone-otp", verifyPhoneOtp);
+router.post("/login", login);
+router.get("/profile", getProfile);
 
 module.exports = router;

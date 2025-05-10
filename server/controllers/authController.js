@@ -36,13 +36,13 @@ exports.sendEmailOtp = async (req, res) => {
 };
 
 exports.verifyEmailOtp = async (req, res) => {
-  const { email, otp, username, password } = req.body;
+  const { email, otp, username, password, phone } = req.body;
   if (emailOtpStore[email] === parseInt(otp)) {
     delete emailOtpStore[email];
     const existingUser = await User.findOne({ username });
     if (existingUser) return res.status(400).json({ message: "User already exists" });
     const hashedPassword = await bcrypt.hash(password, 10);
-    await new User({ username, password: hashedPassword, email }).save();
+    await new User({ username, password: hashedPassword, email, phone }).save();
     res.json({ message: "Signup successful" });
   } else {
     res.status(400).json({ message: "Invalid OTP" });

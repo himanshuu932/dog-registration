@@ -1,4 +1,4 @@
-const DogLicense = require("../models/dogLicensejs");
+const DogLicense = require("../models/dogLicense.js");
 
 exports.applyLicense = async (req, res) => {
   const { dogName, breed, age, vaccinationProofUrl } = req.body;
