@@ -39,7 +39,7 @@ const CertificateIcon = () => (
   </svg>
 );
 
-const Pethome = () => {
+const Pethome = ({user}) => {
   // State for active service
   const [activeService, setActiveService] = useState(null);
 

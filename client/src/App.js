@@ -78,7 +78,7 @@ function App() {
           />
           <Route
             path="/home"
-            element={<PetHome /> }
+            element={<PetHome user={user} /> }
           />
           <Route
             path="/pet-register"

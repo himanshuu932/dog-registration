@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './styles/Petform.css';
+import axios from 'axios';
 
 const PetRegistrationForm = () => {
   const [activeTab, setActiveTab] = useState(1);
@@ -52,11 +53,23 @@ const PetRegistrationForm = () => {
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Submit logic would go here
-  };
+
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const token = localStorage.getItem("token");
+    const res = await axios.post("http://localhost:5000/api/license/apply", formData, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    alert("License application submitted!");
+  } catch (err) {
+    alert(err.response?.data?.message || "Failed to submit license");
+  }
+};
+
 
   return (
     <div className="pet-registration-container">
