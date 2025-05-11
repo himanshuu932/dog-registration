@@ -103,7 +103,7 @@ exports.getProfile = async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.userId);
     if (!user) return res.status(404).json({ message: "User not found" });
-    res.json({ user: { username: user.username, email: user.email, phone: user.phone } });
+    res.json({ user: { username: user.username, email: user.email, phone: user.phone, role: user.role } });
   } catch (err) {
     res.status(401).json({ message: "Invalid token" });
   }

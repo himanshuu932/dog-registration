@@ -8,13 +8,15 @@ import {
 } from "react-router-dom";
 import axios from "axios";
 
-import Navbar from "./components/Navbar";
-import PetHome from "./components/Pethome";
-import LoginPage from "./components/LoginPage";
-import PetRegistration from "./components/Petform";
-import Profile from "./components/Profile";
+import Navbar from './components/Navbar';
+import PetHome from './components/Pethome';
+import LoginPage from './components/LoginPage';
+import PetRegistration from './components/PetRegistration';
+import Profile from './components/Profile';
+import DownloadLicense from './components/Download';
+import QueryFeedback from './components/FeedBack';
+import RenewRegistration from './components/RenewRegistration';
 import AdminPanel from "./components/AdminPanel";
-
 function App() {
   const [languageType, setLanguageType] = useState("en");
   const [user, setUser] = useState(null);
@@ -62,6 +64,8 @@ function App() {
   }, []);
 
   if (loading) return <div>Loading...</div>;
+  console.log("Current user:", user);
+
 
   return (
     <div className="App">
@@ -73,39 +77,52 @@ function App() {
         onLanguageChange={handleLanguageChange}
       />
 
-      <Routes>
-        <Route
-          path="/login"
-          element={
-            !user ? (
-              <LoginPage onLogin={handleLogin} setUser={setUser} />
-            ) : (
-              <Navigate to="/" />
-            )
-          }
-        />
-        <Route path="/" element={<PetHome />} />
-        <Route path="/home" element={<PetHome user={user} />} />
-        <Route
-          path="/pet-register"
-          element={user ? <PetRegistration /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/profile"
-          element={user ? <Profile /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/admin"
-          element={
-            user && user.role === "admin" ? (
-              <AdminPanel />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-      </Routes>
-    </div>
+        <Routes>
+          
+          <Route
+            path="/login"
+            element={!user?<LoginPage onLogin={handleLogin} setUser={setUser} />: <Navigate to="/" />}
+          />
+          <Route
+            path="/"
+            element={ <PetHome /> }
+          />
+          <Route
+            path="/home"
+            element={<PetHome /> }
+          />
+           <Route
+            path="/download-license"
+            element={user ? <DownloadLicense /> : <Navigate to="/login" />}
+          
+          />
+          <Route
+            path="/feedback"
+            element={user ? <QueryFeedback /> : <Navigate to="/login" />}
+          
+          />
+          <Route
+            path="/pet-register"
+            element={user ? <PetRegistration /> : <Navigate to="/login" />}
+          />
+           <Route
+            path="/renew-register"
+            element={user ? <RenewRegistration /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/profile"
+            element={user ? <Profile /> : <Navigate to="/login" />}
+          />
+
+          <Route
+            path="/admin"
+            element={user && user.role === "admin" ? <AdminPanel /> : <Navigate to="/login" />}
+          />
+
+          
+        </Routes>
+      </div>
+   
   );
 }
 

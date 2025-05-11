@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './PetRegistration.css';
+import './styles/PetRegistration.css';
 
 // Import SVG icons as React components
 const PawIcon = () => (
