@@ -358,3 +358,55 @@
 .navbar__logo-img{
     height: 40px;
 }
+/* default: hide mobile-only items */
+.mobile-only {
+  display: none;
+}
+
+/* mobile view tweaks */
+@media (max-width: 768px) {
+  /* 1) Top-row: show only hamburger, logo, lang toggle */
+  .navbar__top-row {
+    display: flex;
+    align-items: center;
+  }
+
+  .navbar__actions > * {
+    display: none; /* hide desktop actions */
+  }
+
+  /* reorder: ☐ hamburger, logo, lang toggle */
+  .hamburger { order: 1; }
+  .navbar__logo { order: 2; margin-left: 1rem; }
+  .lang-toggle-container { order: 3; margin-left: auto; }
+
+  /* 2) Drawer menu */
+  .navbar__bottom-row {
+    display: block;  /* keep UL in DOM */
+  }
+  .navbar__menu {
+    position: fixed;
+    top: 60px;    /* height of top-row on mobile */
+    left: 0; right: 0;
+    background: #13426b;
+    flex-direction: column;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    z-index: 1010;
+  }
+  .navbar__menu.show {
+    display: flex;
+    max-height: calc(100vh - 60px);
+  }
+  .nav-item--gov {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  /* 3) show mobile-only items inside drawer */
+  .mobile-only {
+    display: flex;
+    align-items: center;
+  }
+}
