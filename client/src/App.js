@@ -70,7 +70,7 @@ function App() {
         <Routes>
           <Route
             path="/login"
-            element={<LoginPage onLogin={handleLogin} />}
+            element={!user?<LoginPage onLogin={handleLogin} setUser={setUser} />: <Navigate to="/" />}
           />
           <Route
             path="/"

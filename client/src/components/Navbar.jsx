@@ -87,7 +87,7 @@ const handleNavItemClick = (label) => {
                   </ul>
                 )}
                 {/* Username Display in the top row */}
-                <span className="navbar__username">{user.name}</span>
+                <span className="navbar__username">{user.username}</span>
               </div>
             )}
 
@@ -112,7 +112,7 @@ const handleNavItemClick = (label) => {
               {user ? (
                 <button className="btn btn--gov" onClick={onLogout}>Logout</button>
               ) : (
-                <button className="btn btn--gov" onClick={onLogin}>Login</button>
+                <button className="btn btn--gov" onClick={()=> navigate('/login')}>Login</button>
               )}
             </div>
           </div>
