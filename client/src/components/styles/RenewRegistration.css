@@ -1,0 +1,134 @@
+:root {
+  --gov-blue: #005ea5;
+  --gov-light: #f3f2f1;
+  --gov-dark-gray: #1f1f1f;
+  --gov-green: #00703c;
+  --gov-orange: #d47a00;
+  --text-color: #212b36;
+}
+
+.rr-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: var(--gov-light);
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  color: var(--text-color);
+}
+
+.rr-title {
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--gov-blue);
+  padding-bottom: 0.5rem;
+}
+
+.rr-search-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.rr-label {
+  margin-top: 1rem;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.rr-input {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+}
+
+.rr-input:focus {
+  outline: 2px solid var(--gov-blue);
+  border-color: var(--gov-blue);
+}
+
+.rr-button {
+  margin-top: 1.5rem;
+  align-self: flex-start;
+  padding: 0.75rem 1.5rem;
+  background: var(--gov-blue);
+  color: #fff;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.rr-button:hover,
+.rr-button:focus {
+  background: #004b85;
+}
+
+.rr-button--renew {
+  background: var(--gov-green);
+}
+
+.rr-button--renew:hover,
+.rr-button--renew:focus {
+  background: #005d2e;
+}
+
+.rr-status {
+  margin-top: 1rem;
+  font-size: 1.125rem;
+  color: var(--gov-dark-gray);
+}
+
+.rr-error {
+  margin-top: 1rem;
+  font-size: 1.125rem;
+  color: var(--gov-orange);
+  font-weight: 600;
+}
+
+.rr-card {
+  margin-top: 2rem;
+  background: #fff;
+  padding: 1.5rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.rr-subtitle {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #e5e5e5;
+  padding-bottom: 0.25rem;
+}
+
+.rr-card dl {
+  margin: 0 0 1.5rem;
+}
+
+.rr-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.rr-row:last-child {
+  border-bottom: none;
+}
+
+.rr-row dt {
+  font-weight: 600;
+}
+
+.rr-row dd {
+  margin: 0;
+}
+
+.rr-success {
+  font-size: 1.125rem;
+  color: var(--gov-dark-gray);
+  font-weight: 600;
+}

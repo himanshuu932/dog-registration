@@ -5,9 +5,11 @@ import axios from 'axios';
 import Navbar from './components/Navbar';
 import PetHome from './components/Pethome';
 import LoginPage from './components/LoginPage';
-import PetRegistration from './components/Petform';
+import PetRegistration from './components/PetRegistration';
 import Profile from './components/Profile';
-
+import DownloadLicense from './components/Download';
+import QueryFeedback from './components/FeedBack';
+import RenewRegistration from './components/RenewRegistration';
 function App() {
   const [languageType, setLanguageType] = useState('en');
   const [user, setUser] = useState(null);
@@ -80,14 +82,29 @@ function App() {
             path="/home"
             element={<PetHome /> }
           />
+           <Route
+            path="/download-license"
+            element={user ? <DownloadLicense /> : <Navigate to="/login" />}
+          
+          />
+          <Route
+            path="/feedback"
+            element={user ? <QueryFeedback /> : <Navigate to="/login" />}
+          
+          />
           <Route
             path="/pet-register"
             element={user ? <PetRegistration /> : <Navigate to="/login" />}
+          />
+           <Route
+            path="/renew-register"
+            element={user ? <RenewRegistration /> : <Navigate to="/login" />}
           />
           <Route
             path="/profile"
             element={user ? <Profile /> : <Navigate to="/login" />}
           />
+          
         </Routes>
       </div>
    

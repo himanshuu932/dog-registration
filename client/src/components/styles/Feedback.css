@@ -1,0 +1,74 @@
+:root {
+  --gov-blue: #005ea5;
+  --gov-light: #f3f2f1;
+  --gov-dark-gray: #1f1f1f;
+  --gov-orange: #d47a00;
+  --text-color: #212b36;
+}
+
+.qf-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: var(--gov-light);
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  color: var(--text-color);
+}
+
+.qf-title {
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--gov-blue);
+  padding-bottom: 0.5rem;
+}
+
+.qf-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.qf-label {
+  margin-top: 1rem;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.qf-input,
+.qf-textarea {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+}
+
+.qf-input:focus,
+.qf-textarea:focus {
+  outline: 2px solid var(--gov-blue);
+  border-color: var(--gov-blue);
+}
+
+.qf-button {
+  margin-top: 1.5rem;
+  align-self: flex-start;
+  padding: 0.75rem 1.5rem;
+  background: var(--gov-orange);
+  color: #fff;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.qf-button:hover,
+.qf-button:focus {
+  background: #a05a00;
+}
+
+.qf-success {
+  font-size: 1.125rem;
+  color: var(--gov-dark-gray);
+  font-weight: 600;
+}

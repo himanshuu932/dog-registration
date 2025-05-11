@@ -678,3 +678,176 @@ select:focus {
 .back-btn:hover {
   background-color: #e2e2e2;
 }
+
+/* ===== RESPONSIVE LAYOUT ADJUSTMENTS ===== */
+
+/* Ensure fields and containers scale fluidly */
+.pet-registration-container {
+  padding: 15px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Allow tabs to scroll on narrow viewports */
+.tabs-container {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+.tab {
+  flex: 0 0 auto;
+  min-width: 120px;
+}
+
+/* Form steps: allow wrap and full-width groups on small screens */
+.form-row {
+  flex-wrap: wrap;
+}
+.form-group {
+  min-width: 100%;
+}
+@media (min-width: 600px) {
+  .form-group {
+    min-width: calc(50% - 10px);
+  }
+}
+@media (min-width: 900px) {
+  .form-group {
+    min-width: calc(33.333% - 13.33px);
+  }
+}
+
+/* Pet Info upload section: stack vertically on mobiles */
+.upload-section {
+  flex-wrap: wrap;
+}
+.pet-avatar,
+.pet-form {
+  width: 100%;
+}
+@media (min-width: 768px) {
+  .pet-avatar {
+    width: 200px;
+  }
+  .pet-form {
+    flex: 1;
+  }
+}
+
+/* Preview rows: stack on mobile */
+.preview-row {
+  flex-wrap: wrap;
+}
+.preview-item {
+  min-width: 100%;
+  margin-bottom: 10px;
+}
+@media (min-width: 600px) {
+  .preview-item {
+    min-width: calc(50% - 10px);
+  }
+}
+
+/* Buttons: full-width on small screens */
+.form-buttons {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.back-btn,
+.next-btn,
+.submit-btn {
+  flex: 1 1 100%;
+}
+@media (min-width: 500px) {
+  .back-btn,
+  .next-btn,
+  .submit-btn {
+    flex: 0 0 auto;
+    width: auto;
+  }
+}
+
+/* Tab text centering */
+.tab-content {
+  text-align: center;
+}
+.tab-number {
+  margin: 0 auto 8px;
+}
+
+/* Smaller pet-icon on mobile */
+.pet-icon {
+  width: 100px;
+  height: 100px;
+}
+@media (min-width: 600px) {
+  .pet-icon {
+    width: 120px;
+    height: 120px;
+  }
+}
+.pet-icon img {
+  width: 60px;
+  height: 60px;
+}
+@media (min-width: 600px) {
+  .pet-icon img {
+    width: 70px;
+    height: 70px;
+  }
+}
+
+/* ===== TIP: Add this to your public/index.html <head> =====
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+*/
+/* == PHONE MODE: show only active tab name, hide others’ text == */
+@media (max-width: 600px) {
+  /* Collapse all tab text */
+  .tabs-container .tab .tab-content {
+    display: none;
+  }
+
+  /* Re-show only the active tab’s content */
+  .tabs-container .tab.active .tab-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* If you want only the title (no subtitle) even on active, uncomment this: */
+  /*
+  .tabs-container .tab.active .tab-subtitle {
+    display: none;
+  }
+  */
+}
+/* == PHONE MODE: Minimal inactive tabs, inline active tab == */
+@media (max-width: 600px) {
+  /* Hide all tab content */
+  .tabs-container .tab .tab-content {
+    display: none;
+  }
+
+  /* Display only active tab content */
+  .tabs-container .tab.active .tab-content {
+    display: flex;
+    flex-direction: row;  /* side-by-side layout */
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  /* Optional: shrink tab title font on small screens */
+  .tabs-container .tab.active .tab-title {
+    font-size: 14px;
+  }
+
+  .tabs-container .tab.active .tab-subtitle {
+    display: none; /* optionally hide subtitle in mobile view */
+  }
+
+  /* Reduce overall tab padding/margin if needed */
+  .tabs-container .tab {
+    padding: 6px;
+    min-width: auto;
+  }
+}

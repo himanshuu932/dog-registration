@@ -9,7 +9,6 @@ const navItems = [
   { hi: 'पंजीकरण नवीनीकरण',  en: 'Renew Registration' },
   { hi: 'लाइसेंस डाउनलोड',   en: 'Download License'   },
   { hi: 'प्रश्न और प्रतिक्रिया',  en: 'Query & Feedback'   },
-  { hi: 'संपर्क करें',         en: 'Contact Us'         },
 ];
 
 function Navbar({ languageType, user, notifications = [], onLogout, onLanguageChange }) {
@@ -43,7 +42,16 @@ function Navbar({ languageType, user, notifications = [], onLogout, onLanguageCh
       case 'New Registration':
         navigate('/pet-register');
         break;
-      // add other cases...
+      case 'Renew Registration':
+        navigate('/renew-register');
+        break;  
+      case 'Download License':
+        navigate('/download-license');
+        break;
+      case 'Query & Feedback':
+        navigate('/feedback');
+        break;      
+
       default:
         console.warn('Unhandled nav item:', label);
     }
