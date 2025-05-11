@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import html2pdf from 'html2pdf.js';
 import './styles/Download.css';
 
 const formatDate = (dateString) => {
@@ -34,6 +35,18 @@ const DogLicenseDownload = () => {
     setExpandedId(expandedId === id ? null : id);
   };
 
+  const downloadPDF = (id, dogName = 'dog') => {
+    const element = document.getElementById(`pdf-${id}`);
+    const opt = {
+      margin: 0.5,
+      filename: `Dog_License_${dogName}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+    html2pdf().from(element).set(opt).save();
+  };
+
   return (
     <main className="dl-container">
       <h1 className="dl-title">My Dog License Applications</h1>
@@ -56,59 +69,180 @@ const DogLicenseDownload = () => {
               </div>
 
               <div className="dl-details">
-                <dl>
-                  <div className="dl-row"><dt>Owner Name</dt><dd>{license.fullName}</dd></div>
-                  <div className="dl-row"><dt>Phone Number</dt><dd>{license.phoneNumber}</dd></div>
-                  <div className="dl-row"><dt>Gender</dt><dd>{license.gender}</dd></div>
-                  <div className="dl-row"><dt>Street</dt><dd>{a.streetName}</dd></div>
-                  <div className="dl-row"><dt>Pin Code</dt><dd>{a.pinCode}</dd></div>
-                  <div className="dl-row"><dt>City</dt><dd>{a.city}</dd></div>
-                  <div className="dl-row"><dt>State</dt><dd>{a.state}</dd></div>
-                  <div className="dl-row"><dt>House Area</dt><dd>{license.totalHouseArea}</dd></div>
-                  <div className="dl-row"><dt>Number of Dogs</dt><dd>{license.numberOfDogs}</dd></div>
+                <div id={`pdf-${license._id}`} className="pdf-layout">
+                  <div className="pdf-border">
+                    <div className="pdf-header">
+                      <div className="pdf-emblem">
+                        <img 
+                          src="/api/placeholder/80/80" 
+                          alt="Government Emblem" 
+                          className="pdf-emblem-img" 
+                        />
+                      </div>
+                      
+                      <div className="pdf-contact">
+                        <p>Phone: {license.phoneNumber}</p>
+                        <p>Email: {license.email || 'info@awbi.org'}</p>
+                        <p>Website: www.awbi.org</p>
+                      </div>
+                    </div>
 
-                  <div className="dl-row"><dt>Dog Name</dt><dd>{d.name}</dd></div>
-                  <div className="dl-row"><dt>Breed</dt><dd>{d.breed}</dd></div>
-                  <div className="dl-row"><dt>Category</dt><dd>{d.category}</dd></div>
-                  <div className="dl-row"><dt>Color</dt><dd>{d.color}</dd></div>
-                  <div className="dl-row"><dt>Age</dt><dd>{d.age}</dd></div>
-                  <div className="dl-row"><dt>Dog's gender</dt><dd>{d.sex}</dd></div>
-                 <div className="dl-row"><dt>Vaccinated</dt><dd>{d.vaccinationProofUrl ? 'Yes' : 'No'}</dd></div>
+                    <div className="pdf-certificate-title">
+                      <h2>कुत्तों के पंजीकरण के लिए अधिकृत पत्र</h2>
+                      <h3>OFFICIAL DOG LICENSE CERTIFICATE</h3>
+                    </div>
 
-                  <div className="dl-row"><dt>Date of Vaccination</dt><dd>{formatDate(d.dateOfVaccination)}</dd></div>
-                  <div className="dl-row"><dt>Due Vaccination</dt><dd>{formatDate(d.dueVaccination)}</dd></div>
-                  <div className="dl-row"><dt>Vaccination Proof</dt><dd><a href={d.vaccinationProofUrl} target="_blank" rel="noreferrer">View PDF</a></dd></div>
-                  <div className="dl-row"><dt>Microchipped</dt><dd>{d.microchipped ? 'Yes' : 'No'}</dd></div>
-                  <div className="dl-row"><dt>Issued By</dt><dd>{license.issuedBy || 'N/A'}</dd></div>
-                  <div className="dl-row"><dt>Status</dt><dd>{license.status}</dd></div>
-                  <div className="dl-row"><dt>Submitted On</dt><dd>{formatDate(license.createdAt)}</dd></div>
-                  {license.updatedAt && (
-                    <div className="dl-row"><dt>Last Updated</dt><dd>{formatDate(license.updatedAt)}</dd></div>
-                  )}
-                  {license.expiryDate && (
-                    <div className="dl-row"><dt>Expiry Date</dt><dd>{formatDate(license.expiryDate)}</dd></div>
-                  )}
-                </dl>
+                    <div className="pdf-body">
+                      <div className="pdf-photo-section">
+                        <div className="pdf-info-block">
+                          <div className="pdf-info-row">
+                            <div className="pdf-info-label">नाम / Name</div>
+                            <div className="pdf-info-value">: {license.fullName}</div>
+                          </div>
+                          <div className="pdf-info-row">
+                            <div className="pdf-info-label">पंजीकरण संख्या / Registration No.</div>
+                            <div className="pdf-info-value">: {license._id}</div>
+                          </div>
+                          <div className="pdf-info-row">
+                            <div className="pdf-info-label">जारी दिनांक / Issue Date</div>
+                            <div className="pdf-info-value">: {formatDate(license.createdAt)}</div>
+                          </div>
+                          <div className="pdf-info-row">
+                            <div className="pdf-info-label">समाप्ति तिथि / Expiry Date</div>
+                            <div className="pdf-info-value">: {formatDate(license.expiryDate)}</div>
+                          </div>
+                        </div>
+                        <div className="pdf-photo-box">
+                          {d.avatarUrl ? (
+                            <img src={d.avatarUrl} alt="Dog" className="pdf-photo" />
+                          ) : (
+                            <div className="pdf-photo-placeholder">पशु की तस्वीर / Dog's Photo</div>
+                          )}
+                        </div>
+                      </div>
 
-                {d.avatarUrl && (
-                  <div className="dl-avatar">
-                    <img
-                      src={d.avatarUrl}
-                      alt="Dog Avatar"
-                      className="dl-avatar-img"
-                    />
+                      <div className="pdf-details-section">
+                        <div className="pdf-section-title">पशु का विवरण / Animal Details</div>
+                        <div className="pdf-details-table">
+                          <div className="pdf-details-row">
+                            <div className="pdf-details-label">पशु का नाम / Dog Name</div>
+                            <div className="pdf-details-value">: {d.name}</div>
+                          </div>
+                          <div className="pdf-details-row">
+                            <div className="pdf-details-label">नस्ल / Breed</div>
+                            <div className="pdf-details-value">: {d.breed}</div>
+                          </div>
+                          <div className="pdf-details-row">
+                            <div className="pdf-details-label">वर्ग / Category</div>
+                            <div className="pdf-details-value">: {d.category}</div>
+                          </div>
+                          <div className="pdf-details-row">
+                            <div className="pdf-details-label">रंग / Color</div>
+                            <div className="pdf-details-value">: {d.color}</div>
+                          </div>
+                          <div className="pdf-details-row">
+                            <div className="pdf-details-label">आयु / Age</div>
+                            <div className="pdf-details-value">: {d.age}</div>
+                          </div>
+                          <div className="pdf-details-row">
+                            <div className="pdf-details-label">लिंग / Gender</div>
+                            <div className="pdf-details-value">: {d.sex}</div>
+                          </div>
+                          <div className="pdf-details-row">
+                            <div className="pdf-details-label">टीकाकरण / Vaccinated</div>
+                            <div className="pdf-details-value">: {d.vaccinationProofUrl ? 'हां / Yes' : 'नहीं / No'}</div>
+                          </div>
+                          {d.vaccinationProofUrl && (
+  <div className="pdf-details-row">
+    <div className="pdf-details-label">टीकाकरण प्रमाणपत्र / Vaccination Certificate</div>
+    <div className="pdf-details-value">
+      <a 
+        src={d.vaccinationProofUrl} 
+        alt="Vaccination Certificate" 
+        className="pdf-vaccine-img" >View </a>
+     
+    </div>
+  </div>
+)}
+
+                          <div className="pdf-details-row">
+                            <div className="pdf-details-label">टीकाकरण की तारीख / Vaccination Date</div>
+                            <div className="pdf-details-value">: {formatDate(d.dateOfVaccination)}</div>
+                          </div>
+                          <div className="pdf-details-row">
+                            <div className="pdf-details-label">अगला टीकाकरण / Next Vaccination</div>
+                            <div className="pdf-details-value">: {formatDate(d.dueVaccination)}</div>
+                          </div>
+                          <div className="pdf-details-row">
+                            <div className="pdf-details-label">माइक्रोचिप / Microchipped</div>
+                            <div className="pdf-details-value">: {d.microchipped ? 'हां / Yes' : 'नहीं / No'}</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="pdf-details-section">
+                        <div className="pdf-section-title">मालिक का विवरण / Owner Details</div>
+                        <div className="pdf-details-table">
+                          <div className="pdf-details-row">
+                            <div className="pdf-details-label">पता / Address</div>
+                            <div className="pdf-details-value">: {`${a.streetName}, ${a.city}, ${a.state} - ${a.pinCode}`}</div>
+                          </div>
+                          <div className="pdf-details-row">
+                            <div className="pdf-details-label">फोन नंबर / Phone Number</div>
+                            <div className="pdf-details-value">: {license.phoneNumber}</div>
+                          </div>
+                          <div className="pdf-details-row">
+                            <div className="pdf-details-label">कुत्तों की संख्या / No. of Dogs</div>
+                            <div className="pdf-details-value">: {license.numberOfDogs}</div>
+                          </div>
+                          <div className="pdf-details-row">
+                            <div className="pdf-details-label">घर का क्षेत्रफल / House Area</div>
+                            <div className="pdf-details-value">: {license.totalHouseArea}</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="pdf-declaration">
+                        <p>मैं घोषणा करता/करती हूँ कि उपरोक्त दी गई जानकारी मेरी जानकारी के अनुसार सत्य है।</p>
+                        <p>I declare that the information provided above is true to the best of my knowledge.</p>
+                      </div>
+
+                      <div className="pdf-signatures">
+                        <div className="pdf-signature-block">
+                          <div className="pdf-signature-line"></div>
+                          <p>आवेदक के हस्ताक्षर / Applicant's Signature</p>
+                        </div>
+                        <div className="pdf-signature-block">
+                          <div className="pdf-signature-line"></div>
+                          <p>जारीकर्ता अधिकारी / Issuing Authority</p>
+                        </div>
+                      </div>
+
+                      <div className="pdf-footer">
+                        <div className="pdf-qr-code">
+                          <div className="pdf-qr-placeholder"></div>
+                          <p>QR Code</p>
+                        </div>
+                        <div className="pdf-stamp">
+                          <div className="pdf-stamp-placeholder">
+                            <p>OFFICIAL STAMP</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                )}
+                </div>
 
-                {license.status === 'approved' && license.downloadLink && (
-                  <a
-                    href={license.downloadLink}
-                    download
+                {license.status === 'approved' && (
+                  <button
                     className="dl-button"
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      downloadPDF(license._id, d.name);
+                    }}
                   >
                     Download PDF
-                  </a>
+                  </button>
                 )}
               </div>
             </section>

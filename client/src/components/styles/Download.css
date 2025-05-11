@@ -4,6 +4,9 @@
   --gov-dark-gray: #1f1f1f;
   --gov-green: #00703c;
   --text-color: #212b36;
+  --border-color: #0a0a0a;
+  --gov-maroon: #8b0000;
+  --gov-gold: #b8860b;
 }
 
 .dl-container {
@@ -24,8 +27,7 @@
   padding-bottom: 0.5rem;
 }
 
-.dl-status,
-.dl-no-data {
+.dl-status, .dl-no-data {
   font-size: 1.125rem;
   color: var(--gov-dark-gray);
   text-align: center;
@@ -64,41 +66,6 @@
   display: block;
 }
 
-.dl-card dl {
-  margin: 0;
-}
-
-.dl-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #e5e5e5;
-}
-
-.dl-row:last-child {
-  border-bottom: none;
-}
-
-.dl-row dt {
-  font-weight: 600;
-}
-
-.dl-row dd {
-  margin: 0;
-}
-
-.dl-avatar {
-  margin-top: 1rem;
-  text-align: center;
-}
-
-.dl-avatar-img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
-
 .dl-button {
   display: inline-block;
   padding: 0.75rem 1.5rem;
@@ -109,9 +76,343 @@
   border-radius: 4px;
   margin-top: 1rem;
   transition: background 0.2s ease-in-out;
+  border: none;
+  cursor: pointer;
 }
 
-.dl-button:hover,
-.dl-button:focus {
+.dl-button:hover, .dl-button:focus {
   background: #005d2e;
+}
+
+/* PDF Layout */
+.pdf-layout {
+  font-family: 'Times New Roman', Times, serif;
+  width: 100%;
+  background: #fff;
+  box-sizing: border-box;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.pdf-layout::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' opacity='0.03'%3E%3Cpath d='M100,0 L200,100 L100,200 L0,100 Z' fill='%238b0000'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.pdf-border {
+  border: 3px double var(--border-color);
+  padding: 15px;
+  position: relative;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Header */
+.pdf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.pdf-emblem {
+  width: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pdf-emblem-img {
+  width: 100%;
+  height: auto;
+}
+
+.pdf-title-block {
+  text-align: center;
+  flex: 1;
+  padding: 0 10px;
+}
+
+.pdf-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0 0 5px 0;
+  color: var(--gov-maroon);
+}
+
+.pdf-subtitle {
+  font-size: 12px;
+  margin: 2px 0;
+  font-weight: normal;
+}
+
+.pdf-org-title {
+  font-size: 18px;
+  margin: 5px 0 2px 0;
+  color: var(--gov-maroon);
+  font-weight: bold;
+}
+
+.pdf-address {
+  font-size: 11px;
+  margin: 2px 0;
+}
+
+.pdf-govt {
+  font-size: 14px;
+  font-weight: bold;
+  margin: 5px 0 0 0;
+}
+
+.pdf-contact {
+  font-size: 11px;
+  text-align: right;
+  min-width: 120px;
+}
+
+.pdf-contact p {
+  margin: 2px 0;
+}
+
+/* Certificate Title */
+.pdf-certificate-title {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.pdf-certificate-title h2 {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0 0 5px 0;
+}
+
+.pdf-certificate-title h3 {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0;
+  text-decoration: underline;
+  color: var(--gov-maroon);
+  letter-spacing: 1px;
+}
+
+/* Photo Section */
+.pdf-photo-section {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.pdf-info-block {
+  flex: 1;
+}
+
+.pdf-info-row {
+  display: flex;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.pdf-info-label {
+  font-weight: bold;
+  min-width: 200px;
+}
+
+.pdf-info-value {
+  flex: 1;
+}
+
+.pdf-photo-box {
+  width: 120px;
+  height: 140px;
+  border: 2px solid var(--border-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.pdf-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pdf-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 12px;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+/* Details Section */
+.pdf-details-section {
+  margin-bottom: 20px;
+}
+
+.pdf-section-title {
+  font-weight: bold;
+  font-size: 16px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 12px;
+  padding-bottom: 5px;
+  color: var(--gov-blue);
+  background-color: #f9f9f9;
+  padding: 5px;
+  border-left: 4px solid var(--gov-maroon);
+}
+
+.pdf-details-table {
+  margin-bottom: 15px;
+}
+
+.pdf-details-row {
+  display: flex;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.pdf-details-label {
+  font-weight: bold;
+  min-width: 200px;
+}
+
+.pdf-details-value {
+  flex: 1;
+}
+
+/* Declaration */
+.pdf-declaration {
+  margin: 25px 0;
+  font-size: 14px;
+  text-align: center;
+  padding: 10px;
+  border: 1px solid #e0e0e0;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+}
+
+.pdf-declaration p {
+  margin: 5px 0;
+  line-height: 1.5;
+}
+
+/* Signatures */
+.pdf-signatures {
+  display: flex;
+  justify-content: space-between;
+  margin: 40px 0 20px 0;
+}
+
+.pdf-signature-block {
+  text-align: center;
+  width: 45%;
+}
+
+.pdf-signature-line {
+  width: 100%;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 10px;
+}
+
+.pdf-signature-block p {
+  font-size: 12px;
+  margin: 5px 0;
+}
+
+/* Footer */
+.pdf-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+.pdf-qr-code {
+  text-align: center;
+}
+
+.pdf-qr-placeholder {
+  width: 80px;
+  height: 80px;
+  border: 1px solid var(--border-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 5px;
+  background: #f5f5f5;
+  position: relative;
+  overflow: hidden;
+}
+
+.pdf-qr-placeholder::before,
+.pdf-qr-placeholder::after {
+  content: "";
+  position: absolute;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.pdf-qr-placeholder::before {
+  width: 100%;
+  height: 1px;
+  top: 50%;
+  left: 0;
+}
+
+.pdf-qr-placeholder::after {
+  width: 1px;
+  height: 100%;
+  left: 50%;
+  top: 0;
+}
+
+.pdf-qr-code p {
+  font-size: 12px;
+  margin: 5px 0;
+}
+
+.pdf-stamp {
+  display: flex;
+  align-items: flex-end;
+}
+
+.pdf-stamp-placeholder {
+  width: 120px;
+  height: 120px;
+  border: 2px dashed var(--gov-maroon);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 12px;
+  color: var(--gov-maroon);
+  font-weight: bold;
+  transform: rotate(-15deg);
+  position: relative;
+  overflow: hidden;
+}
+
+.pdf-stamp-placeholder::after {
+  content: "";
+  position: absolute;
+  width: 150%;
+  height: 20px;
+  background-color: rgba(139, 0, 0, 0.2);
+  top: 50%;
+  left: -25%;
+  transform: translateY(-50%) rotate(-15deg);
 }
