@@ -9,7 +9,7 @@ import {
 import axios from "axios";
 
 import Navbar from './components/Navbar';
-import PetHome from './components/Pethome';
+import PetHome from './components/Home/Pethome';
 import LoginPage from './components/LoginPage';
 import PetRegistration from './components/PetRegistration';
 import Profile from './components/Profile';
@@ -17,6 +17,7 @@ import DownloadLicense from './components/Download';
 import QueryFeedback from './components/FeedBack';
 import RenewRegistration from './components/RenewRegistration';
 import AdminPanel from "./components/AdminPanel";
+import Footer from './components/Footer';
 function App() {
   const [languageType, setLanguageType] = useState("en");
   const [user, setUser] = useState(null);
@@ -121,6 +122,7 @@ function App() {
 
           
         </Routes>
+         <Footer />
       </div>
    
   );

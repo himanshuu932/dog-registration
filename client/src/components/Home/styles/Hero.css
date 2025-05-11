@@ -1,0 +1,131 @@
+/* src/styles/Hero.css */
+
+.hero-section {
+  background-color: #e9f0f9;
+  background-image: linear-gradient(135deg, #e9f0f9 0%, #d4e3f7 100%);
+  padding: 80px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.hero-text {
+  flex: 1;
+  max-width: 550px;
+}
+
+.hero-text h1 {
+  color: var(--primary-color);
+  margin-bottom: 20px;
+  font-size: 2.8rem;
+  line-height: 1.2;
+}
+
+.hero-text p {
+  color: var(--light-text);
+  margin-bottom: 30px;
+  font-size: 1.1rem;
+}
+
+.hero-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pet-circle {
+  width: 400px;
+  height: 400px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+  animation: float 6s ease-in-out infinite;
+}
+
+.paw-decorations {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.paw-icon {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  opacity: 0.6;
+  animation: float 4s ease-in-out infinite;
+}
+
+.light-purple {
+  color: var(--accent-light);
+}
+
+.navy {
+  color: var(--primary-color);
+}
+
+.pink {
+  color: #ff88a8;
+}
+
+.top-right {
+  top: 50px;
+  right: 100px;
+  animation-delay: 0.5s;
+}
+
+.bottom-left {
+  bottom: 80px;
+  left: 150px;
+  animation-delay: 1s;
+}
+
+.bottom-right {
+  bottom: 50px;
+  right: 250px;
+  animation-delay: 1.5s;
+}
+
+@media (max-width: 1024px) {
+  .hero-text h1 {
+    font-size: 2.3rem;
+  }
+  
+  .pet-circle {
+    width: 350px;
+    height: 350px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .hero-text {
+    margin-bottom: 40px;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .pet-circle {
+    width: 280px;
+    height: 280px;
+  }
+}
