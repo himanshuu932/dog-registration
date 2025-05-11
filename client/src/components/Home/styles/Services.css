@@ -1,0 +1,153 @@
+/* Services section */
+.services-section {
+  padding: 80px 0;
+  background-color: #fff;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+.service-card {
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.service-image {
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.service-title {
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 15px 20px;
+  color: #fff;
+  text-align: center;
+  width: 80%;
+  border-radius: 8px;
+  backdrop-filter: blur(5px);
+}
+
+.service-title h3 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.service-details {
+  padding: 20px;
+}
+
+.fee-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 20px;
+}
+
+.fee-header {
+  font-weight: 600;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.fee-row {
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.service-details .btn {
+  width: 100%;
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ensure service-image has height to show the img */
+.service-image {
+  position: relative;
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+}
+
+/* make img fill its parent and crop to cover */
+.responsive-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Button styles for Services component */
+.btn {
+  display: inline-block;
+  padding: 12px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.btn-secondary {
+  background-color: #6a4ee1;
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background-color: #5a3acf;
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Container */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Typography for Services */
+h2 {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 40px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+h3 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+}

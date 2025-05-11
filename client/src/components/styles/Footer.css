@@ -1,0 +1,32 @@
+/* Footer */
+.footer {
+  background-color: var(--footer-bg);
+  color: var(--footer-text);
+  padding: 40px 0 20px;
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.copyright {
+  text-align: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.support {
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.footer a {
+  color: var(--accent-light);
+}
+
+.footer a:hover {
+  text-decoration: underline;
+  color: var(--white);
+}
