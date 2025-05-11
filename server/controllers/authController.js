@@ -89,8 +89,8 @@ exports.login = async (req, res) => {
   if (!user || !(await bcrypt.compare(password, user.password))) {
     return res.status(400).json({ message: "Invalid credentials" });
   }
-  const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
-  res.json({ message: "Login successful", user: { username: user.username, email: user.email, phone: user.phone },token });
+  const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1d" });
+  res.json({ message: "Login successful", user: { username: user.username, email: user.email, phone: user.phone, role: user.role,  },token });
 };
 
 exports.getProfile = async (req, res) => {
@@ -103,7 +103,7 @@ exports.getProfile = async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.userId);
     if (!user) return res.status(404).json({ message: "User not found" });
-    res.json({ user: { username: user.username, email: user.email, phone: user.phone } });
+    res.json({ user: { username: user.username, email: user.email, phone: user.phone, role: user.role } });
   } catch (err) {
     res.status(401).json({ message: "Invalid token" });
   }

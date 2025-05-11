@@ -2,13 +2,34 @@ const mongoose = require("mongoose");
 
 const dogLicenseSchema = new mongoose.Schema({
   owner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  dogName: String,
-  breed: String,
-  age: Number,
-  vaccinationProofUrl: String,
-  issuedDate: { type: Date, default: Date.now },
+  fullName: String,
+  phoneNumber: String,
+  gender: String,
+  address: {
+    streetName: String,
+    pinCode: String,
+    city: String,
+    state: String,
+  },
+  totalHouseArea: String,
+  numberOfDogs: Number,
+  dog: {
+    name: String,
+    category: String,
+    breed: String,
+    color: String,
+    age: String,
+    sex: String,
+    dateOfVaccination: Date,
+    dueVaccination: Date,
+    vaccinationProofUrl: String
+  },
   expiryDate: Date,
-  status: { type: String, default: "Pending" } // Pending, Approved, Rejected
+   status: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending'
+  }
 });
 
 module.exports = mongoose.model("DogLicense", dogLicenseSchema);
