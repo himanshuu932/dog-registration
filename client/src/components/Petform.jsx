@@ -77,15 +77,40 @@ const PetRegistrationForm = () => {
     setActiveTab((prev) => prev - 1);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (formData.declaration1 && formData.declaration2 && formData.declaration3 && formData.declaration4) {
-      console.log('Form submitted:', formData);
-      alert('Form submitted successfully!');
-    } else {
-      alert('Please accept all declarations before submitting.');
+
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!formData.declaration1 || !formData.declaration2 || !formData.declaration3 || !formData.declaration4) {
+    alert('Please accept all declarations before submitting.');
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('You must be logged in to submit the form.');
+      return;
     }
-  };
+
+    const res = await axios.post('http://localhost:5000/api/license/apply', formData, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    alert('Form submitted successfully!');
+    console.log('Server response:', res.data);
+
+    // Optionally reset form:
+    // setFormData({ ...initialFormData });
+  } catch (err) {
+    console.error('Error submitting form:', err);
+    alert(err.response?.data?.message || 'Something went wrong. Please try again.');
+  }
+};
+
 
   const renderError = (field) =>
     errors[field] && <span className="error-text">{errors[field]}</span>;

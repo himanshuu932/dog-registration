@@ -30,7 +30,8 @@ exports.applyLicense = async (req, res) => {
         dueVaccination,
         vaccinationProofUrl
       },
-      expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
+      expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+      status: 'pending'
     });
 
     await newLicense.save();

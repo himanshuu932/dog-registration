@@ -24,7 +24,12 @@ const dogLicenseSchema = new mongoose.Schema({
     dueVaccination: Date,
     vaccinationProofUrl: String
   },
-  expiryDate: Date
+  expiryDate: Date,
+   status: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending'
+  }
 });
 
 module.exports = mongoose.model("DogLicense", dogLicenseSchema);
