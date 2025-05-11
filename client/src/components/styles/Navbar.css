@@ -25,25 +25,21 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 2rem;
+  padding: 0.75rem 1rem;
   height: 70px;
   width: 100%;
-}
-
-/* Bottom row - elements visible after login */
-.navbar__bottom-row {
-  display: flex;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.1);
-  height: 50px;
-  width: 100%;
-  padding: 0 2rem;
 }
 
 /* Logo styling */
 .navbar__logo {
   display: flex;
   align-items: center;
+  margin-left: 10px;
+}
+
+.navbar__logo-img {
+  height: 40px;
+  margin-right: 10px;
 }
 
 .gov-logo {
@@ -53,52 +49,65 @@
   white-space: nowrap;
 }
 
+/* Right side actions container */
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* Group for language toggle and notification bell */
+.navbar__controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Desktop only elements */
+.navbar__desktop-only {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 /* Navigation menu styling */
 .navbar__menu {
   display: flex;
+  flex-direction: column;
   margin: 0;
   padding: 0;
   list-style: none;
-  height: 100%;
   width: 100%;
 }
 
 .nav-item--gov {
   cursor: pointer;
   font-size: 0.875rem;
-  padding: 0 1.25rem;
-  height: 100%;
+  padding: 1rem;
   display: flex;
   align-items: center;
   position: relative;
   transition: background-color 0.2s;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .nav-item--gov:hover {
   background-color: rgba(255, 255, 255, 0.15);
 }
 
-.nav-item--gov::after {
-  content: '';
+/* Mobile menu container */
+.navbar__mobile-menu {
+  display: none;
+  background-color: #13426b;
   position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 3px;
-  background-color: #ffd700;
-  transition: width 0.3s;
+  top: 70px;
+  left: 0;
+  width: 100%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.nav-item--gov:hover::after {
-  width: 80%;
-}
-
-/* Right side actions container */
-.navbar__actions {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
+.navbar__mobile-menu.show {
+  display: block;
 }
 
 /* Common button styling */
@@ -123,12 +132,6 @@
 .lang-toggle-container {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-}
-
-.lang-toggle__label {
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.9);
 }
 
 .lang-toggle {
@@ -156,7 +159,6 @@
 .notif {
   display: flex;
   align-items: center;
-  gap: 1rem;
   position: relative;
 }
 
@@ -170,10 +172,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.notif__icon {
-  color: #fff;
 }
 
 .notif__badge {
@@ -232,7 +230,7 @@
   font-size: 0.875rem;
 }
 
-/* Hamburger menu button (mobile) */
+/* Hamburger menu button */
 .hamburger {
   display: none;
   background: none;
@@ -240,10 +238,10 @@
   cursor: pointer;
   width: 30px;
   height: 24px;
-  position: relative;
   flex-direction: column;
   justify-content: space-between;
   padding: 0;
+  z-index: 1020;
 }
 
 .hamburger span {
@@ -251,90 +249,131 @@
   height: 2px;
   width: 100%;
   background-color: #fff;
-  transition: all 0.3s;
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+/* Hamburger animation for active state */
+.hamburger.active span:nth-child(1) {
+  transform: translateY(11px) rotate(45deg);
+}
+
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+  transform: translateY(-11px) rotate(-45deg);
+}
+
+/* Hide mobile-specific elements by default */
+.mobile-auth {
+  display: none;
+}
+
+/* Desktop default layout (bottom row) */
+@media (min-width: 769px) {
+  .navbar__mobile-menu {
+    display: none !important; /* Never show on desktop */
+  }
+  
+  /* Bottom row styling for desktop */
+  .navbar__bottom-row {
+    display: flex;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.1);
+    height: 50px;
+    width: 100%;
+    padding: 0 2rem;
+  }
+  
+  .navbar__menu {
+    flex-direction: row;
+    height: 100%;
+  }
+  
+  .nav-item--gov {
+    height: 100%;
+    padding: 0 1.25rem;
+    border-bottom: none;
+  }
+  
+  .nav-item--gov::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 3px;
+    background-color: #ffd700;
+    transition: width 0.3s;
+  }
+  
+  .nav-item--gov:hover::after {
+    width: 80%;
+  }
 }
 
 /* Responsive styles */
 @media (max-width: 1024px) {
-  .navbar__top-row,
-  .navbar__bottom-row {
+  .navbar__top-row {
     padding: 0.5rem 1rem;
-  }
-  
-  .nav-item--gov {
-    padding: 0 0.75rem;
   }
   
   .navbar__actions {
     gap: 1rem;
   }
+  
+  .gov-logo {
+    font-size: 1.1rem;
+  }
 }
 
+/* Mobile styles */
 @media (max-width: 768px) {
   .hamburger {
     display: flex;
-    z-index: 1020;
   }
   
-  .navbar__bottom-row {
-    display: none; /* Hide bottom row on mobile */
+  .navbar__desktop-only {
+    display: none; /* Hide desktop elements */
   }
   
-  .navbar__menu {
-    position: fixed;
-    flex-direction: column;
-    top: 120px; /* Adjusted for new navbar height */
-    left: 0;
-    right: 0;
-    background: #13426b;
-    height: auto;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
-    width: 100%;
-    z-index: 1010;
+  .mobile-auth {
+    display: flex; /* Show mobile auth button */
+    justify-content: center;
   }
   
-  .navbar__menu.show {
-    max-height: calc(100vh - 120px);
-    overflow-y: auto;
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
-    display: flex;
-  }
-  
-  .nav-item--gov {
-    padding: 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  .nav-item--gov::after {
-    display: none;
-  }
-  
-  .navbar__actions {
+  /* The language toggle and notification are always together */
+  .navbar__controls {
     margin-left: auto;
   }
   
-  .lang-toggle__label {
-    display: none;
+  .navbar__mobile-menu {
+    position: absolute;
+    top: 70px;
+    left: 0;
+    right: 0;
+    z-index: 1000;
   }
 }
 
 @media (max-width: 576px) {
   .navbar__top-row {
     height: 60px;
+    padding: 0.5rem 0.75rem;
   }
   
   .gov-logo {
-    font-size: 1rem;
+    font-size: 0.85rem; /* Smaller text on very small screens */
   }
   
-  .navbar__menu {
-    top: 60px;
+  .navbar__mobile-menu {
+    top: 60px; /* Adjust for smaller header */
   }
   
-  .navbar__username {
-    display: none;
+  .navbar__logo-img {
+    height: 30px;
   }
   
   .navbar__actions {
@@ -349,64 +388,5 @@
   .notif__dropdown {
     width: 250px;
     right: -70px;
-  }
-  
-  .notif__dropdown::before {
-    right: 80px;
-  }
-}
-.navbar__logo-img{
-    height: 40px;
-}
-/* default: hide mobile-only items */
-.mobile-only {
-  display: none;
-}
-
-/* mobile view tweaks */
-@media (max-width: 768px) {
-  /* 1) Top-row: show only hamburger, logo, lang toggle */
-  .navbar__top-row {
-    display: flex;
-    align-items: center;
-  }
-
-  .navbar__actions > * {
-    display: none; /* hide desktop actions */
-  }
-
-  /* reorder: ☐ hamburger, logo, lang toggle */
-  .hamburger { order: 1; }
-  .navbar__logo { order: 2; margin-left: 1rem; }
-  .lang-toggle-container { order: 3; margin-left: auto; }
-
-  /* 2) Drawer menu */
-  .navbar__bottom-row {
-    display: block;  /* keep UL in DOM */
-  }
-  .navbar__menu {
-    position: fixed;
-    top: 60px;    /* height of top-row on mobile */
-    left: 0; right: 0;
-    background: #13426b;
-    flex-direction: column;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
-    z-index: 1010;
-  }
-  .navbar__menu.show {
-    display: flex;
-    max-height: calc(100vh - 60px);
-  }
-  .nav-item--gov {
-    padding: 1rem;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-  }
-
-  /* 3) show mobile-only items inside drawer */
-  .mobile-only {
-    display: flex;
-    align-items: center;
   }
 }
