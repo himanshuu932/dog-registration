@@ -1,9 +1,13 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const { applyLicense, getUserLicenses } = require("../controllers/licenseController");
+const licenseController = require('../controllers/licenseController');
+const uploadMiddleware = require('../middleware/uploadMiddleware');
 const { verifyToken } = require("../middleware/authMiddleware");
 
-router.post("/apply", verifyToken, applyLicense);
-router.get("/my-licenses", verifyToken, getUserLicenses);
-
+// Make sure these are properly imported functions
+router.post('/upload', uploadMiddleware, licenseController.uploadVaccinationProof);
+router.post('/apply', verifyToken, licenseController.applyLicense);
+router.get('/user', verifyToken, licenseController.getUserLicenses);
+router.delete('/:id', licenseController.deleteLicense);
+  
 module.exports = router;
