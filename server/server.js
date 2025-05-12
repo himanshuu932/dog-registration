@@ -20,5 +20,8 @@ app.use(bodyParser.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/license", licenseRoutes);
 app.use("/api/admin", adminRoutes);
+app.get('/health-check-polling', (req, res) => {
+  res.status(200).send('OK');
+});
 
 app.listen(5000, () => console.log("Server running on port 5000"));

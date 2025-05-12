@@ -7,11 +7,14 @@ const AdminPanel = () => {
   const [loading, setLoading] = useState(true);
   const [expandedRows, setExpandedRows] = useState([]);
 
+
+  const backend = "https://dog-registration.onrender.com";
+
   const token = localStorage.getItem("token");
 
   const fetchLicenses = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/admin/all", {
+      const res = await axios.get(`${backend}/api/admin/all`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setLicenses(res.data);
@@ -24,7 +27,7 @@ const AdminPanel = () => {
 
   const updateStatus = async (id, action) => {
     try {
-      await axios.patch(`http://localhost:5000/api/admin/${action}/${id}`, {}, {
+      await axios.patch(`${backend}/api/admin/${action}/${id}`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert(`License ${action}d`);

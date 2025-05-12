@@ -41,6 +41,10 @@ const [avatarUrl, setAvatarUrl] = useState('');
     declaration4: false
   });
 
+
+
+   const backend = "https://dog-registration.onrender.com";
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -124,7 +128,7 @@ const [avatarUrl, setAvatarUrl] = useState('');
       formData.append('file', file);
 
       const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost:5000/api/license/upload', formData, {
+      const response = await axios.post(`${backend}/api/license/upload`, formData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
@@ -179,7 +183,7 @@ const handleAvatarUpload = async () => {
     formData.append('file', avatarFile);
 
     const token = localStorage.getItem('token');
-    const response = await axios.post('http://localhost:5000/api/license/upload', formData, {
+    const response = await axios.post(`${backend}/api/license/upload`, formData, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'multipart/form-data'
@@ -224,7 +228,7 @@ const handleSubmit = async (e) => {
         vaccinationProofPublicId: vaccinationProof.publicId
       };
 
-      const res = await axios.post('http://localhost:5000/api/license/apply', submissionData, {
+      const res = await axios.post(`${backend}/api/license/apply`, submissionData, {
         headers: {
           Authorization: `Bearer ${token}`
         }

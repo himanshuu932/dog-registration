@@ -24,6 +24,9 @@ function App() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+
+   const backend = "https://dog-registration.onrender.com";
+
   const handleLogin = (userData, token) => {
     localStorage.setItem("token", token);
     setUser(userData);
@@ -49,7 +52,7 @@ function App() {
       }
 
       try {
-        const res = await axios.get("http://localhost:5000/api/auth/profile", {
+        const res = await axios.get(`${backend}/api/auth/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(res.data.user);

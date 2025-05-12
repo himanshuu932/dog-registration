@@ -31,12 +31,15 @@ function LoginSignup({ user, setUser }) {
     return number ? number.toString() : "";
   };
 
+
+   const backend = "https://dog-registration.onrender.com";
+
 const handleLogin = async () => {
   setError("");
   setLoading(true);
   try {
     const res = await axios.post(
-      "http://localhost:5000/api/auth/login",
+      `${backend}/api/auth/login`,
       {
         username,
         password,
@@ -84,11 +87,11 @@ const handleLogin = async () => {
     setLoading(true);
     try {
       if (method === "phone") {
-        await axios.post("http://localhost:5000/api/auth/send-otp", { 
+        await axios.post(`${backend}/api/auth/send-otp`, { 
           phone: formatPhoneNumber(phoneNumber) 
         });
       } else {
-        await axios.post("http://localhost:5000/api/auth/send-email-otp", { 
+        await axios.post(`${backend}/api/auth/send-email-otp`, { 
           email 
         });
       }
@@ -134,14 +137,14 @@ const handleVerifyOtp = async () => {
     if (method === "phone") {
       payload.phone = formatPhoneNumber(phoneNumber);
       console.log("Phone signup payload:", payload); // Debug log
-      await axios.post("http://localhost:5000/api/auth/verify-otp", payload);
+      await axios.post(`${backend}/api/auth/verify-otp`, payload);
     } 
     // For email method signup
     else {
       payload.email = email;
       payload.phone = formatPhoneNumber(signupPhoneNumber);
       console.log("Email signup payload:", payload); // Debug log
-      await axios.post("http://localhost:5000/api/auth/verify-email-otp", payload);
+      await axios.post(`${backend}/api/auth/verify-email-otp`, payload);
     }
     
     alert("Signup successful! You can now log in.");

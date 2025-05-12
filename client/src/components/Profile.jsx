@@ -6,6 +6,8 @@ function Profile() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
+   const backend = "https://dog-registration.onrender.com";
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -16,7 +18,7 @@ function Profile() {
           return;
         }
 
-        const res = await axios.get("http://localhost:5000/api/auth/profile", {
+        const res = await axios.get(`${backend}/api/auth/profile`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

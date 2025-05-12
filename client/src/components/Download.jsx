@@ -12,10 +12,12 @@ const DogLicenseDownload = () => {
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState(null);
 
+   const backend = "https://dog-registration.onrender.com";
+
   const token = localStorage.getItem('token');
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/license/user', {
+    fetch(`${backend}/api/license/user`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
