@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { verifyToken } = require("../middleware/authMiddleware");
-const { isAdmin } = require("../middleware/isAdmin");
+const { verifyToken } = require("../middleWare/authMiddleware");
+const { isAdmin } = require("../middleWare/isAdmin");
 const {
   getAllLicenses,
   approveLicense,

@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const licenseController = require('../controllers/licenseController');
-const upload = require('../middleware/uploadMiddleware');
-const { verifyToken } = require("../middleware/authMiddleware");
+const upload = require('../middleWare/uploadMiddleware');
+const { verifyToken } = require("../middleWare/authMiddleware");
 
 // Make sure these are properly imported functions
 router.post('/upload', upload, licenseController.uploadVaccinationProof);
