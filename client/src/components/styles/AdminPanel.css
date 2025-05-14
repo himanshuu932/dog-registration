@@ -7,8 +7,8 @@
   --secondary: #3498db;
   --secondary-light: #5dade2;
   --accent: #1abc9c;
-  --success: #27ae60;
-  --danger: #e74c3c;
+  --success: #23814a; /* Approved status color */
+  --danger: #d84e3f; /* Rejected status color */
   --warning: #f39c12;
   --pending: #f1c40f;
   --gray-light: #ecf0f1;
@@ -26,37 +26,18 @@
   font-family: var(--font-main);
   color: var(--black);
   background-color: var(--white);
-  padding: 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
+  padding: 2rem; /* Keep padding for spacing from viewport edges */
+
   box-shadow: 0 2px 10px var(--shadow);
   border-radius: 8px;
   position: relative; /* Needed for positioning children and stacking context */
 
-  /* Default: Single column layout (Table takes full width) */
-  /* Use block display by default to stack children (title, then list) */
-  display: block;
+  /* Removed: Always single column layout */
+  /* display: block; */ /* Remove this line */
   gap: 0; /* Default gap */
 }
 
-/* Two-Column Layout when expanded (Desktop Only) */
-/* Apply grid only when the two-column-layout class is present (desktop + expanded) */
-.admin-panel.two-column-layout {
-    display: grid; /* Use grid for desktop two-column layout */
-    /* Define columns: Left column (list) at 45% of viewport width, Right column (details) takes remaining space */
-    grid-template-columns: 45vw 1fr; /* 45% of viewport width for list, 1fr for details */
-    gap: 2rem; /* Add a gap between the two columns */
-    /* Define grid areas */
-    grid-template-areas: "list details"; /* Arrange list and details side-by-side */
 
-    /* Add overflow hidden to prevent grid content from overflowing the container */
-    overflow: hidden;
-    /* Ensure the grid container takes up available height if needed */
-    align-items: start; /* Align items to the start of their grid areas */
-}
-
-/* Styles for the desktop title (outside the main grid areas) */
-/* When in two-column layout, this title will be above the grid */
 .admin-panel > h2 {
   display: flex;
   align-items: center;
@@ -64,43 +45,40 @@
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--gray-light);
   margin-top: 0;
-  /* Add margin below the title to separate it from the grid content */
   margin-bottom: 1.5rem;
+   padding-left: 0; /* Remove left padding here, handled by .admin-panel */
+   padding-right: 0; /* Remove right padding here, handled by .admin-panel */
 }
 
-
-/* Styles for the left (list) container */
+/* Styles for the list container */
+/* Added horizontal padding to align with overall panel padding */
 .license-list-container {
-    /* Removed: overflow-y: auto; - Left column will not have its own scrollbar */
-    /* On desktop single column, takes full width (block display) */
-    /* On desktop two-column, placed in 'list' grid area */
-    grid-area: list;
-    /* min-width added to prevent list from becoming too small */
-    min-width: 300px; /* Keep a minimum width */
-    /* Ensure it takes up the full height of the grid row */
-    min-height: 0; /* Important for flex/grid items in auto rows */
-    /* Add z-index to ensure it stays on top of the details panel */
-    z-index: 2;
     position: relative; /* Create a stacking context */
+    width: 100%; /* Take full width within admin-panel */
+    overflow-y: auto; /* Added overflow-y for scrolling if the list is long */
+     /* padding: 0 2rem; /* Add horizontal padding */ /* Moved padding to .admin-panel */
 }
 
-/* Styles for the right (details) container */
+/* Styles for the details container */
+/* Added horizontal padding to align with overall panel padding */
 .license-details-container {
     overflow-y: auto; /* Add scroll if details are long */
      background-color: var(--gray-light); /* Background for the details panel */
      border-radius: var(--border-radius);
      padding: 1rem; /* Padding within the details container */
      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.05); /* Inner shadow */
-      /* On single column desktop, this is hidden by conditional rendering in JSX */
-      /* On desktop two-column, placed in 'details' grid area */
-    grid-area: details;
-     /* min-width added to prevent details from becoming too small */
-    min-width: 400px; /* Keep a minimum width */
-     /* Ensure it takes up the full height of the grid row */
-    min-height: 0; /* Important for flex/grid items in auto rows */
-    /* Add z-index to place it below the list panel if overlap occurs */
-    z-index: 1;
-    position: relative; /* Create a stacking context */
+     width: 100%; /* Take full width within admin-panel */
+     min-height: 0; /* Important for flex/grid items in auto rows */
+     position: relative; /* Create a stacking context */
+     margin-top: 1.5rem; /* Add space between list (if visible) and details */
+      /* padding: 2rem; /* Add padding */ /* Moved padding to .admin-panel */
+}
+
+/* Hide the list container when the details container is present (on all screen sizes) */
+/* This rule uses the :has() selector, which has broad but not universal browser support.
+   Ensure you check compatibility or use JS state management as an alternative if needed. */
+.admin-panel:has(.license-details-container) .license-list-container {
+    display: none;
 }
 
 
@@ -110,9 +88,9 @@ h2, h3, h4 {
   color: var(--primary);
 }
 
-/* Mobile Title Style */
+/* Mobile Title Style (Only shown on mobile when list is visible) */
 .mobile-title {
-     display: none; /* Hidden by default, shown on mobile */
+     display: none; /* Hidden by default */
 }
 
 
@@ -130,10 +108,12 @@ h2, h3, h4 {
 .license-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 0rem; /* Removed top margin to align with title border */
+ /* Removed top margin to align with title border */
   box-shadow: 0 1px 3px var(--shadow);
   border-radius: var(--border-radius);
   overflow: hidden;
+  /* Removed: display: block; */ /* Remove this line */
+  overflow-x: auto; /* Allow horizontal scrolling for the table if needed */
 }
 
 .license-table thead {
@@ -145,6 +125,7 @@ h2, h3, h4 {
   padding: 1rem;
   text-align: left;
   font-weight: 500;
+  white-space: nowrap; /* Prevent header text from wrapping */
 }
 
 .license-table tbody tr {
@@ -157,48 +138,37 @@ h2, h3, h4 {
   background-color: rgba(236, 240, 241, 0.5);
 }
 
-/* Style for the currently expanded row in the list (Desktop Two-Column Only) */
-/* Apply highlight only when in two-column layout */
-.admin-panel.two-column-layout .license-table tbody tr.expanded-row {
-    background-color: var(--secondary-light); /* Highlight color */
-    color: var(--white);
-}
-.admin-panel.two-column-layout .license-table tbody tr.expanded-row td {
-    color: var(--white); /* Ensure text is readable */
-}
-.admin-panel.two-column-layout .license-table tbody tr.expanded-row .cell-icon {
-     color: var(--white); /* Ensure icons are readable */
-}
-.admin-panel.two-column-layout .license-table tbody tr.expanded-row .status-badge {
-     background-color: rgba(255, 255, 255, 0.2); /* Make badge translucent */
-     color: var(--white);
-}
-.admin-panel.two-column-layout .license-table tbody tr.expanded-row button {
-    background-color: var(--white);
-    color: var(--primary);
-}
-.admin-panel.two-column-layout .license-table tbody tr.expanded-row button:hover {
-     background-color: var(--gray-light);
-}
-
 
 .license-table td {
   padding: 1rem;
   vertical-align: middle;
+  white-space: nowrap; /* Prevent cell content from wrapping */
+   overflow: hidden; /* Hide overflowing text */
+   text-overflow: ellipsis; /* Add ellipsis for overflow */
 }
 
-/* Cell Formatting - Keep existing cell formatting */
+/* Cell Formatting - Keep existing cell formatting and add min-width/max-width for control */
 .user-cell, .dog-cell, .date-cell {
   display: flex;
   align-items: center;
+   min-width: 120px; /* Example minimum width */
+   max-width: 250px; /* Example maximum width */
 }
+.status-badge {
+     min-width: 100px; /* Ensure status badge has minimum width */
+     justify-content: center; /* Center content in the badge */
+     white-space: nowrap; /* Prevent badge text from wrapping */
+}
+
 
 .cell-icon {
   margin-right: 0.5rem;
   color: var(--secondary);
+   flex-shrink: 0; /* Prevent icon from shrinking */
 }
 
-/* Status Badge */
+
+/* Status Badge (Keep existing styles) */
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -207,9 +177,7 @@ h2, h3, h4 {
   font-size: 0.85rem;
   font-weight: 500;
   text-transform: capitalize;
-  /* Ensure content stays within bounds */
   overflow: hidden;
-  white-space: nowrap;
 }
 
 .status-badge.approved {
@@ -229,7 +197,6 @@ h2, h3, h4 {
 
 .status-badge svg {
   margin-right: 0.35rem;
-  /* Prevent icon from affecting container size if it's slightly larger */
   flex-shrink: 0;
 }
 
@@ -248,8 +215,8 @@ button {
 .btn-view, .btn-approve, .btn-reject {
   padding: 0.5rem 0.85rem;
   border-radius: var(--border-radius);
-  /* Removed margin-right here, managed by parent container gap */
   font-size: 0.85rem;
+   white-space: nowrap; /* Prevent button text from wrapping */
 }
 
 .btn-view {
@@ -261,34 +228,39 @@ button {
   background-color: var(--primary);
 }
 
+/* Adjusted colors for Approve and Reject buttons */
 .btn-approve {
-  background-color: var(--success);
+  background-color: var(--success); /* Match approved status color */
   color: var(--white);
 }
 
 .btn-approve:hover {
-  background-color: #219653;
+  background-color: #219653; /* Darker shade for hover */
 }
 
 .btn-reject {
-  background-color: var(--danger);
+  background-color: var(--danger); /* Match rejected status color */
   color: var(--white);
 }
 
 .btn-reject:hover {
-  background-color: #c0392b;
+  background-color: #c0392b; /* Darker shade for hover */
 }
 
 .btn-icon {
   margin-right: 0.35rem;
+   flex-shrink: 0; /* Prevent icon from shrinking */
 }
 
 
-/* Container to put buttons in a row in the Actions cell by default */
+/* Container to put buttons in a row in the Actions cell */
 .actions-cell .action-buttons-container {
     display: flex;
     align-items: center;
     gap: 0.5rem; /* Space between buttons/groups */
+    flex-wrap: wrap; /* Allow buttons to wrap if space is limited */
+     /* Ensure container doesn't push content out */
+     min-width: 100px; /* Ensure actions cell has a minimum width */
 }
 
 /* Style for pending action buttons group */
@@ -296,37 +268,11 @@ button {
     display: flex; /* Use flexbox to arrange approve/reject in a row */
     gap: 0.5rem; /* Space between approve and reject buttons */
     align-items: center;
-}
-
-/* Adjust action buttons container when in two-column layout (Desktop Only) */
-/* Stack the View/Hide button above the pending actions group */
-.admin-panel.two-column-layout .actions-cell .action-buttons-container {
-    flex-direction: column; /* Stack children vertically */
-    align-items: flex-start; /* Align items to the start (left) */
-    gap: 0.75rem; /* Space between stacked items */
-}
-
-/* Adjust the View button specifically when stacked (Desktop Two-Column) */
-.admin-panel.two-column-layout .actions-cell .action-buttons-container .btn-view {
-    margin-right: 0; /* Remove margin */
-    width: auto; /* Allow button to size based on content */
-}
-
-
-/* Adjust pending action buttons when in two-column layout (icon only, Desktop Only) */
-.pending-actions.icon-only .btn-approve,
-.pending-actions.icon-only .btn-reject {
-    padding: 0.5rem; /* Square padding for icon only */
-    /* margin-right: 0; Removed, managed by parent gap */
-}
-.pending-actions.icon-only .btn-approve .btn-icon,
-.pending-actions.icon-only .btn-reject .btn-icon {
-     margin: 0; /* Remove margin on icon */
+    flex-shrink: 0; /* Prevent shrinking */
 }
 
 
 /* Removed: Resizable Divider Styles */
-/* .resizable-divider { ... } */
 
 
 /* Remove the old expanded row styles */
@@ -336,14 +282,17 @@ button {
 
 
 .view-toggle-btn {
-  
   padding: 0.65rem 1rem;
   border-radius: var(--border-radius);
   font-size: 0.9rem;
   background-color: var(--white);
   color: var(--primary);
   border: 1px solid var(--gray);
-  width: 90%; /* Make button full width in details panel */
+  width: auto; /* Allow button to size based on content */
+  margin-bottom: 1rem; /* Add space below the toggle button */
+   /* Ensure it doesn't overflow its container */
+  max-width: 100%;
+  box-sizing: border-box; /* Include padding and border in element's total width */
 }
 
 .view-toggle-btn:hover {
@@ -351,36 +300,38 @@ button {
 }
 
 
-/* Standard View (Form-like) Styling */
-/* This container is inside .license-details-container */
+/* Standard View (Form-like) Styling - Keep existing for responsiveness */
 .standard-form-view {
-    background-color: var(--white); /* White background for the form area */
+    background-color: var(--white);
     border: 1px solid var(--gray);
     border-radius: var(--border-radius);
-    padding: 1.5rem; /* Adjusted padding */
-    /* max-width: 800px; Removed max-width here as it's handled by container */
-    margin: 0 auto; /* Center the form within its container */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Subtle shadow */
-    overflow: hidden; /* Contain floats and ensure padding is inside */
-    width: 100%; /* Ensure it takes full width within its container */
+    padding: 1.5rem;
+    margin: 0 auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-/* Grouping for Owner Info and Photo in Standard View */
+/* Grouping for Owner Info and Photo in Standard View - Keep existing responsiveness */
 .standard-form-view .owner-photo-group {
-    display: grid; /* Use grid for owner info and photo */
-    grid-template-columns: 1fr 1fr; /* Two columns */
-    gap: 1.5rem; /* Gap between owner info and photo */
-    margin-bottom: 1.5rem; /* Space below this group */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    @media (max-width: 600px) {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
 }
-
 
 /* Reuse certificate section styling for standard form */
 .standard-form-view .certificate-section {
-  margin-bottom: 0; /* Remove bottom margin when grouped or the last section */
+  margin-bottom: 0;
   border: 1px solid var(--gray-light);
   border-radius: var(--border-radius);
-  overflow: hidden; /* Hide overflowing content */
-  box-shadow: none; /* No shadow for standard form sections */
+  overflow: hidden;
+  box-shadow: none;
 }
 
 /* Specific margin for sections that are not the last one in the standard view */
@@ -390,44 +341,54 @@ button {
 
 
 .standard-form-view .section-header {
-  background-color: var(--primary); /* Primary color header */
+  background-color: var(--primary);
   color: var(--white);
-  padding: 0.6rem 1rem; /* Adjusted padding */
+  padding: 0.6rem 1rem;
   font-weight: 600;
   display: flex;
   align-items: center;
-  font-size: 1rem; /* Slightly smaller font */
+  font-size: 1rem;
 }
 
 .standard-form-view .section-content {
-  padding: 1rem; /* Adjusted padding */
-  background-color: var(--white); /* White background for content */
+  padding: 1rem;
+  background-color: var(--white);
 }
 
-/* Reuse certificate grid styling for standard form */
+/* Reuse certificate grid styling for standard form - Keep existing responsiveness */
 .standard-form-view .certificate-grid {
-  display: flex;
-  flex-direction: column; /* Changed from flex back to grid */
-  gap: 0.75rem; /* Adjusted gap */
+ display: flex;
+ flex-direction: column;
+  gap: 0.75rem;
 }
 
-/* Ensure text does not overflow in grid items */
+/* Ensure text does not overflow in grid items - Keep existing handling */
 .standard-form-view .certificate-grid .grid-item {
-  padding: 0.6rem 0.8rem; /* Adjusted padding */
+  padding: 0.6rem 0.8rem;
   display: flex;
-  flex-direction: row; /* Ensure content is in a row */
+  flex-direction: row;
   align-items: center;
-  background-color: var(--gray-light); /* Light background for items */
+  background-color: var(--gray-light);
   border-radius: var(--border-radius);
-  font-size: 0.9rem; /* Adjusted font size */
-  overflow: hidden; /* Hide overflowing content */
+  font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
+.standard-form-view .certificate-grid .grid-item span {
+    word-break: normal;
+    overflow-wrap: normal;
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 
 .standard-form-view .certificate-grid .grid-item strong {
-  margin-right: 0.4rem; /* Adjusted margin */
-  color: var(--primary-light); /* Label color */
+  margin-right: 0.4rem;
+  color: var(--primary-light);
   font-weight: 600;
-  flex-shrink: 0; /* Prevent label from shrinking */
+  flex-shrink: 0;
 }
 
 .standard-form-view .certificate-grid .grid-item .detail-icon {
@@ -436,52 +397,49 @@ button {
     flex-shrink: 0;
 }
 
-.standard-form-view .certificate-grid .grid-item span {
-    /* Allow text to break and wrap if it's too long */
-    word-break: break-word;
-    overflow-wrap: break-word;
-}
-
 
 .standard-form-view .certificate-grid .span-two {
-  grid-column: span 2; /* Span two columns */
+  grid-column: span 2;
+    @media (max-width: 600px) {
+        grid-column: auto;
+    }
 }
 
-/* Standard View Dog Photo Section */
+/* Standard View Dog Photo Section - Keep existing */
 .standard-form-view .dog-photo-section .section-content {
     display: flex;
-    justify-content: center; /* Center the photo or placeholder */
-    align-items: center; /* Vertically center the photo or placeholder */
-    height: 100%; /* Make photo section content fill height of owner info */
-    min-height: 150px; /* Ensure minimum height even without photo */
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    min-height: 150px;
 }
 
 
 .standard-form-view .dog-photo-section .avatar-preview {
-   padding: 0.75rem; /* Adjusted padding */
-   box-shadow: 0 1px 3px var(--shadow); /* Subtle shadow */
+   padding: 0.75rem;
+   box-shadow: 0 1px 3px var(--shadow);
 }
 
 .standard-form-view .dog-photo-section .dog-avatar {
-    max-width: 150px; /* Adjusted max width */
-    max-height: 150px; /* Adjusted max height */
+    max-width: 150px;
+    max-height: 150px;
     object-fit: cover;
 }
 
 
-/* Reuse vaccination link styling for standard form */
+/* Reuse vaccination link styling for standard form - Keep existing handling */
 .standard-form-view .vaccination-proof-section .section-content {
-     display: flex; /* Use flexbox to center the link or placeholder */
+     display: flex;
      justify-content: center;
      align-items: center;
-     min-height: 80px; /* Ensure minimum height */
+     min-height: 80px;
 }
 
 
 .standard-form-view .vaccination-link {
     display: inline-flex;
     align-items: center;
-    padding: 0.6rem 0.8rem; /* Adjusted padding */
+    padding: 0.6rem 0.8rem;
     border-radius: var(--border-radius);
     background-color: var(--white);
     color: var(--secondary);
@@ -490,9 +448,13 @@ button {
     box-shadow: 0 1px 2px var(--shadow);
     transition: all 0.2s ease;
     font-size: 0.9rem;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-/* Styling for "No Photo" and "No Certificate" placeholders */
+/* Styling for "No Photo" and "No Certificate" placeholders - Keep existing */
 .no-data-placeholder {
     color: var(--gray-dark);
     font-style: italic;
@@ -502,25 +464,32 @@ button {
 }
 
 
-/* Certificate View Styling */
+/* Certificate View Styling - Keep existing for responsiveness */
 .certificate-mode {
-  background-color: var(--white); /* White background for the certificate */
+  background-color: var(--white);
   border: 1px solid var(--gray);
   border-radius: var(--border-radius);
   padding: 2.5rem;
-  max-width: 800px; /* Max width for the certificate */
-  margin: 0 auto; /* Center the certificate and remove margin */
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Stronger shadow for the certificate */
+
+  margin: 0 auto;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   position: relative;
-  overflow: hidden; /* Ensure nothing spills out */
-   width: 100%; /* Ensure it takes full width within its container */
+  overflow: hidden;
+   width: 100%;
+    box-sizing: border-box; /* Include padding and border in element's total width */
 }
 
+/* Certificate Header - Keep existing responsiveness */
 .certificate-header {
   display: flex;
   justify-content: space-between;
   margin-bottom: 1.5rem;
   align-items: center;
+    @media (max-width: 500px) {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
 }
 
 .logo-container {
@@ -530,12 +499,12 @@ button {
 
 .municipal-logo {
   margin-right: 1rem;
-  color: var(--primary); /* Use primary color for logo */
+  color: var(--primary);
 }
 
 .header-text h3 {
   margin: 0;
-  font-size: 1.4rem; /* Slightly larger title */
+  font-size: 1.4rem;
   color: var(--primary);
 }
 
@@ -558,55 +527,64 @@ button {
 }
 
 .certificate-title {
-  font-size: 1.8rem; /* Larger title */
+  font-size: 1.8rem;
   text-align: center;
-  font-weight: 700; /* Bolder title */
+  font-weight: 700;
   padding: 1rem 0;
   margin: 1.5rem 0;
-  border-top: 3px solid var(--primary); /* Thicker primary border */
-  border-bottom: 3px solid var(--primary); /* Thicker primary border */
+  border-top: 3px solid var(--primary);
+  border-bottom: 3px solid var(--primary);
   color: var(--primary);
-  text-transform: uppercase; /* Uppercase as in image */
+  text-transform: uppercase;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .certificate-subtitle {
-  font-size: 1.1rem; /* Subtitle font size */
+  font-size: 1.1rem;
   font-weight: 500;
   margin-top: 0.5rem;
   color: var(--gray-dark);
 }
 
+/* Certificate Main Info - Keep existing responsiveness */
 .certificate-main-info {
   display: grid;
-  grid-template-columns: 3fr 1fr; /* Main info layout */
-  gap: 2rem; /* Increased gap */
-  margin-bottom: 2rem; /* Increased margin */
+  grid-template-columns: 3fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+    @media (max-width: 700px) {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
 }
 
 .certificate-basic-info {
-  background-color: var(--gray-light); /* Light background */
-  padding: 1.5rem; /* Increased padding */
+  background-color: var(--gray-light);
+  padding: 1.5rem;
   border-radius: var(--border-radius);
 }
 
 .info-row {
-  margin-bottom: 1rem; /* Space between info rows */
+  margin-bottom: 1rem;
   display: flex;
   align-items: center;
   font-size: 1rem;
   color: var(--black);
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .info-row strong {
     margin-right: 0.5rem;
-    color: var(--primary-light); /* Label color */
+    color: var(--primary-light);
     font-weight: 600;
+    flex-shrink: 0;
 }
 
 .info-row span {
-    /* Allow text to break and wrap if it's too long */
-    word-break: break-word;
     overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 
@@ -617,17 +595,18 @@ button {
   background-color: var(--gray-light);
   border-radius: var(--border-radius);
   overflow: hidden;
-  min-height: 150px; /* Ensure a minimum height */
+  min-height: 150px;
 }
 
 .certificate-dog-photo {
   max-width: 100%;
-  max-height: 180px; /* Adjusted max height */
+  max-height: 180px;
   border-radius: var(--border-radius);
-  object-fit: cover; /* Ensure image covers the area without distortion */
+  object-fit: cover;
+  height: auto;
 }
 
-/* Styling for "No Photo" placeholder within the certificate view */
+/* Styling for "No Photo" placeholder within the certificate view - Keep existing */
 .certificate-photo .no-data-placeholder {
     display: flex;
     flex-direction: column;
@@ -641,17 +620,17 @@ button {
 
 /* Certificate Specific Section Styles - Used by .certificate-mode */
 .certificate-mode .certificate-section {
-  margin-bottom: 2rem; /* Increased margin */
+  margin-bottom: 2rem;
   border: 1px solid var(--gray-light);
   border-radius: var(--border-radius);
   overflow: hidden;
-  box-shadow: 0 2px 5px var(--shadow); /* Subtle shadow for certificate sections */
+  box-shadow: 0 2px 5px var(--shadow);
 }
 
 .certificate-mode .section-header {
-  background-color: var(--primary); /* Primary color header */
+  background-color: var(--primary);
   color: var(--white);
-  padding: 0.75rem 1.5rem; /* Increased padding */
+  padding: 0.75rem 1.5rem;
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -659,49 +638,58 @@ button {
 }
 
 .certificate-mode .section-content {
-  padding: 1.5rem; /* Increased padding */
-  background-color: var(--white); /* White background for content */
+  padding: 1.5rem;
+  background-color: var(--white);
 }
 
-/* Certificate Specific Grid Styles - Used by .certificate-mode */
-.certificate-mode .certificate-grid { /* Grid for details within certificate sections */
+/* Certificate Specific Grid Styles - Used by .certificate-mode - Keep existing responsiveness */
+.certificate-mode .certificate-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* Two columns */
-  gap: 1rem; /* Gap between items */
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
 }
 
+/* Ensure text does not overflow in grid items - Keep existing handling */
 .certificate-mode .certificate-grid .grid-item {
-  padding: 0.75rem; /* Padding for grid items */
+  padding: 0.75rem;
   display: flex;
-  flex-direction: column; /* Ensure content is in a row */
-  align-items: center;
-  background-color: var(--gray-light); /* Light background for items */
+  flex-direction: column;
+  align-items: flex-start;
+  background-color: var(--gray-light);
   border-radius: var(--border-radius);
   font-size: 0.95rem;
-  overflow: hidden; /* Hide overflowing content */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
+.certificate-mode .certificate-grid .grid-item span {
+    word-break: normal;
+    overflow-wrap: normal;
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 
 .certificate-mode .certificate-grid .grid-item strong {
   margin-right: 0.5rem;
-  color: var(--primary-light); /* Label color */
+  color: var(--primary-light);
   font-weight: 600;
-  flex-shrink: 0; /* Prevent label from shrinking */
+  margin-bottom: 0.25rem;
 }
 
 .certificate-mode .certificate-grid .grid-item .detail-icon {
     margin-right: 0.5rem;
-    color: var(--secondary); /* Icon color */
+    color: var(--secondary);
     flex-shrink: 0;
-}
-.certificate-mode .certificate-grid .grid-item span {
-    /* Allow text to break and wrap if it's too long */
-    word-break: break-word;
-    overflow-wrap: break-word;
 }
 
 
 .certificate-mode .certificate-grid .span-two {
-  grid-column: span 2; /* Make address span two columns */
+  grid-column: span 2;
+   @media (max-width: 700px) {
+        grid-column: auto;
+    }
 }
 
 
@@ -720,51 +708,71 @@ button {
   text-decoration: none;
   margin-left: 0.35rem;
   font-weight: 500;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .certificate-link:hover {
   text-decoration: underline;
 }
 
-/* Certificate Specific Elements */
+/* Certificate Specific Elements - Keep existing responsiveness */
 .declaration-box {
-  background-color: var(--gray-light); /* Light background */
+  background-color: var(--gray-light);
   padding: 1.5rem;
   border-radius: var(--border-radius);
-  margin: 2rem 0; /* Increased margin */
+  margin: 2rem 0;
   font-style: italic;
   text-align: center;
-  border: 1px dashed var(--gray); /* Dashed border as in image */
+  border: 1px dashed var(--gray);
   color: var(--gray-dark);
   font-size: 0.95rem;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
+/* Signature Section - Keep existing responsiveness */
 .signature-section {
   display: flex;
   justify-content: space-between;
-  margin: 3rem 0 2rem; /* Increased margin */
+  margin: 3rem 0 2rem;
+    @media (max-width: 500px) {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
 }
 
 .signature-box {
   width: 45%;
   text-align: center;
+    @media (max-width: 500px) {
+        width: 100%;
+    }
 }
 
 .signature-line {
   border-bottom: 1px solid var(--black);
   margin-bottom: 0.5rem;
-  height: 2rem; /* Space for signature */
+  height: 2rem;
 }
 
+/* Footer Elements - Keep existing responsiveness */
 .certificate-footer-elements {
   display: flex;
   justify-content: space-between;
-  margin: 2rem 0 1rem; /* Adjusted margin */
-  align-items: flex-end; /* Align items to the bottom */
+  margin: 2rem 0 1rem;
+  align-items: flex-end;
+    @media (max-width: 500px) {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+    }
 }
 
 .qr-code .qr-box {
-  width: 100px; /* Larger QR box */
+  width: 100px;
   height: 100px;
   border: 1px solid var(--gray-dark);
   display: flex;
@@ -782,43 +790,44 @@ button {
   color: var(--gray-dark);
   font-size: 0.9rem;
   font-weight: 500;
-  text-transform: uppercase; /* Uppercase stamp text */
+  text-transform: uppercase;
 }
 
 .stamp-icon {
   margin-bottom: 0.5rem;
-  color: var(--secondary); /* Secondary color for stamp icon */
+  color: var(--secondary);
 }
 
+/* Certificate Footer - Keep existing responsiveness */
 .certificate-footer {
   text-align: center;
   margin-top: 2rem;
-  padding-top: 1.5rem; /* Increased padding */
+  padding-top: 1.5rem;
   border-top: 1px solid var(--gray-light);
   color: var(--gray-dark);
   font-size: 0.875rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  flex-wrap: wrap;
+   gap: 0.5rem;
 }
 
 .footer-icon {
-  margin-right: 0.4rem; /* Adjusted margin */
-  color: var(--secondary-light); /* Lighter secondary color for footer icons */
+  margin-right: 0.4rem;
+  color: var(--secondary-light);
 }
 
 .certificate-footer span {
-    margin: 0 0.5rem; /* Space around dividers */
+    margin: 0 0.5rem;
+    flex-shrink: 0;
 }
 
 
 /* Media Queries (Mobile Styles) */
 @media (max-width: 768px) {
   .admin-panel {
-    padding: 1rem;
-    display: block; /* Stack elements vertically */
-    gap: 0;
+    padding: 1rem; /* Reduced padding on smaller screens */
   }
 
   /* Hide desktop title on mobile */
@@ -826,143 +835,212 @@ button {
       display: none;
   }
 
-  /* Mobile Header (Back Button and Title) */
+  /* Mobile Header (Back to List button) - Always shown when details are open */
   .mobile-details-header {
       display: flex;
       align-items: center;
       padding-bottom: 1rem;
       border-bottom: 1px solid var(--gray-light);
       margin-bottom: 1rem;
-      /* Ensure it takes full width and is at the top */
        width: 100%;
-       /* Positioned by the main .license-details-container flex/block layout */
-       /* Consider making license-details-container flex column and order this first */
   }
 
   .mobile-details-header .back-to-list-btn {
       background: none;
       border: none;
-      padding: 0.5rem 0.5rem 0.5rem 0; /* Adjust padding */
+      padding: 0.5rem 0.5rem 0.5rem 0;
       margin-right: 1rem;
       color: var(--primary);
        font-size: 1rem;
-       display: flex; /* Ensure icon and text are in a row */
+       display: flex;
        align-items: center;
   }
    .mobile-details-header .back-to-list-btn svg {
        margin-right: 0.5rem;
    }
 
-  .mobile-details-header .mobile-title { /* Style for a potential title next to back button */
+  .mobile-details-header .mobile-title {
       margin: 0;
       font-size: 1.2rem;
-      flex-grow: 1; /* Allow title to take available space */
-      display: none; /* Hidden by default, uncomment if you add a title in JSX */
+      flex-grow: 1;
+      display: none; /* Still hidden as we use the generic H2 */
   }
 
 
-  /* License List Container (Mobile - Always Visible until item clicked) */
+  /* License List Container (Mobile) - Always visible UNLESS details are open */
   .license-list-container {
-      position: static; /* Revert from fixed positioning */
-      width: 100%; /* Take full width */
-      height: auto; /* Auto height */
-      background-color: transparent; /* Transparent background */
-      z-index: auto; /* Revert z-index */
-      transform: translateX(0); /* Always visible */
-      transition: none; /* Remove transition */
-      overflow-y: visible; /* Allow scrolling within the container if table is wide */
-      padding: 0; /* Remove padding */
-      box-shadow: none; /* Remove shadow */
+      position: static;
+      width: 100%;
+      height: auto;
+      background-color: transparent;
+      z-index: auto;
+      transform: translateX(0);
+      transition: none;
+      overflow-y: visible;
+      overflow-x: auto; /* Added for horizontal scrolling on mobile */
+       padding: 0 1rem; /* Adjusted horizontal padding on mobile */
+      box-shadow: none;
   }
-
-  /* Hide the list container when a license is selected on mobile */
-  /* Using :has() requires a modern browser */
-  .admin-panel .license-list-container:has(~ .license-details-container) {
-      display: none;
-  }
-  /* Alternative for older browsers: Control visibility via JS state */
+   /* The rule to hide the list when details are present is now global */
 
 
-  /* Removed: Resizable Divider Styles */
-   /* .resizable-divider { ... } */
-
-
-  /* Details View Container (Mobile) */
+  /* Details View Container (Mobile) - Always visible IF a license is selected */
    .license-details-container {
-       margin-top: 0; /* Remove top margin */
-       padding: 0; /* Remove padding from container */
-       box-shadow: none; /* Remove shadow */
-       background-color: transparent; /* Transparent background */
-        width: 100%; /* Take full width */
-        /* Positioned by the main .admin-panel flex/block layout */
-        /* Make this a flex column container to position mobile header at the top */
+       margin-top: 0;
+       padding: 0 1rem; /* Adjusted horizontal padding on mobile */
+       box-shadow: none;
+       background-color: transparent;
          display: flex;
          flex-direction: column;
-         align-items: center; /* Center content horizontally within this container */
+         align-items: center;
    }
 
-   /* Mobile Actions Bar (Approve/Reject at Top of Details View) */
+   /* Mobile Actions Bar (Approve/Reject at Top of Details View) - Keep mobile specific */
    .mobile-details-actions {
-       display: flex; /* Show on mobile */
-       justify-content: center; /* Center buttons */
+       display: flex;
+       justify-content: center;
        gap: 1rem;
        padding: 1rem;
-       background-color: var(--gray-light); /* Example background */
+       background-color: var(--gray-light);
        border-bottom: 1px solid var(--gray);
        margin-bottom: 1rem;
-       border-radius: var(--border-radius); /* Add rounding */
-       width: 100%; /* Take full width within details container */
-        flex-shrink: 0; /* Prevent shrinking */
+       border-radius: var(--border-radius);
+       width: 100%;
+        flex-shrink: 0;
    }
 
-   /* Hide pending actions in the table row on mobile */
-   .actions-cell .pending-actions {
-       display: none;
+  /* --- Mobile Table Specific Styles --- */
+
+  /* Hide table headers on mobile */
+  .license-table thead {
+    display: none;
+  }
+
+  /* Make table rows behave like blocks on mobile */
+  .license-table tbody tr {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--gray-light);
+    margin-bottom: 1rem;
+    border-radius: var(--border-radius);
+    padding: 0.5rem; /* Add padding to the row container */
+    background-color: var(--white); /* Add a background to the row */
+    box-shadow: 0 1px 3px var(--shadow);
+  }
+
+   /* Ensure row hover effect still works */
+   .license-table tbody tr:hover {
+        background-color: rgba(236, 240, 241, 0.8);
    }
 
-    /* Hide Actions header and cell content in the table on mobile */
-   .license-table th:nth-child(5),
-   .license-table td:nth-child(5) {
-       display: none;
-   }
 
-
-  .license-table {
+  /* Make table data cells behave like blocks */
+  .license-table td {
     display: block;
-    overflow-x: auto;
+    text-align: right; /* Align content to the right */
+    padding: 0.5rem 0.5rem; /* Adjusted padding */
+    border-bottom: 1px solid var(--gray-light); /* Separator for cells */
+    white-space: normal; /* Allow text to wrap */
+    overflow: visible; /* Allow content to overflow naturally */
+    text-overflow: clip; /* Remove ellipsis for stacked content */
+  }
+
+  /* Remove border from the last cell in the row */
+  .license-table td:last-child {
+    border-bottom: none;
+  }
+
+   /* Add a label/pseudo-element for clarity on mobile */
+   /* Example: */
+  .license-table td[data-label]:before {
+    content: attr(data-label);
+    font-weight: 600;
+    float: left; /* Float label to the left */
+    margin-right: 0.5rem;
+    color: var(--primary-light);
   }
 
 
-  /* Standard Form View Adjustments (Mobile) */
-  .standard-form-view {
-      padding: 1rem;
-       margin: 0 auto; /* Center the form within its container */
-       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Add shadow */
-       border: 1px solid var(--gray); /* Add border */
-       background-color: var(--white); /* White background */
-       width: 100%; /* Take full width of details container */
+  /* Specific styling for the first column (combined info) */
+  .mobile-combined-info-cell {
+      display: flex; /* Use flexbox for internal stacking */
+      flex-direction: column; /* Stack items vertically */
+      align-items: flex-start; /* Align items to the start */
+      text-align: left; /* Align text to the left */
+       padding-bottom: 0.5rem; /* Add space below combined info */
   }
 
-  .standard-form-view .owner-photo-group {
-      grid-template-columns: 1fr; /* Stack owner info and photo on mobile */
-      gap: 1rem;
+  .mobile-combined-info-cell .user-name,
+  .mobile-combined-info-cell .dog-name {
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 0.2rem;
+       display: flex;
+       align-items: center;
   }
 
-  .standard-form-view .certificate-grid {
-      display: grid; /* Ensure display is grid */
-      grid-template-columns: 1fr; /* Single column on smaller screens */
-       gap: 0.75rem; /* Adjusted gap */
+  .mobile-combined-info-cell .dog-name {
+       margin-bottom: 0.5rem; /* Add more space below dog name */
   }
-   .standard-form-view .certificate-grid .span-two {
-      grid-column: auto; /* Reset span for smaller screens */
+
+
+  .mobile-combined-info-cell .status-date-group {
+      display: flex; /* Use flexbox to align status and date */
+      flex-direction: column; /* Stack status and date */
+      align-items: flex-start; /* Align items to the start */
+      font-size: 0.9rem;
+      color: var(--gray-dark);
+  }
+
+   .mobile-combined-info-cell .status-date-group .status-badge {
+        margin-bottom: 0.2rem; /* Space between status and date */
+         display: inline-flex; /* Keep inline-flex for badge itself */
+         align-self: flex-start; /* Align badge to the start */
+         padding: 0.2rem 0.5rem; /* Adjusted padding for mobile badge */
+         font-size: 0.8rem; /* Adjusted font size for mobile badge */
    }
-    .standard-form-view .certificate-grid .grid-item { /* Ensure flex direction is row on mobile if needed, but grid handles columns */
-        flex-direction: row; /* Keep as row for icon/label/value alignment */
+
+    .mobile-combined-info-cell .status-date-group .date-text {
+         display: flex;
+         align-items: center;
+          color: var(--gray-dark); /* Ensure date text color is correct */
+    }
+    .mobile-combined-info-cell .status-date-group .date-text svg {
+        margin-right: 0.3rem; /* Space between icon and date text */
+        color: var(--secondary);
     }
 
 
+  /* Specific styling for the Actions cell on mobile */
+  .mobile-actions-cell {
+      text-align: center; /* Center buttons */
+       padding-top: 0.5rem; /* Add space above buttons */
+  }
+
+  .mobile-actions-cell .action-buttons-container {
+       justify-content: center; /* Center buttons within the container */
+  }
+
+  /* Hide desktop-only columns on mobile */
+  .license-table th.hide-on-mobile,
+  .license-table td.hide-on-mobile {
+    display: none;
+  }
+
+
+  /* Standard Form View Adjustments (Mobile) - Keep existing */
+  .standard-form-view {
+      padding: 1rem;
+       margin: 0 auto;
+       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+       border: 1px solid var(--gray);
+       background-color: var(--white);
+       width: 100%;
+  }
+
+
   .standard-form-view .dog-photo-section .dog-avatar {
-    max-width: 100px; /* Smaller photo on mobile */
+    max-width: 100px;
     max-height: 100px;
   }
 
@@ -977,7 +1055,14 @@ button {
    .standard-form-view .certificate-grid .grid-item {
        font-size: 0.85rem;
        padding: 0.5rem;
+        flex-direction: row;
+        align-items: center;
    }
+   .standard-form-view .certificate-grid .grid-item strong {
+        margin-bottom: 0;
+        margin-right: 0.4rem;
+   }
+
 
    /* Hide certificate-specific elements on mobile standard view */
    .standard-form-view .declaration-box,
@@ -988,37 +1073,14 @@ button {
    }
 
 
-  /* Certificate View Adjustments (Mobile) */
-  .certificate-main-info {
-    grid-template-columns: 1fr; /* Single column for main info */
-    gap: 1rem;
-  }
-
-   .certificate-photo {
-        min-height: 100px; /* Adjust min height for smaller screens */
-    }
-
-  .certificate-mode .certificate-grid {
-    display: grid; /* Ensure display is grid */
-    grid-template-columns: 1fr; /* Single column for certificate details */
-    gap: 0.75rem;
-  }
-
-  .certificate-mode .certificate-grid .span-two {
-    grid-column: auto; /* Reset span for smaller screens */
-  }
-    .certificate-mode .certificate-grid .grid-item { /* Ensure flex direction is row on mobile if needed */
-        flex-direction: row; /* Keep as row for icon/label/value alignment */
-    }
-
-
+  /* Certificate View Adjustments (Mobile) - Keep existing */
   .certificate-mode {
     padding: 1.5rem;
-     margin: 0 auto; /* Center the certificate within its container */
-     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Add shadow */
-     border: 1px solid var(--gray); /* Add border */
-     background-color: var(--white); /* White background */
-     width: 100%; /* Take full width of details container */
+     margin: 0 auto;
+     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+     border: 1px solid var(--gray);
+     background-color: var(--white);
+     width: 100%;
   }
 
     /* Ensure certificate sections still have borders/background on mobile */
@@ -1032,25 +1094,27 @@ button {
          margin-bottom: 0;
      }
 
-
+  /* Certificate header now handles stacking with its own media query */
+  /*
   .certificate-header {
-      flex-direction: column; /* Stack header items */
+      flex-direction: column;
       align-items: flex-start;
   }
 
   .date-container {
-      margin-top: 1rem; /* Add space between logo and date */
+      margin-top: 1rem;
   }
+  */
 
   .certificate-title {
-      font-size: 1.4rem; /* Adjust title size */
+      font-size: 1.4rem;
   }
   .certificate-subtitle {
-      font-size: 1rem;
+      font-size: 1rem; /* Adjusted subtitle font size */
   }
 
   .certificate-mode .section-header {
-      font-size: 1rem; /* Adjust section header size */
+      font-size: 1rem;
       padding: 0.75rem 1rem;
   }
 
@@ -1058,34 +1122,13 @@ button {
       padding: 1rem;
   }
 
-
-  .signature-section {
-    flex-direction: column;
+    /* Certificate specific grid adjustments for smaller mobile screens */
+  @media (max-width: 400px) {
+      .certificate-mode .certificate-grid {
+          grid-template-columns: 1fr; /* Stack items on very small screens */
+      }
+       .certificate-mode .certificate-grid .span-two {
+           grid-column: auto;
+       }
   }
-
-  .signature-box {
-    width: 100%;
-    margin-bottom: 1.5rem;
-  }
-
-  .certificate-footer-elements {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .qr-code .qr-box {
-    margin-bottom: 1.5rem;
-     width: 80px; /* Smaller QR box on mobile */
-     height: 80px;
-  }
-
-   .certificate-footer {
-        flex-direction: column; /* Stack footer contact info */
-        align-items: center;
-        font-size: 0.8rem;
-   }
-
-    .certificate-footer span {
-        margin: 0.25rem 0; /* Adjust space for stacked items */
-    }
 }
