@@ -452,11 +452,11 @@ const AdminPanel = () => {
           <div className="license-list-container">
               {/* Desktop Title */}
               {/* Show desktop title if list is visible */}
-              {!isMobile && <h2><Award className="title-icon" /> Dog License Applications</h2>}
-               {/* Mobile Title (when list is visible) */}
-               {isMobile && expandedRowId === null && (
+              <h2><Award className="title-icon" /> Dog License Applications</h2>
+               {/* Mobile Title (when list is visible) - Hide as desktop title is now always shown here*/}
+               {/*isMobile && expandedRowId === null && (
                     <h2 className="mobile-title"><Award className="title-icon" /> Dog License Applications</h2>
-               )}
+               )*/}
 
               {loading ? (
                 <div className="loading-container">
@@ -469,9 +469,9 @@ const AdminPanel = () => {
                     <tr>
                       <th>Owner</th>
                       <th>Dog Name</th>
-                      <th className="hide-on-mobile">Status</th> {/* Hide Status header on mobile */}
-                      <th className="hide-on-mobile">Vaccination Date</th> {/* Hide Vaccination Date header on mobile */}
-                      <th>Actions</th> {/* Keep Actions header, will be restyled */}
+                      <th>Status</th>
+                      <th>Vaccination Date</th>
+                      <th>Actions</th> {/* Keep Actions header */}
                     </tr>
                   </thead>
                   <tbody>
@@ -481,130 +481,61 @@ const AdminPanel = () => {
                          // Removed: className={expandedRowId === lic._id && !isMobile ? 'expanded-row' : ''}
                          onClick={() => toggleExpanded(lic._id)} // Toggle on row click
                       >
-                        {/* Conditional rendering for mobile vs desktop columns */}
-                        {isMobile ? (
-                            <>
-                              {/* Combined Info Cell for Mobile */}
-                              {/* Added data-label for CSS */}
-                                  <div className="user-name"><User size={16} className="cell-icon" /> {lic.fullName}</div>
-                                  <div className="dog-name"><Dog size={16} className="cell-icon" /> {lic.dog?.name || "N/A"}</div>
-                                   <div className="status-date-group">
-                                      <div className={`status-badge ${lic.status}`}>
-                                        {lic.status === "approved" && <Check size={14} />}
-                                        {lic.status === "rejected" && <X size={14} />}
-                                        {lic.status === "pending" && <Calendar size={14} />}
-                                        {lic.status}
-                                      </div>
-                                      <div className="date-text"><Calendar size={16} className="cell-icon" /> {formatDate(lic.dog?.dateOfVaccination)}</div>
-                                   </div>
-                          
-                              {/* View Button Cell for Mobile */}
-                               <td data-label="View">
+                        <td><div className="user-cell"><User size={16} className="cell-icon" /> {lic.fullName}</div></td>
+                        <td><div className="dog-cell"><Dog size={16} className="cell-icon" /> {lic.dog?.name || "N/A"}</div></td>
+                        <td>
+                          <div className={`status-badge ${lic.status}`}>
+                            {lic.status === "approved" && <Check size={14} />}
+                            {lic.status === "rejected" && <X size={14} />}
+                            {lic.status === "pending" && <Calendar size={14} />}
+                            {lic.status}
+                          </div>
+                        </td>
+                        <td><div className="date-cell"><Calendar size={16} className="cell-icon" /> {formatDate(lic.dog?.dateOfVaccination)}</div></td>
+                        <td className="actions-cell">
+                          {/* Container for buttons in the actions cell */}
+                          <div className="action-buttons-container">
+                              {/* Show View button always in the table */}
+                                   <button
+                                      className="btn-view"
+                                      onClick={(e) => {
+                                           // Prevent row click event from firing again
+                                          e.stopPropagation();
+                                          toggleExpanded(lic._id);
+                                      }}
+                                    >
+                                        <><Eye size={16} className="btn-icon" /> View</>
+                                    </button>
+
+                              {/* Show pending actions ONLY on non-mobile AND if status is pending */}
+                              {!isMobile && lic.status === "pending" && (
+                                 <div className={`pending-actions`}> {/* Removed icon-only class logic */}
                                      <button
-                                        className="btn-view"
+                                        className="btn-approve"
                                         onClick={(e) => {
-                                             // Prevent row click event from firing again
-                                            e.stopPropagation();
-                                            toggleExpanded(lic._id);
+                                             e.stopPropagation(); // Prevent row click
+                                            updateStatus(lic._id, "approve");
                                         }}
                                       >
-                                          <><Eye size={16} className="btn-icon" /> View</>
+                                        <Check size={16} className="btn-icon" />
+                                        {/* Show text on desktop */}
+                                        Approve
                                       </button>
-                               </td>
-                              {/* Actions Cell for Mobile (Approve/Reject) */}
-                              {lic.status === "pending" && ( // Only show this cell if status is pending
-                                <td className="mobile-actions-cell" data-label="Actions">
-                                    <div className="action-buttons-container">
-                                        <button
-                                           className="btn-approve"
-                                           onClick={(e) => {
-                                                e.stopPropagation(); // Prevent row click
-                                              updateStatus(lic._id, "approve");
-                                           }}
-                                         >
-                                           <Check size={16} className="btn-icon" />
-                                           Approve
-                                         </button>
-                                         <button
-                                           className="btn-reject"
-                                           onClick={(e) => {
-                                                e.stopPropagation(); // Prevent row click
-                                              updateStatus(lic._id, "reject");
-                                           }}
-                                         >
-                                           <X size={16} className="btn-icon" />
-                                           Reject
-                                         </button>
-                                    </div>
-                                 </td>
+                                      <button
+                                        className="btn-reject"
+                                        onClick={(e) => {
+                                             e.stopPropagation(); // Prevent row click
+                                            updateStatus(lic._id, "reject");
+                                        }}
+                                      >
+                                        <X size={16} className="btn-icon" />
+                                        {/* Show text on desktop */}
+                                        Reject
+                                      </button>
+                                 </div>
                               )}
-                              {/* If status is not pending, render an empty cell to maintain column structure if needed, or adjust CSS display */}
-                              {/* Given the 'three columns' instruction, it's better to only render 3 cells total on mobile */}
-                               {!isMobile && lic.status !== "pending" && (
-                                    <td className="mobile-actions-cell" data-label="Actions"></td> // Empty cell for non-pending on mobile (this shouldn't be rendered based on the isMobile condition above, but keeping here for clarity if logic changes)
-                                )}
-
-                            </>
-                        ) : (
-                            <>
-                              {/* Desktop Columns */}
-                              <td><div className="user-cell"><User size={16} className="cell-icon" /> {lic.fullName}</div></td>
-                              <td><div className="dog-cell"><Dog size={16} className="cell-icon" /> {lic.dog?.name || "N/A"}</div></td>
-                              <td className="hide-on-mobile"> {/* Hide Status cell on mobile */}
-                                <div className={`status-badge ${lic.status}`}>
-                                  {lic.status === "approved" && <Check size={14} />}
-                                  {lic.status === "rejected" && <X size={14} />}
-                                  {lic.status === "pending" && <Calendar size={14} />}
-                                  {lic.status}
-                                </div>
-                              </td>
-                              <td className="hide-on-mobile"><div className="date-cell"><Calendar size={16} className="cell-icon" /> {formatDate(lic.dog?.dateOfVaccination)}</div></td> {/* Hide Vaccination Date cell on mobile */}
-                              <td className="actions-cell"> {/* Keep Actions cell, will be restyled on mobile */}
-                                {/* Container for buttons in the actions cell */}
-                                <div className="action-buttons-container">
-                                    {/* Show View button always in the table */}
-                                         <button
-                                            className="btn-view"
-                                            onClick={(e) => {
-                                                 // Prevent row click event from firing again
-                                                e.stopPropagation();
-                                                toggleExpanded(lic._id);
-                                            }}
-                                          >
-                                              <><Eye size={16} className="btn-icon" /> View</>
-                                          </button>
-
-                                    {/* Show pending actions ONLY on non-mobile AND if status is pending */}
-                                    {!isMobile && lic.status === "pending" && (
-                                       <div className={`pending-actions`}> {/* Removed icon-only class logic */}
-                                           <button
-                                              className="btn-approve"
-                                              onClick={(e) => {
-                                                   e.stopPropagation(); // Prevent row click
-                                                  updateStatus(lic._id, "approve");
-                                              }}
-                                            >
-                                              <Check size={16} className="btn-icon" />
-                                              {/* Show text on desktop */}
-                                              Approve
-                                            </button>
-                                            <button
-                                              className="btn-reject"
-                                              onClick={(e) => {
-                                                   e.stopPropagation(); // Prevent row click
-                                                  updateStatus(lic._id, "reject");
-                                              }}
-                                            >
-                                              <X size={16} className="btn-icon" />
-                                              {/* Show text on desktop */}
-                                              Reject
-                                            </button>
-                                       </div>
-                                    )}
-                                </div>
-                              </td>
-                            </>
-                        )}
+                          </div>
+                        </td>
                       </tr>
                     ))}
                   </tbody>

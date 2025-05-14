@@ -310,7 +310,7 @@ button {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     overflow: hidden;
     width: 100%;
-    box-sizing: border-box;
+    box-sizing: border-box; 
 }
 
 /* Grouping for Owner Info and Photo in Standard View - Keep existing responsiveness */
@@ -470,7 +470,7 @@ button {
   border: 1px solid var(--gray);
   border-radius: var(--border-radius);
   padding: 2.5rem;
-
+  
   margin: 0 auto;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   position: relative;
@@ -824,7 +824,7 @@ button {
 }
 
 
-/* Media Queries (Mobile Styles) */
+/* Media Queries (Mobile Styles - Adjusting based on single column for all sizes) */
 @media (max-width: 768px) {
   .admin-panel {
     padding: 1rem; /* Reduced padding on smaller screens */
@@ -863,7 +863,7 @@ button {
       margin: 0;
       font-size: 1.2rem;
       flex-grow: 1;
-      display: none; /* Still hidden as we use the generic H2 */
+      display: none;
   }
 
 
@@ -909,124 +909,14 @@ button {
         flex-shrink: 0;
    }
 
-  /* --- Mobile Table Specific Styles --- */
-
-  /* Hide table headers on mobile */
-  .license-table thead {
-    display: none;
-  }
-
-  /* Make table rows behave like blocks on mobile */
-  .license-table tbody tr {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid var(--gray-light);
-    margin-bottom: 1rem;
-    border-radius: var(--border-radius);
-    padding: 0.5rem; /* Add padding to the row container */
-    background-color: var(--white); /* Add a background to the row */
-    box-shadow: 0 1px 3px var(--shadow);
-  }
-
-   /* Ensure row hover effect still works */
-   .license-table tbody tr:hover {
-        background-color: rgba(236, 240, 241, 0.8);
+   /* Keep Actions column visible on mobile, rely on flex-wrap for layout */
+   /* Removed the display: none rule from the mobile media query */
+   /*
+   .license-table th:nth-child(5),
+   .license-table td:nth-child(5) {
+       display: none;
    }
-
-
-  /* Make table data cells behave like blocks */
-  .license-table td {
-    display: block;
-    text-align: right; /* Align content to the right */
-    padding: 0.5rem 0.5rem; /* Adjusted padding */
-    border-bottom: 1px solid var(--gray-light); /* Separator for cells */
-    white-space: normal; /* Allow text to wrap */
-    overflow: visible; /* Allow content to overflow naturally */
-    text-overflow: clip; /* Remove ellipsis for stacked content */
-  }
-
-  /* Remove border from the last cell in the row */
-  .license-table td:last-child {
-    border-bottom: none;
-  }
-
-   /* Add a label/pseudo-element for clarity on mobile */
-   /* Example: */
-  .license-table td[data-label]:before {
-    content: attr(data-label);
-    font-weight: 600;
-    float: left; /* Float label to the left */
-    margin-right: 0.5rem;
-    color: var(--primary-light);
-  }
-
-
-  /* Specific styling for the first column (combined info) */
-  .mobile-combined-info-cell {
-      display: flex; /* Use flexbox for internal stacking */
-      flex-direction: column; /* Stack items vertically */
-      align-items: flex-start; /* Align items to the start */
-      text-align: left; /* Align text to the left */
-       padding-bottom: 0.5rem; /* Add space below combined info */
-  }
-
-  .mobile-combined-info-cell .user-name,
-  .mobile-combined-info-cell .dog-name {
-      font-weight: 600;
-      color: var(--primary);
-      margin-bottom: 0.2rem;
-       display: flex;
-       align-items: center;
-  }
-
-  .mobile-combined-info-cell .dog-name {
-       margin-bottom: 0.5rem; /* Add more space below dog name */
-  }
-
-
-  .mobile-combined-info-cell .status-date-group {
-      display: flex; /* Use flexbox to align status and date */
-      flex-direction: column; /* Stack status and date */
-      align-items: flex-start; /* Align items to the start */
-      font-size: 0.9rem;
-      color: var(--gray-dark);
-  }
-
-   .mobile-combined-info-cell .status-date-group .status-badge {
-        margin-bottom: 0.2rem; /* Space between status and date */
-         display: inline-flex; /* Keep inline-flex for badge itself */
-         align-self: flex-start; /* Align badge to the start */
-         padding: 0.2rem 0.5rem; /* Adjusted padding for mobile badge */
-         font-size: 0.8rem; /* Adjusted font size for mobile badge */
-   }
-
-    .mobile-combined-info-cell .status-date-group .date-text {
-         display: flex;
-         align-items: center;
-          color: var(--gray-dark); /* Ensure date text color is correct */
-    }
-    .mobile-combined-info-cell .status-date-group .date-text svg {
-        margin-right: 0.3rem; /* Space between icon and date text */
-        color: var(--secondary);
-    }
-
-
-  /* Specific styling for the Actions cell on mobile */
-  .mobile-actions-cell {
-      text-align: center; /* Center buttons */
-       padding-top: 0.5rem; /* Add space above buttons */
-  }
-
-  .mobile-actions-cell .action-buttons-container {
-       justify-content: center; /* Center buttons within the container */
-  }
-
-  /* Hide desktop-only columns on mobile */
-  .license-table th.hide-on-mobile,
-  .license-table td.hide-on-mobile {
-    display: none;
-  }
-
+   */
 
   /* Standard Form View Adjustments (Mobile) - Keep existing */
   .standard-form-view {
