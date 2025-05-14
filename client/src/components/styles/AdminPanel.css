@@ -336,7 +336,7 @@ button {
 
 
 .view-toggle-btn {
-  margin-left:  1rem ; /* Adjusted margin */
+  
   padding: 0.65rem 1rem;
   border-radius: var(--border-radius);
   font-size: 0.9rem;
