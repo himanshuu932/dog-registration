@@ -14,14 +14,14 @@ import {
   User,
   Dog,
   Eye,
-  ChevronLeft, // Added for back button
-  Award, // For certificate icon
-  Syringe, // For vaccination icon
-  Stamp, // For stamp icon - Still needed for the icon outside the PDF in renderCertificateView wrapper
-  Globe, // For website icon - Still needed for the icon outside the PDF in renderCertificateView wrapper
-  Phone, // For phone icon - Still needed for the icon outside the PDF in renderCertificateView wrapper
-  MapPin, // For location icon - Still needed for the icon outside the PDF in renderCertificateView wrapper
-  Image // Import Image icon - still needed for standard view in AdminPanel example, but not used in this file anymore
+  ChevronLeft,
+  Award,
+  Syringe,
+  Stamp,
+  Globe,
+  Phone,
+  MapPin,
+  Image
 } from 'lucide-react';
 
 const formatDate = (dateString) => {
@@ -64,7 +64,7 @@ const UserStatusBadge = ({ status, isMobile }) => {
   return (
     <span className={badgeClass}>
       <Icon size={16} style={{ color: iconColor }} />
-      {!isMobile && <span>{status}</span>} {/* Hide text on mobile */}
+      {!isMobile && <span>{status}</span>}
     </span>
   );
 };
@@ -74,7 +74,7 @@ const DogLicenseDownload = () => {
   const [loading, setLoading] = useState(true);
   const [expandedLicenseId, setExpandedLicenseId] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [filterStatus, setFilterStatus] = useState('All'); // State for filter
+  const [filterStatus, setFilterStatus] = useState('All');
 
   const backend = "https://dog-registration.onrender.com";
   const token = localStorage.getItem('token');
@@ -121,19 +121,23 @@ const DogLicenseDownload = () => {
         return;
     }
 
+    element.classList.add('force-desktop-pdf-layout');
+
     const opt = {
       margin: 0.5,
       filename: `Dog_License_${dogName}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2 },
-      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
-    html2pdf().from(element).set(opt).save();
+
+    html2pdf().from(element).set(opt).save().then(() => {
+      element.classList.remove('force-desktop-pdf-layout');
+    });
   };
 
   const selectedLicense = licenses.find(lic => lic._id === expandedLicenseId);
 
-  // Filter licenses based on the selected filterStatus
   const filteredLicenses = licenses.filter(license => {
     if (filterStatus === 'All') {
       return true;
@@ -150,14 +154,13 @@ const DogLicenseDownload = () => {
         new Date(lic.dog.dateOfVaccination).getFullYear() + 1
       )).toLocaleDateString('en-GB') : "N/A";
 
-      // Reverted to original class names for PDF layout and removed Lucide icons from PDF content
       return (
-           <div className="user-dl-certificate-view"> {/* Keep this wrapper for download button and notices */}
-              <div id={`pdf-${lic._id}`} className="pdf-layout"> {/* Original PDF Layout Class */}
-                <div className="pdf-border"> {/* Original PDF Border Class */}
-                  <div className="pdf-header"> {/* Original PDF Header Class */}
-                    <div className="pdf-header-left"> {/* Original PDF Header Left Class */}
-                      <div className="pdf-logo-icon"> {/* Original PDF Logo Icon Class */}
+           <div className="user-dl-certificate-view">
+              <div id={`pdf-${lic._id}`} className="pdf-layout">
+                <div className="pdf-border">
+                  <div className="pdf-header">
+                    <div className="pdf-header-left">
+                      <div className="pdf-logo-icon">
                          <img src="./logo.png"></img>
                       </div>
                       <div className="pdf-org-name">
@@ -165,40 +168,39 @@ const DogLicenseDownload = () => {
                         <h4>नगर निगम गोरखपुर</h4>
                       </div>
                     </div>
-                    <div className="pdf-header-right"> {/* Original PDF Header Right Class */}
-                      <div className="pdf-date"> {/* Original PDF Date Class */}
+                    <div className="pdf-header-right">
+                      <div className="pdf-date">
                         <span> Date: {currentDate}</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="pdf-certificate-title"> {/* Original PDF Certificate Title Class */}
-                    <h2>OFFICIAL DOG LICENSE CERTIFICATE</h2> {/* Changed to h2 to match provided CSS block order */}
-                    <h3>कुत्तों के पंजीकरण के लिए अधिकृत पत्र</h3> {/* Changed to h3 to match provided CSS block order */}
+                  <div className="pdf-certificate-title">
+                    <h2>OFFICIAL DOG LICENSE CERTIFICATE</h2>
+                    <h3>कुत्तों के पंजीकरण के लिए अधिकृत पत्र</h3>
                   </div>
 
-                  <div className="pdf-body"> {/* Original PDF Body Class - added for structure */}
-                    <div className="pdf-photo-section"> {/* Original PDF Photo Section Class */}
-                      <div className="pdf-info-block"> {/* Original PDF Info Block Class */}
-                        <div className="pdf-info-row"> {/* Original PDF Info Row Class */}
-                          <div className="pdf-info-label">नाम / Name</div> {/* Original PDF Info Label Class */}
-                          <div className="pdf-info-value">: {lic.fullName || "N/A"}</div> {/* Original PDF Info Value Class */}
+                  <div className="pdf-body">
+                    <div className="pdf-photo-section">
+                      <div className="pdf-info-block">
+                        <div className="pdf-info-row">
+                          <div className="pdf-info-label">नाम / Name</div>
+                          <div className="pdf-info-value">: {lic.fullName || "N/A"}</div>
                         </div>
-                        <div className="pdf-info-row"> {/* Original PDF Info Row Class */}
-                          <div className="pdf-info-label">पंजीकरण संख्या / Registration No.</div> {/* Original PDF Info Label Class */}
-                          <div className="pdf-info-value">: {lic._id?.substring(0, 20) || "N/A"}</div> {/* Original PDF Info Value Class - Use substring */}
+                        <div className="pdf-info-row">
+                          <div className="pdf-info-label">पंजीकरण संख्या / Registration No.</div>
+                          <div className="pdf-info-value">: {lic._id?.substring(0, 20) || "N/A"}</div>
                         </div>
-                        <div className="pdf-info-row"> {/* Original PDF Info Row Class */}
-                          <div className="pdf-info-label">जारी दिनांक / Issue Date</div> {/* Original PDF Info Label Class */}
-                          <div className="pdf-info-value">: {formatDate(lic.createdAt)}</div> {/* Original PDF Info Value Class */}
+                        <div className="pdf-info-row">
+                          <div className="pdf-info-label">जारी दिनांक / Issue Date</div>
+                          <div className="pdf-info-value">: {formatDate(lic.createdAt)}</div>
                         </div>
-                        <div className="pdf-info-row"> {/* Original PDF Info Row Class */}
-                          <div className="pdf-info-label">समाप्ति तिथि / Expiry Date</div> {/* Original PDF Info Label Class */}
-                           {/* Assuming expiry is 1 year from vaccination or creation if no vaccination date */}
-                          <div className="pdf-info-value">: {expiryDate}</div> {/* Original PDF Info Value Class */}
+                        <div className="pdf-info-row">
+                          <div className="pdf-info-label">समाप्ति तिथि / Expiry Date</div>
+                          <div className="pdf-info-value">: {expiryDate}</div>
                         </div>
                       </div>
-                      <div className="pdf-photo-box"> {/* Original PDF Photo Box Class */}
+                      <div className="pdf-photo-box">
                         {lic.dog?.avatarUrl ? (
                           <img src={lic.dog.avatarUrl} alt="Dog" className="pdf-photo" />
                         ) : (
@@ -207,135 +209,134 @@ const DogLicenseDownload = () => {
                       </div>
                     </div>
 
-                    <div className="pdf-details-section"> {/* Original PDF Details Section Class */}
-                      <div className="pdf-section-title">पशु का विवरण / Animal Details</div> {/* Original PDF Section Title Class */}
-                      <div className="pdf-details-columns"> {/* Original PDF Details Columns Class */}
-                        <div className="pdf-details-column-left"> {/* Original PDF Details Column Left Class */}
-                          <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
-                            <div className="pdf-details-label">पशु का नाम / Dog Name</div> {/* Original PDF Details Label Class */}
-                            <div className="pdf-details-value">: {lic.dog?.name || "N/A"}</div> {/* Original PDF Details Value Class */}
+                    <div className="pdf-details-section">
+                      <div className="pdf-section-title">पशु का विवरण / Animal Details</div>
+                      <div className="pdf-details-columns">
+                        <div className="pdf-details-column-left">
+                          <div className="pdf-details-row">
+                            <div className="pdf-details-label">पशु का नाम / Dog Name</div>
+                            <div className="pdf-details-value">: {lic.dog?.name || "N/A"}</div>
                           </div>
-                          <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
-                            <div className="pdf-details-label">नस्ल / Breed</div> {/* Original PDF Details Label Class */}
-                            <div className="pdf-details-value">: {lic.dog?.breed || "N/A"}</div> {/* Original PDF Details Value Class */}
+                          <div className="pdf-details-row">
+                            <div className="pdf-details-label">नस्ल / Breed</div>
+                            <div className="pdf-details-value">: {lic.dog?.breed || "N/A"}</div>
                           </div>
-                          <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
-                            <div className="pdf-details-label">वर्ग / Category</div> {/* Original PDF Details Label Class */}
-                            <div className="pdf-details-value">: {lic.dog?.category || "N/A"}</div> {/* Original PDF Details Value Class */}
+                          <div className="pdf-details-row">
+                            <div className="pdf-details-label">वर्ग / Category</div>
+                            <div className="pdf-details-value">: {lic.dog?.category || "N/A"}</div>
                           </div>
-                          <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
-                            <div className="pdf-details-label">रंग / Color</div> {/* Original PDF Details Label Class */}
-                            <div className="pdf-details-value">: {lic.dog?.color || "N/A"}</div> {/* Original PDF Details Value Class */}
+                          <div className="pdf-details-row">
+                            <div className="pdf-details-label">रंग / Color</div>
+                            <div className="pdf-details-value">: {lic.dog?.color || "N/A"}</div>
                           </div>
-                          <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
-                            <div className="pdf-details-label">आयु / Age</div> {/* Original PDF Details Label Class */}
-                            <div className="pdf-details-value">: {lic.dog?.age || "N/A"}</div> {/* Original PDF Details Value Class */}
+                          <div className="pdf-details-row">
+                            <div className="pdf-details-label">आयु / Age</div>
+                            <div className="pdf-details-value">: {lic.dog?.age || "N/A"}</div>
                           </div>
-                          <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
-                            <div className="pdf-details-label">टीकाकरण की तारीख / Vaccination Date</div> {/* Original PDF Details Label Class */}
-                            <div className="pdf-details-value">: {formatDate(lic.dog?.dateOfVaccination)}</div> {/* Original PDF Details Value Class */}
+                          <div className="pdf-details-row">
+                            <div className="pdf-details-label">टीकाकरण की तारीख / Vaccination Date</div>
+                            <div className="pdf-details-value">: {formatDate(lic.dog?.dateOfVaccination)}</div>
                           </div>
                         </div>
-                        <div className="pdf-details-column-right"> {/* Original PDF Details Column Right Class */}
-                          <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
-                            <div className="pdf-details-label">लिंग / Gender</div> {/* Original PDF Details Label Class */}
-                            <div className="pdf-details-value">: {lic.dog?.sex || "N/A"}</div> {/* Original PDF Details Value Class */}
+                        <div className="pdf-details-column-right">
+                          <div className="pdf-details-row">
+                            <div className="pdf-details-label">लिंग / Gender</div>
+                            <div className="pdf-details-value">: {lic.dog?.sex || "N/A"}</div>
                           </div>
-                          <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
-                            <div className="pdf-details-label">टीकाकरण / Vaccinated</div> {/* Original PDF Details Label Class */}
+                          <div className="pdf-details-row">
+                            <div className="pdf-details-label">टीकाकरण / Vaccinated</div>
                             <div className="pdf-details-value">
                               : {lic.dog?.dateOfVaccination ? ' हां / Yes' : ' नहीं / No'}
-                            </div> {/* Original PDF Details Value Class */}
+                            </div>
                           </div>
                           {lic.dog?.vaccinationProofUrl && (
-                            <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
-                              <div className="pdf-details-label">टीकाकरण प्रमाणपत्र / Vaccination Certificate</div> {/* Original PDF Details Label Class */}
+                            <div className="pdf-details-row">
+                              <div className="pdf-details-label">टीकाकरण प्रमाणपत्र / Vaccination Certificate</div>
                               <div className="pdf-details-value">
                                 <a
                                   href={lic.dog.vaccinationProofUrl}
                                   target="_blank"
                                   rel="noreferrer"
-                                  className="pdf-vaccine-img" // Using original class name, might need review
-                                >View </a> {/* Use href for link */}
-                              </div> {/* Original PDF Details Value Class */}
+                                  className="pdf-vaccine-img"
+                                >View </a>
+                              </div>
                             </div>
                           )}
-                          <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
-                            <div className="pdf-details-label">माइक्रोचिप / Microchipped</div> {/* Original PDF Details Label Class */}
+                          <div className="pdf-details-row">
+                            <div className="pdf-details-label">माइक्रोचip / Microchipped</div>
                             <div className="pdf-details-value">
-                              : No {/* Assuming static */}
-                            </div> {/* Original PDF Details Value Class */}
+                              : No
+                            </div>
                           </div>
-                          <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
-                            <div className="pdf-details-label">अगला टीकाकरण / Next Vaccination</div> {/* Original PDF Details Label Class */}
-                            <div className="pdf-details-value">: {formatDate(lic.dog?.dueVaccination)}</div> {/* Original PDF Details Value Class */}
+                          <div className="pdf-details-row">
+                            <div className="pdf-details-label">अगला टीकाकरण / Next Vaccination</div>
+                            <div className="pdf-details-value">: {formatDate(lic.dog?.dueVaccination)}</div>
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    <div className="pdf-details-section"> {/* Original PDF Details Section Class */}
-                      <div className="pdf-section-title">मालिक का विवरण / Owner Details</div> {/* Original PDF Section Title Class */}
-                      <div className="pdf-details-table"> {/* Original PDF Details Table Class */}
-                        <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
-                          <div className="pdf-details-label">पता / Address</div> {/* Original PDF Details Label Class */}
-                          <div className="pdf-details-value">: {`${lic.address?.streetName || ""}, ${lic.address?.city || ""}, ${lic.address?.state || ""} - ${lic.address?.pinCode || "N/A"}`}</div> {/* Original PDF Details Value Class */}
+                    <div className="pdf-details-section">
+                      <div className="pdf-section-title">मालिक का विवरण / Owner Details</div>
+                      <div className="pdf-details-table">
+                        <div className="pdf-details-row">
+                          <div className="pdf-details-label">पता / Address</div>
+                          <div className="pdf-details-value">: {`${lic.address?.streetName || ""}, ${lic.address?.city || ""}, ${lic.address?.state || ""} - ${lic.address?.pinCode || "N/A"}`}</div>
                         </div>
-                        <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
-                          <div className="pdf-details-label">फोन नंबर / Phone Number</div> {/* Original PDF Details Label Class */}
-                          <div className="pdf-details-value">: {lic.phoneNumber || "N/A"}</div> {/* Original PDF Details Value Class */}
+                        <div className="pdf-details-row">
+                          <div className="pdf-details-label">फोन नंबर / Phone Number</div>
+                          <div className="pdf-details-value">: {lic.phoneNumber || "N/A"}</div>
                         </div>
-                        <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
-                          <div className="pdf-details-label">कुत्तों की संख्या / No. of Dogs</div> {/* Original PDF Details Label Class */}
-                          <div className="pdf-details-value">: {lic.numberOfDogs || "N/A"}</div> {/* Original PDF Details Value Class */}
+                        <div className="pdf-details-row">
+                          <div className="pdf-details-label">कुत्तों की संख्या / No. of Dogs</div>
+                          <div className="pdf-details-value">: {lic.numberOfDogs || "N/A"}</div>
                         </div>
-                        <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
-                          <div className="pdf-details-label">घर का क्षेत्रफल / House Area</div> {/* Original PDF Details Label Class */}
-                          <div className="pdf-details-value">: {lic.totalHouseArea ? `${lic.totalHouseArea} sq meter` : "N/A"}</div> {/* Original PDF Details Value Class */}
+                        <div className="pdf-details-row">
+                          <div className="pdf-details-label">घर का क्षेत्रफल / House Area</div>
+                          <div className="pdf-details-value">: {lic.totalHouseArea ? `${lic.totalHouseArea} sq meter` : "N/A"}</div>
                         </div>
                       </div>
                     </div>
 
-                    <div className="pdf-declaration"> {/* Original PDF Declaration Class */}
+                    <div className="pdf-declaration">
                       <p>मैं घोषणा करता/करती हूँ कि उपरोक्त दी गई जानकारी मेरी जानकारी के अनुसार सत्य है।  <b>/</b> I declare that the information provided above is true to the best of my knowledge.</p>
                     </div>
 
-                    <div className="pdf-signatures"> {/* Original PDF Signatures Class */}
-                      <div className="pdf-signature-block"> {/* Original PDF Signature Block Class */}
-                        <div className="pdf-signature-line"></div> {/* Original PDF Signature Line Class */}
+                    <div className="pdf-signatures">
+                      <div className="pdf-signature-block">
+                        <div className="pdf-signature-line"></div>
                         <p>आवेदक के हस्ताक्षर / Applicant's Signature</p>
                       </div>
-                      <div className="pdf-signature-block"> {/* Original PDF Signature Block Class */}
-                        <div className="pdf-signature-line"></div> {/* Original PDF Signature Line Class */}
+                      <div className="pdf-signature-block">
+                        <div className="pdf-signature-line"></div>
                         <p>जारीकर्ता अधिकारी / Issuing Authority</p>
                       </div>
                     </div>
 
-                    <div className="pdf-footer"> {/* Original PDF Footer Class */}
-                          <div className="pdf-qr-code"> {/* Original PDF QR Code Class */}
-                             <div className="pdf-qr-placeholder"></div> {/* Original PDF QR Placeholder Class */}
+                    <div className="pdf-footer">
+                          <div className="pdf-qr-code">
+                             <div className="pdf-qr-placeholder"></div>
                             <p>QR Code</p>
                           </div>
-                           <div className="pdf-stamp"> {/* Original PDF Stamp Class */}
-                                <div className="pdf-stamp-placeholder"> {/* Original PDF Stamp Placeholder Class */}
+                           <div className="pdf-stamp">
+                                <div className="pdf-stamp-placeholder">
                                     <p>OFFICIAL STAMP</p>
                                 </div>
                            </div>
                     </div>
-                    <div className="pdf-contact-footer"> {/* Original PDF Contact Footer Class */}
+                    <div className="pdf-contact-footer">
                        {lic.phoneNumber || "N/A"} &nbsp;|&nbsp;
-                       info@awbi.org &nbsp;|&nbsp; {/* Updated dummy email */}
-                       www.awbi.org {/* Updated dummy website */}
+                       info@awbi.org &nbsp;|&nbsp;
+                       www.awbi.org
                     </div>
-                  </div> {/* End of pdf-body */}
-                </div> {/* End of pdf-border */}
-              </div> {/* End of pdf-layout */}
-               {/* Keep these outside the pdf-layout div so they don't affect the PDF content */}
+                  </div>
+                </div>
+              </div>
                {lic.status === 'approved' && (
                     <button
                       className="user-dl-button user-dl-certificate-download-btn"
                       onClick={(e) => {
-                        e.stopPropagation(); // Prevent row click from closing details
+                        e.stopPropagation();
                         downloadPDF(lic._id, lic.dog?.name);
                       }}
                     >
@@ -366,12 +367,10 @@ const DogLicenseDownload = () => {
     <main className="user-dl-container">
       <header className="user-dl-header">
         {expandedLicenseId === null ? (
-           <> {/* Use Fragment to group multiple elements */}
+           <>
              <h1 className="user-dl-title">My Dog License Applications</h1>
-              {/* Conditionally render filters when certificate is NOT open */}
              <div className="user-dl-filters">
                <span className="user-dl-filter-label">Filter by:</span>
-               {/* Added onClick handlers and conditional class for active filter */}
                <button
                  className={`user-dl-filter-btn user-dl-filter-all ${filterStatus === 'All' ? 'user-dl-filter-active' : ''}`}
                  onClick={() => setFilterStatus('All')}
@@ -390,7 +389,6 @@ const DogLicenseDownload = () => {
                >
                  Pending
                </button>
-                {/* Added Rejected filter button */}
                 <button
                  className={`user-dl-filter-btn user-dl-filter-rejected ${filterStatus === 'Rejected' ? 'user-dl-filter-active' : ''}`}
                  onClick={() => setFilterStatus('Rejected')}
@@ -408,7 +406,6 @@ const DogLicenseDownload = () => {
                     <ChevronLeft size={24} />
                     Back to List
                  </button>
-                 {/* Optional title for details view */}
             </div>
         )}
       </header>
@@ -418,7 +415,7 @@ const DogLicenseDownload = () => {
           <div className="user-dl-spinner"></div>
           <p className="user-dl-status">Loading license data…</p>
         </div>
-      ) : filteredLicenses.length > 0 ? ( // Use filteredLicenses here
+      ) : filteredLicenses.length > 0 ? (
          expandedLicenseId === null ? (
             <div className="user-dl-table-container">
                <table className="user-dl-license-table">
@@ -428,11 +425,11 @@ const DogLicenseDownload = () => {
                         <th>Dog Name</th>
                         <th>Status</th>
                         {!isMobile && <th>Applied Date</th>}
-                        <th>View</th> {/* Keep View header for consistency across views */}
+                        <th>View</th>
                      </tr>
                   </thead>
                   <tbody>
-                     {filteredLicenses.map(license => ( // Use filteredLicenses here
+                     {filteredLicenses.map(license => (
                         <tr key={license._id} onClick={() => toggleExpanded(license._id)}>
                            <td><div className="user-dl-cell user-dl-owner-cell">{!isMobile && <User size={16} className="user-dl-cell-icon" />} {license.fullName}</div></td>
                            <td><div className="user-dl-cell user-dl-dog-cell">{!isMobile && <Dog size={16} className="user-dl-cell-icon" />} {license.dog?.name || "N/A"}</div></td>
@@ -442,7 +439,7 @@ const DogLicenseDownload = () => {
                                 <button
                                    className="user-dl-view-btn"
                                    onClick={(e) => {
-                                        e.stopPropagation(); // Prevent row click
+                                        e.stopPropagation();
                                        toggleExpanded(license._id);
                                    }}
                                  >
@@ -456,7 +453,7 @@ const DogLicenseDownload = () => {
             </div>
          ) : (
              <div className="user-dl-details-view">
-                 {renderCertificateView(selectedLicense)} {/* Directly render certificate view */}
+                 {renderCertificateView(selectedLicense)}
              </div>
          )
       ) : (
@@ -464,7 +461,6 @@ const DogLicenseDownload = () => {
           <div className="user-dl-empty-icon">
             <FileText size={48} />
           </div>
-          {/* Updated empty state message based on filter */}
           <p className="user-dl-no-data">
              {filterStatus === 'All'
                 ? "You have not applied for any licenses yet."

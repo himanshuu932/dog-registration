@@ -1,8 +1,4 @@
-/* Download.css */
-/* Government Portal Styling for User Downloads */
-
 :root {
-  /* Admin Panel Colors for consistency */
   --admin-primary: #2c3e50;
   --admin-primary-light: #34495e;
   --admin-secondary: #3498db;
@@ -19,10 +15,8 @@
   --admin-black: #2c3e50;
   --admin-shadow: rgba(0, 0, 0, 0.1);
   --admin-border-radius: 4px;
-  --admin-font-main: 'Roboto', sans-serif; /* Use Roboto for consistency */
+  --admin-font-main: 'Roboto', sans-serif;
 
-
-  /* User Download Specific Colors - Mapping to Admin colors with user-dl- prefix */
   --user-dl-primary: var(--admin-primary);
   --user-dl-primary-light: var(--admin-primary-light);
   --user-dl-secondary: var(--admin-secondary);
@@ -41,7 +35,6 @@
   --user-dl-border-radius: var(--admin-border-radius);
   --user-dl-font-main: var(--admin-font-main);
 
-   /* Original gov colors for the PDF layout */
   --gov-blue: #005ea5;
   --gov-light: #f3f2f1;
   --gov-dark-gray: #1f1f1f;
@@ -51,60 +44,55 @@
   --gov-maroon: #8b0000;
   --gov-gold: #b8860b;
 
-  /* Re-evaluate existing dl- colors and decide if they are still needed or should be replaced */
-   --dl-primary: #0052cc; /* Keep if needed for specific components, otherwise replace */
-   --dl-success: #00875a; /* Keep if needed for specific components, otherwise replace */
-   --dl-warning: #ff8800; /* Keep if needed for specific components, otherwise replace */
-   --dl-danger: #de350b; /* Keep if needed for specific components, otherwise replace */
-   --dl-light: #f4f5f7; /* Keep if needed for specific components, otherwise replace */
-   --dl-medium: #dfe1e6; /* Keep if needed for specific components, otherwise replace */
-   --dl-dark: #505f79; /* Keep if needed for specific components, otherwise replace */
-   --dl-white: #ffffff; /* Keep if needed for specific components, otherwise replace */
-   --dl-black: #172b4d; /* Keep if needed for specific components, otherwise replace */
-   --dl-card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Keep if needed for specific components, otherwise replace */
-   --dl-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Keep if needed for specific components, otherwise replace */
-
+   --dl-primary: #0052cc;
+   --dl-success: #00875a;
+   --dl-warning: #ff8800;
+   --dl-danger: #de350b;
+   --dl-light: #f4f5f7;
+   --dl-medium: #dfe1e6;
+   --dl-dark: #505f79;
+   --dl-white: #ffffff;
+   --dl-black: #172b4d;
+   --dl-card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+   --dl-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-
-/* Main Container - Updated class name and padding */
 .user-dl-container {
-  max-width: 1200px; /* Increased max-width for better table display */
+  max-width: 1200px;
   min-height: 60vh;
   margin: 2rem auto;
-  padding: 2rem; /* Added more padding */
+  padding: 2rem;
   font-family: var(--user-dl-font-main);
   color: var(--user-dl-black);
   background-color: var(--user-dl-white);
-  border-radius: 8px; /* Adjusted border-radius */
-  box-shadow: 0 2px 10px var(--user-dl-shadow); /* Updated shadow */
+  border-radius: 8px;
+  box-shadow: 0 2px 10px var(--user-dl-shadow);
 }
 
-/* Header Styles - Updated class names */
 .user-dl-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem; /* Adjusted margin */
+  margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--user-dl-gray-light); /* Updated border */
+  border-bottom: 1px solid var(--user-dl-gray-light);
   flex-wrap: wrap;
 }
 
 .user-dl-title {
-  font-size: 1.8rem; /* Adjusted font size */
-  font-weight: 500; /* Adjusted font weight */
-  color: var(--user-dl-primary); /* Updated color */
+  font-size: 1.8rem;
+  font-weight: 500;
+  color: var(--user-dl-primary);
   margin: 0;
   position: relative;
-  padding-left: 0; /* Removed left padding */
+  padding-left: 0;
 }
 
 .user-dl-filters {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-top: 0; /* Adjusted margin */
+  margin-top: 0;
 }
 
 .user-dl-filter-label {
@@ -116,46 +104,44 @@
 .user-dl-filter-btn {
   padding: 0.4rem 0.8rem;
   background: transparent;
-  border: 1px solid var(--user-dl-gray); /* Updated border */
+  border: 1px solid var(--user-dl-gray);
   border-radius: 20px;
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  color: var(--user-dl-black); /* Default text color */
+  color: var(--user-dl-black);
 }
 
 .user-dl-filter-btn:hover {
-  background-color: var(--user-dl-gray-light); /* Updated hover background */
+  background-color: var(--user-dl-gray-light);
 }
 
 .user-dl-filter-active {
-  background-color: var(--user-dl-primary); /* Updated active background */
+  background-color: var(--user-dl-primary);
   color: var(--user-dl-white);
-  border-color: var(--user-dl-primary); /* Updated active border */
+  border-color: var(--user-dl-primary);
 }
 
 .user-dl-filter-approved {
-  color: var(--user-dl-success); /* Updated color */
-  border-color: var(--user-dl-success); /* Updated border */
+  color: var(--user-dl-success);
+  border-color: var(--user-dl-success);
 }
 
 .user-dl-filter-approved:hover {
-  background-color: var(--user-dl-success); /* Updated hover background */
+  background-color: var(--user-dl-success);
   color: var(--user-dl-white);
 }
 
 .user-dl-filter-pending {
-  color: var(--user-dl-warning); /* Updated color */
-  border-color: var(--user-dl-warning); /* Updated border */
+  color: var(--user-dl-warning);
+  border-color: var(--user-dl-warning);
 }
 
 .user-dl-filter-pending:hover {
-  background-color: var(--user-dl-warning); /* Updated hover background */
+  background-color: var(--user-dl-warning);
   color: var(--user-dl-white);
 }
 
-
-/* Back to List Header */
 .user-dl-back-to-list-header {
     display: flex;
     align-items: center;
@@ -178,8 +164,6 @@
     margin-right: 0.5rem;
 }
 
-
-/* Loading State - Updated class names */
 .user-dl-loading {
   display: flex;
   flex-direction: column;
@@ -192,46 +176,46 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 3px solid var(--user-dl-gray); /* Updated border */
-  border-top-color: var(--user-dl-primary); /* Updated border color */
+  border: 3px solid var(--user-dl-gray);
+  border-top-color: var(--user-dl-primary);
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
 }
 
-/* Using the existing spin keyframes from Download.css */
-/* @keyframes spin { ... } */
-
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 
 .user-dl-status {
   font-size: 1.125rem;
-  color: var(--user-dl-dark); /* Updated color */
+  color: var(--user-dl-dark);
 }
 
-/* Empty State - Updated class names */
 .user-dl-empty-state {
   text-align: center;
   padding: 3rem 0;
   background-color: var(--user-dl-white);
   border-radius: 8px;
-  border: 1px dashed var(--user-dl-gray); /* Updated border */
+  border: 1px dashed var(--user-dl-gray);
   margin: 2rem 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .user-dl-empty-icon {
-  color: var(--user-dl-dark); /* Updated color */
+  color: var(--user-dl-dark);
   margin-bottom: 1rem;
 }
 
 .user-dl-no-data {
   font-size: 1.125rem;
-  color: var(--user-dl-dark); /* Updated color */
+  color: var(--user-dl-dark);
   margin-bottom: 1.5rem;
 }
 
 .user-dl-new-application-btn {
   padding: 0.75rem 1.5rem;
-  background-color: var(--user-dl-primary); /* Updated background */
+  background-color: var(--user-dl-primary);
   color: var(--user-dl-white);
   border: none;
   border-radius: 4px;
@@ -241,19 +225,16 @@
 }
 
 .user-dl-new-application-btn:hover {
-  background-color: var(--user-dl-primary-light); /* Updated hover background */
+  background-color: var(--user-dl-primary-light);
 }
 
-
-/* Table Styles - New styles for table layout */
 .user-dl-table-container {
     width: 100%;
-    overflow-x: auto; /* Allow horizontal scrolling if needed on smaller screens */
+    overflow-x: auto;
      box-shadow: 0 1px 3px var(--user-dl-shadow);
     border-radius: var(--user-dl-border-radius);
-    overflow: hidden; /* Hide overflow from rounded corners */
+    overflow: hidden;
 }
-
 
 .user-dl-license-table {
   width: 100%;
@@ -261,7 +242,7 @@
 }
 
 .user-dl-license-table thead {
-  background-color: var(--user-dl-primary); /* Updated background */
+  background-color: var(--user-dl-primary);
   color: var(--user-dl-white);
 }
 
@@ -269,28 +250,27 @@
   padding: 1rem;
   text-align: left;
   font-weight: 500;
-  white-space: nowrap; /* Prevent header text from wrapping */
+  white-space: nowrap;
 }
 
 .user-dl-license-table tbody tr {
-  border-bottom: 1px solid var(--user-dl-gray-light); /* Updated border */
+  border-bottom: 1px solid var(--user-dl-gray-light);
   transition: background-color 0.2s ease;
-  cursor: pointer; /* Indicate clickable rows */
+  cursor: pointer;
 }
 
 .user-dl-license-table tbody tr:hover {
-  background-color: rgba(236, 240, 241, 0.5); /* Lighter hover effect */
+  background-color: rgba(236, 240, 241, 0.5);
 }
 
 .user-dl-license-table td {
   padding: 1rem;
   vertical-align: middle;
-  white-space: nowrap; /* Prevent cell content from wrapping */
-   overflow: hidden; /* Hide overflowing text */
-   text-overflow: ellipsis; /* Add ellipsis for overflow */
+  white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
 }
 
-/* Cell Formatting */
 .user-dl-cell {
   display: flex;
   align-items: center;
@@ -298,22 +278,20 @@
 
 .user-dl-cell-icon {
   margin-right: 0.5rem;
-  color: var(--user-dl-secondary); /* Updated icon color */
-   flex-shrink: 0; /* Prevent icon from shrinking */
+  color: var(--user-dl-secondary);
+   flex-shrink: 0;
 }
 
-/* Status Badge in Table */
 .user-dl-status-badge {
   display: inline-flex;
   align-items: center;
-   gap: 0.25rem; /* Space between icon and text */
+   gap: 0.25rem;
   padding: 0.4rem 0.75rem;
   border-radius: 50px;
   font-size: 0.85rem;
   font-weight: 500;
   text-transform: capitalize;
   overflow: hidden;
-   /* Default styles, will be overridden by status-specific classes */
    background: none;
    color: inherit;
 }
@@ -322,75 +300,67 @@
      flex-shrink: 0;
 }
 
-
 .user-dl-status-approved {
-  background-color: rgba(39, 174, 96, 0.15); /* Admin success color with opacity */
+  background-color: rgba(39, 174, 96, 0.15);
   color: var(--user-dl-success);
 }
 
 .user-dl-status-pending {
-  background-color: rgba(243, 156, 18, 0.15); /* Admin warning color with opacity */
+  background-color: rgba(243, 156, 18, 0.15);
   color: var(--user-dl-warning);
 }
 
 .user-dl-status-rejected {
-  background-color: rgba(231, 76, 60, 0.15); /* Admin danger color with opacity */
+  background-color: rgba(231, 76, 60, 0.15);
   color: var(--user-dl-danger);
 }
 
-/* View Button in Table */
 .user-dl-view-btn {
   padding: 0.5rem 0.85rem;
   border-radius: var(--user-dl-border-radius);
   font-size: 0.85rem;
-  background-color: var(--user-dl-primary-light); /* Updated background */
+  background-color: var(--user-dl-primary-light);
   color: var(--user-dl-white);
   border: none;
   cursor: pointer;
   transition: background-color 0.2s ease;
-   display: inline-flex; /* Use flex to align icon and text */
+   display: inline-flex;
    align-items: center;
-   gap: 0.25rem; /* Space between icon and text */
-    white-space: nowrap; /* Prevent button text wrap */
+   gap: 0.25rem;
+    white-space: nowrap;
 }
 
 .user-dl-view-btn:hover {
-  background-color: var(--user-dl-primary); /* Updated hover background */
+  background-color: var(--user-dl-primary);
 }
 
 .user-dl-btn-icon {
     flex-shrink: 0;
 }
 
-
-/* Details View Container */
 .user-dl-details-view {
     width: 100%;
-    /* background-color: var(--user-dl-gray-light); */ /* Moved background to content area */
      border-radius: var(--user-dl-border-radius);
-     padding: 1rem; /* Padding within the details container */
-     /* box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.05); */ /* Moved shadow to content area */
+     padding: 1rem;
+     box-shadow: 0 4px 15px var(--user-dl-shadow);
+     position: relative;
+    overflow: hidden;
+     width: 100%;
+    box-sizing: border-box;
 }
 
-/* Removed toggle button styles */
-
-
-/* Removed standard view styles */
-
-/* Certificate View Content (PDF Layout Styling) - Using provided CSS and adjusting for one page */
 .user-dl-certificate-view {
-     background-color: var(--user-dl-white); /* Keep wrapper styling */
-    border: 1px solid var(--user-dl-gray); /* Keep wrapper styling */
-    border-radius: var(--user-dl-border-radius); /* Keep wrapper styling */
-    padding: 1.5rem; /* Keep wrapper styling */
-     box-shadow: 0 4px 15px var(--user-dl-shadow); /* Keep wrapper styling */
-     position: relative; /* Keep wrapper styling */
-    overflow: hidden; /* Keep wrapper styling */
-     width: 100%; /* Keep wrapper styling */
-    box-sizing: border-box; /* Include padding and border in element's total width */
+     background-color: var(--user-dl-white);
+    border: 1px solid var(--user-dl-gray);
+    border-radius: var(--user-dl-border-radius);
+    padding: 1.5rem;
+     box-shadow: 0 4px 15px var(--user-dl-shadow);
+     position: relative;
+    overflow: hidden;
+     width: 100%;
+    box-sizing: border-box;
 }
 
-/* PDF Layout */
 .pdf-layout {
   font-family: 'Times New Roman', Times, serif;
   width: 100%;
@@ -415,52 +385,49 @@
 
 .pdf-border {
   border: 3px double var(--border-color);
-  padding: 8px; /* Reduced padding */
+  padding: 8px;
   position: relative;
   background: #fff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Certificate Title */
 .pdf-certificate-title {
   text-align: center;
-  margin: 10px 0; /* Reduced margin */
+  margin: 10px 0;
 }
 
 .pdf-certificate-title h2 {
-  font-size: 17px; /* Slightly reduced font size */
+  font-size: 17px;
   font-weight: bold;
-  margin: 0 0 6px 0; /* Reduced margin */
+  margin: 0 0 6px 0;
 }
 
 .pdf-certificate-title h3 {
-  font-size: 17px; /* Slightly reduced font size */
+  font-size: 17px;
   font-weight: bold;
-  margin-bottom: 8px; /* Reduced margin */
+  margin-bottom: 8px;
   text-decoration: underline;
   color: var(--gov-maroon);
-  letter-spacing: 1px; /* Slightly reduced letter spacing */
+  letter-spacing: 1px;
 }
 .pdf-header {
   display: flex;
   justify-content: space-between;
-  align-items: center; /* Ensure vertical alignment in header */
- /* added divider */
+  align-items: center;
  border-bottom: 2px solid #333;
-  padding-bottom: 8px; /* Reduced padding */
-  margin-bottom: 10px; /* Reduced margin */
-
+  padding-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .pdf-header-left {
   display: flex;
-  align-items: center; /* Ensure vertical alignment in header left */
+  align-items: center;
 }
 
 .pdf-logo-icon {
-  height: 50px; /* Reduced size */
-  width: 50px; /* Reduced size */
-  margin-right: 10px; /* Reduced margin */
+  height: 50px;
+  width: 50px;
+  margin-right: 10px;
 }
 
 .pdf-logo-icon img {
@@ -468,42 +435,41 @@
  max-height: 100%;
 }
 
-/* Photo Section */
 .pdf-photo-section {
  display: flex;
  justify-content: space-between;
  margin-bottom: 5px;
- margin-right: 20px; /* Reduced margin */
+ margin-right: 20px;
  align-items: flex-start;
 }
 
 .pdf-info-block {
  flex: 1;
- margin-right: 10px; /* Reduced margin */
- margin-left: 10px; /* Reduced margin */
+ margin-right: 10px;
+ margin-left: 10px;
 }
 
 .pdf-info-row {
  display: flex;
- margin-bottom: 4px; /* Reduced margin */
- font-size: 12px; /* Reduced font size */
- line-height: 1.4; /* Slightly reduced line height */
-  justify-content: space-between; /* Keep original justification */
+ margin-bottom: 4px;
+ font-size: 12px;
+ line-height: 1.4;
+  justify-content: space-between;
 }
 
 .pdf-info-label {
  font-weight: bold;
- min-width: 180px; /* Reduced min-width */
+ min-width: 180px;
 }
 
 .pdf-info-value {
  flex: 1;
- padding-left: 4px; /* Reduced padding */
+ padding-left: 4px;
 }
 
 .pdf-photo-box {
- width: 100px; /* Reduced size */
- height: 120px; /* Reduced size */
+ width: 100px;
+ height: 120px;
  border: 2px solid var(--border-color);
  display: flex;
  justify-content: center;
@@ -522,118 +488,108 @@
  width: 100%;
  height: 100%;
  display: flex;
-  flex-direction: column; /* Added for placeholder text centering */
+  flex-direction: column;
  justify-content: center;
  align-items: center;
  text-align: center;
- font-size: 10px; /* Reduced font size */
- padding: 3px; /* Reduced padding */
+ font-size: 10px;
+ padding: 3px;
  box-sizing: border-box;
- margin-right: 30px; /* Reduced margin */
+ margin-right: 30px;
 }
 
-/* Details Section */
 .pdf-details-section {
  margin-bottom: 5px;
- margin-left: 10px; /* Reduced margin */
+ margin-left: 10px;
 }
 
 .pdf-section-title {
  font-weight: bold;
- font-size: 14px; /* Reduced font size */
+ font-size: 14px;
  border-bottom: 1px solid var(--border-color);
- margin-bottom: 8px; /* Reduced margin */
- padding-bottom: 3px; /* Reduced padding */
+ margin-bottom: 8px;
+ padding-bottom: 3px;
  color: var(--gov-blue);
  background-color: #f9f9f9;
- padding: 3px; /* Reduced padding */
+ padding: 3px;
  border-left: 4px solid var(--gov-maroon);
 }
 
-/* Container for the two columns within Animal Details */
 .pdf-details-columns {
- display: flex; /* Use Flexbox for columns */
- gap: 15px; /* Reduced gap */
+ display: flex;
+ gap: 15px;
 }
 
 .pdf-details-column-left,
 .pdf-details-column-right {
- flex: 1; /* Allow columns to grow and shrink */
+ flex: 1;
 }
 
-/* Styles for individual rows within the columns */
-/* Corrected specificity to target rows in the single-column Owner Details table */
 .pdf-details-table .pdf-details-row {
  display: flex;
- margin-bottom: 4px; /* Reduced spacing */
- justify-content: space-between; /* Keep original justification */
- font-size: 12px; /* Reduced font size */
- line-height: 1.4; /* Slightly reduced line height */
-}
-
-.pdf-details-table .pdf-details-label { /* Target labels in the Owner Details table */
- font-weight: bold;
- min-width: 280px; /* Reduced min-width */
-  flex-shrink: 0; /* Prevent shrinking */
-}
-
-.pdf-details-table .pdf-details-value { /* Target values in the Owner Details table */
- flex: 1;
- padding-left: 4px; /* Reduced padding */
-    word-break: break-word; /* Allow text to wrap if needed */
-}
-
-
-/* Specific styles for rows, labels, and values within the two-column Animal Details */
-.pdf-details-columns .pdf-details-row {
- display: flex; /* Keep flex for label and value side-by-side */
+ margin-bottom: 4px;
  justify-content: space-between;
- margin-bottom: 5px; /* Reduced spacing between rows in columns */
- font-size: 12px; /* Reduced font size */
- line-height: 1.4; /* Slightly reduced line height */
+ font-size: 12px;
+ line-height: 1.4;
+}
+
+.pdf-details-table .pdf-details-label {
+ font-weight: bold;
+ min-width: 280px;
+  flex-shrink: 0;
+}
+
+.pdf-details-table .pdf-details-value {
+ flex: 1;
+ padding-left: 4px;
+    word-break: break-word;
+}
+
+.pdf-details-columns .pdf-details-row {
+ display: flex;
+ justify-content: space-between;
+ margin-bottom: 5px;
+ font-size: 12px;
+ line-height: 1.4;
 }
 
 .pdf-details-columns .pdf-details-label {
  font-weight: bold;
- width: 180px; /* Reduced width in columns */
- flex-shrink: 0; /* Prevent label from shrinking */
+ width: 180px;
+ flex-shrink: 0;
 }
 
 .pdf-details-columns .pdf-details-value {
- flex: 1; /* Allow value to take up remaining space */
- padding-left: 4px; /* Space between label and value */
-  word-break: break-word; /* Allow text to wrap if needed */
+ flex: 1;
+ padding-left: 4px;
+  word-break: break-word;
 }
 
 .pdf-vaccine-img {
- max-width: 80px; /* Reduced size */
+ max-width: 80px;
  height: auto;
 }
 
-
-/* Declaration */
 .pdf-declaration {
-  margin: 15px 0; /* Reduced margin */
- font-size: 12px; /* Reduced font size */
+  margin: 15px 0;
+ font-size: 12px;
  text-align: left;
-padding-left: 10px; /* Reduced padding */
+padding-left: 10px;
  border: 1px solid #e0e0e0;
  background-color: #f9f9f9;
  border-radius: 5px;
-  padding: 8px; /* Added padding for consistency */
-
+  padding: 8px;
 }
 
 .pdf-declaration p {
- margin: 4px 0; /* Reduced margin */
- line-height: 1.5; /* Slightly reduced line height */
+ margin: 4px 0;
+ line-height: 1.5;
 }
 
-/* Signatures */
 .pdf-signatures {
  display: flex;
  justify-content: space-between;
- margin: 20px 0 10px 0; /* Reduced margin */
+ margin: 20px 0 10px 0;
 }
 
 .pdf-signature-block {
@@ -644,57 +600,54 @@ padding-left: 10px; /* Reduced padding */
 .pdf-signature-line {
  width: 100%;
  border-bottom: 1px solid var(--border-color);
- margin-bottom: 6px; /* Reduced margin */
- margin-top:8px ; /* Reduced margin */
-   height: 1.5rem; /* Adjusted height */
+ margin-bottom: 6px;
+ margin-top:8px ;
+   height: 1.5rem;
 }
 
 .pdf-signature-block p {
- font-size: 10px; /* Reduced font size */
- margin: 4px 0; /* Reduced margin */
+ font-size: 10px;
+ margin: 4px 0;
 }
 
-/* Contact Info Footer */
 .pdf-contact-footer {
- font-size: 10px; /* Reduced font size */
+ font-size: 10px;
  text-align: center;
- margin-top: 10px; /* Reduced margin */
- padding-top: 6px; /* Reduced padding */
+ margin-top: 10px;
+ padding-top: 6px;
  border-top: 1px solid #eee;
  display: flex;
  justify-content: center;
- gap: 10px; /* Reduced gap */
+ gap: 10px;
 }
 
 .pdf-contact-footer span {
   white-space: nowrap;
 }
 
-
-/* Footer */
 .pdf-footer {
  display: flex;
  justify-content: space-between;
- margin-top: 15px; /* Reduced margin */
-  align-items: center; /* Ensure vertical alignment in footer */
+ margin-top: 15px;
+  align-items: center;
 }
 
 .pdf-qr-code {
  text-align: center;
-  display: flex; /* Added display flex */
-  flex-direction: column; /* Added flex direction */
-  align-items: center; /* Added align items */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .pdf-qr-placeholder {
- width: 60px; /* Reduced size */
- height: 60px; /* Reduced size */
+ width: 60px;
+ height: 60px;
  border: 1px solid var(--border-color);
  display: flex;
-  flex-direction: column; /* Added flex direction */
+  flex-direction: column;
  justify-content: center;
  align-items: center;
- margin-left: 10px; /* Reduced margin */
+ margin-left: 10px;
  background: #f5f5f5;
  position: relative;
  overflow: hidden;
@@ -722,8 +675,8 @@ padding-left: 10px; /* Reduced padding */
 }
 
 .pdf-qr-code p {
- font-size: 9px; /* Reduced font size */
- margin: 4px 0; /* Reduced margin */
+ font-size: 9px;
+ margin: 4px 0;
 }
 
 .pdf-stamp {
@@ -732,43 +685,42 @@ padding-left: 10px; /* Reduced padding */
 }
 
 .pdf-stamp-placeholder {
- width: 80px; /* Reduced size */
- height: 80px; /* Reduced size */
+ width: 80px;
+ height: 80px;
  border: 2px dashed var(--gov-maroon);
  border-radius: 50%;
  display: flex;
-  flex-direction: column; /* Added flex direction */
+  flex-direction: column;
  justify-content: center;
  align-items: center;
  text-align: center;
- font-size: 10px; /* Reduced font size */
+ font-size: 10px;
  color: var(--gov-maroon);
  font-weight: bold;
  transform: rotate(-15deg);
  position: relative;
  overflow: hidden;
- margin-right: 10px; /* Reduced margin */
+ margin-right: 10px;
 }
 
 .pdf-stamp-placeholder::after {
  content: "";
  position: absolute;
  width: 150%;
- height: 16px; /* Reduced height */
+ height: 16px;
  background-color: rgba(139, 0, 0, 0.2);
  top: 50%;
  left: -25%;
  transform: translateY(-50%) rotate(-15deg);
 }
 
-/* Download Button in Details */
 .user-dl-button {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background-color: var(--user-dl-success); /* Updated background */
+  background-color: var(--user-dl-success);
   color: var(--user-dl-white);
   border: none;
   border-radius: 4px;
@@ -777,19 +729,17 @@ padding-left: 10px; /* Reduced padding */
   cursor: pointer;
   transition: background-color 0.2s;
   margin-top: 1.5rem;
-   width: auto; /* Allow button to size based on content */
+   width: auto;
 }
 
 .user-dl-button:hover {
-  background-color: #1e8449; /* Darker shade for hover */
+  background-color: #1e8449;
 }
 
 .user-dl-certificate-download-btn {
-    margin-top: 1rem; /* Adjusted margin for certificate view */
+    margin-top: 1rem;
 }
 
-
-/* Pending/Rejected Notices */
 .user-dl-pending-notice,
 .user-dl-rejected-notice {
   display: flex;
@@ -803,12 +753,12 @@ padding-left: 10px; /* Reduced padding */
 }
 
 .user-dl-pending-notice {
-  background-color: rgba(243, 156, 18, 0.1); /* Admin warning color with opacity */
+  background-color: rgba(243, 156, 18, 0.1);
   color: var(--user-dl-warning);
 }
 
 .user-dl-rejected-notice {
-  background-color: rgba(231, 76, 60, 0.1); /* Admin danger color with opacity */
+  background-color: rgba(231, 76, 60, 0.1);
   color: var(--user-dl-danger);
 }
 
@@ -817,10 +767,225 @@ padding-left: 10px; /* Reduced padding */
   margin: 0;
 }
 
+/* Styles to force desktop layout for PDF generation */
+.force-desktop-pdf-layout .pdf-border {
+    padding: 8px;
+}
+
+.force-desktop-pdf-layout .pdf-header {
+    flex-direction: row;
+    align-items: center;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+}
+
+.force-desktop-pdf-layout .pdf-logo-icon {
+    height: 50px;
+    width: 50px;
+    margin-right: 10px;
+}
+
+.force-desktop-pdf-layout .pdf-org-name h3 {
+    font-size: 17px;
+}
+.force-desktop-pdf-layout .pdf-org-name h4 {
+     font-size: 17px;
+}
+
+.force-desktop-pdf-layout .pdf-header-right {
+    margin-top: 0;
+    font-size: initial;
+}
+
+.force-desktop-pdf-layout .pdf-certificate-title h3 {
+    font-size: 17px;
+}
+.force-desktop-pdf-layout .pdf-certificate-title h2 {
+     font-size: 17px;
+}
+
+.force-desktop-pdf-layout .pdf-photo-section {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: initial;
+    margin-bottom: 5px;
+    margin-right: 20px;
+}
+
+.force-desktop-pdf-layout .pdf-info-block {
+    flex: 1;
+    width: auto;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.force-desktop-pdf-layout .pdf-info-row {
+    font-size: 12px;
+    margin-bottom: 4px;
+    justify-content: space-between;
+}
+
+.force-desktop-pdf-layout .pdf-info-label {
+    font-weight: bold;
+    min-width: 180px;
+    margin-right: initial;
+    width: auto;
+}
+
+.force-desktop-pdf-layout .pdf-info-value {
+    flex: 1;
+    padding-left: 4px;
+}
+
+.force-desktop-pdf-layout .pdf-photo-box {
+    width: 100px;
+    height: 120px;
+    margin-right: initial;
+}
+.force-desktop-pdf-layout .pdf-photo-placeholder {
+    font-size: 10px;
+     margin-right: 30px;
+}
+
+.force-desktop-pdf-layout .pdf-details-section {
+    margin-bottom: 5px;
+    margin-left: 10px;
+}
+
+.force-desktop-pdf-layout .pdf-section-title {
+    font-size: 14px;
+    padding: 3px;
+}
+
+.force-desktop-pdf-layout .pdf-details-columns {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+}
+
+.force-desktop-pdf-layout .pdf-details-column-left,
+.force-desktop-pdf-layout .pdf-details-column-right {
+    flex: 1;
+    min-width: initial;
+}
+
+.force-desktop-pdf-layout .pdf-details-table .pdf-details-row {
+     font-size: 12px;
+     margin-bottom: 4px;
+     justify-content: space-between;
+}
+
+.force-desktop-pdf-layout .pdf-details-table .pdf-details-label {
+      font-weight: bold;
+      min-width: 280px;
+       flex-shrink: 0;
+       margin-right: initial;
+}
+
+.force-desktop-pdf-layout .pdf-details-table .pdf-details-value {
+     flex: 1;
+     padding-left: 4px;
+      word-break: break-word;
+}
+
+.force-desktop-pdf-layout .pdf-details-columns .pdf-details-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.force-desktop-pdf-layout .pdf-details-columns .pdf-details-label {
+     font-weight: bold;
+     width: 180px;
+     flex-shrink: 0;
+      margin-right: initial;
+}
+
+.force-desktop-pdf-layout .pdf-details-columns .pdf-details-value {
+     flex: 1;
+     padding-left: 4px;
+      word-break: break-word;
+}
+
+.force-desktop-pdf-layout .pdf-declaration {
+    font-size: 12px;
+    padding: 8px;
+    margin: 15px 0;
+     padding-left: 10px;
+}
+
+.force-desktop-pdf-layout .pdf-signatures {
+    display: flex;
+    flex-direction: row;
+    gap: initial;
+    margin: 20px 0 10px 0;
+}
+
+.force-desktop-pdf-layout .pdf-signature-block {
+     width: 48%;
+     min-width: auto;
+     flex-grow: initial;
+}
+
+.force-desktop-pdf-layout .pdf-signature-line {
+     margin-top: 8px;
+     height: 1.5rem;
+}
+
+.force-desktop-pdf-layout .pdf-signature-block p {
+    font-size: 10px;
+    margin: 4px 0;
+}
+
+.force-desktop-pdf-layout .pdf-footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: initial;
+    margin-top: 15px;
+}
+
+.force-desktop-pdf-layout .pdf-qr-code {
+    margin-left: initial;
+}
+
+.force-desktop-pdf-layout .pdf-qr-placeholder {
+    width: 60px;
+    height: 60px;
+     font-size: 9px;
+      margin-left: 10px;
+}
+.force-desktop-pdf-layout .pdf-qr-code p {
+    font-size: 9px;
+    margin: 4px 0;
+}
+
+.force-desktop-pdf-layout .pdf-stamp {
+     margin-right: initial;
+}
+
+.force-desktop-pdf-layout .pdf-stamp-placeholder {
+    width: 80px;
+    height: 80px;
+     font-size: 10px;
+      margin-right: 10px;
+}
+
+.force-desktop-pdf-layout .pdf-contact-footer {
+    font-size: 10px;
+    margin-top: 10px;
+    padding-top: 6px;
+    gap: 10px;
+}
+
+
 /* Responsive Styles */
 @media (max-width: 768px) {
   .user-dl-container {
-    padding: 1rem; /* Reduced padding on smaller screens */
+    padding: 1rem;
   }
 
   .user-dl-header {
@@ -844,20 +1009,13 @@ padding-left: 10px; /* Reduced padding */
        font-size: 0.9rem;
    }
 
-
-
-
-
-     /* Hide Applied Date and View columns on mobile */
-     /* Note: We are keeping View column data visible but styling the button */
-    .user-dl-license-table th:nth-child(4), /* Applied Date header */
-    .user-dl-license-table td:nth-child(4) { /* Applied Date data */
+    .user-dl-license-table th:nth-child(4),
+    .user-dl-license-table td:nth-child(4) {
         display: none;
     }
 
-     /* Adjust the Status Badge on mobile */
     .user-dl-status-badge {
-        padding: 0; /* Remove padding */
+        padding: 0;
         font-size: 0.8rem;
         min-width: auto;
          background: none;
@@ -865,240 +1023,220 @@ padding-left: 10px; /* Reduced padding */
          justify-content: center;
     }
      .user-dl-status-badge svg {
-        margin-right: 0; /* Remove margin */
-        width: 20px; /* Set a fixed size for icons on mobile */
+        margin-right: 0;
+        width: 20px;
         height: 20px;
     }
 
-
-    /* Remove icons from Owner and Dog Name cells on mobile */
     .user-dl-owner-cell .user-dl-cell-icon,
     .user-dl-dog-cell .user-dl-cell-icon {
         display: none;
     }
 
-     /* Style the View button on mobile */
     .user-dl-view-btn {
-        padding: 0.4rem; /* Reduced padding */
-        gap: 0; /* Removed gap */
-         /* Make button fill the cell */
+        padding: 0.4rem;
+        gap: 0;
         width: 100%;
         height: 100%;
-        justify-content: center; /* Center content in the button */
-         background-color: transparent; /* Remove background */
-         color: var(--user-dl-secondary); /* Set icon color */
-         box-shadow: none; /* Remove shadow */
+        justify-content: center;
+         background-color: transparent;
+         color: var(--user-dl-secondary);
+         box-shadow: none;
     }
      .user-dl-view-btn:hover {
-         background-color: var(--user-dl-gray-light); /* subtle hover */
+         background-color: var(--user-dl-gray-light);
      }
     .user-dl-view-btn span {
-        display: none; /* Hide "View" text on mobile */
+        display: none;
     }
      .user-dl-view-btn .user-dl-btn-icon {
-         margin-right: 0; /* Remove icon margin */
+         margin-right: 0;
      }
 
-    /* Details View Adjustments */
      .user-dl-details-view {
-         padding: 0 0.5rem; /* Reduced padding */
+         padding: 0 0.5rem;
      }
 
-     /* Removed toggle button styles */
-
-
-     /* Removed standard view styles */
-
-      /* Certificate View Adjustments - Apply original PDF styles with mobile responsiveness */
        .user-dl-certificate-view {
-           padding: 1rem; /* Keep wrapper padding */
+           padding: 1rem;
        }
 
        .pdf-layout {
-           padding: 3px; /* Further reduced padding on mobile */
+           padding: 3px;
        }
 
        .pdf-border {
-           padding: 8px; /* Adjusted padding for mobile PDF border */
+           padding: 8px;
        }
 
        .pdf-header {
-           flex-direction: column; /* Stack items on mobile */
-           align-items: flex-start; /* Align to start */
-           padding-bottom: 4px; /* Reduced padding */
-           margin-bottom: 8px; /* Reduced margin */
+           flex-direction: column;
+           align-items: flex-start;
+           padding-bottom: 4px;
+           margin-bottom: 8px;
        }
         .pdf-logo-icon {
-            height: 35px; /* Adjusted size */
-            width: 35px; /* Adjusted size */
-            margin-right: 6px; /* Reduced margin */
+            height: 35px;
+            width: 35px;
+            margin-right: 6px;
         }
          .pdf-org-name h3 {
-             font-size: 0.9rem; /* Adjusted font size */
+             font-size: 0.9rem;
          }
           .pdf-org-name h4 {
-             font-size: 0.7rem; /* Adjusted font size */
+             font-size: 0.7rem;
          }
         .pdf-header-right {
-             margin-top: 4px; /* Reduced margin */
-             font-size: 0.7rem; /* Adjusted font size */
+             margin-top: 4px;
+             font-size: 0.7rem;
         }
-         /* pdf-footer-icon class is not used in the PDF content anymore */
-
 
        .pdf-certificate-title h3 {
-           font-size: 1rem; /* Adjusted font size */
+           font-size: 1rem;
        }
         .pdf-certificate-title h2 {
-           font-size: 0.8rem; /* Adjusted font size */
+           font-size: 0.8rem;
         }
-
 
        .pdf-photo-section {
-            flex-direction: column; /* Stack items on mobile */
-            align-items: center; /* Center items */
-            gap: 10px; /* Reduced gap */
-            margin-right: 0; /* Remove original margin */
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-right: 0;
        }
         .pdf-info-block {
-            width: 100%; /* Take full width */
-             margin-right: 0; /* Remove original margin */
-             margin-left: 0; /* Remove original margin */
+            width: 100%;
+             margin-right: 0;
+             margin-left: 0;
         }
         .pdf-info-row {
-            font-size: 0.8rem; /* Reduced font size */
-            margin-bottom: 4px; /* Reduced margin */
-             /* Removed justify-content: space-between on mobile for simpler layout */
+            font-size: 0.8rem;
+            margin-bottom: 4px;
         }
          .pdf-info-label {
-             min-width: 90px; /* Adjusted min-width on mobile */
-              margin-right: 4px; /* Add space between label and value */
-             width: auto; /* Allow width to be determined by content */
+             min-width: 90px;
+              margin-right: 4px;
+             width: auto;
          }
          .pdf-info-value {
-              padding-left: 0; /* Remove padding */
+              padding-left: 0;
          }
         .pdf-photo-box {
-             width: 80px; /* Reduced size */
-             height: 100px; /* Reduced size */
-             margin-right: 0; /* Remove original margin */
+             width: 80px;
+             height: 100px;
+             margin-right: 0;
         }
          .pdf-photo-placeholder {
-             font-size: 0.6rem; /* Reduced font size */
-              margin-right: 0; /* Remove original margin */
+             font-size: 0.6rem;
+              margin-right: 0;
          }
 
-
        .pdf-details-section {
-           margin-bottom: 8px; /* Reduced margin */
-            margin-left: 0; /* Remove original margin */
+           margin-bottom: 8px;
+            margin-left: 0;
        }
         .pdf-section-title {
-           font-size: 0.9rem; /* Reduced font size */
-            padding: 5px 6px; /* Reduced padding */
+           font-size: 0.9rem;
+            padding: 5px 6px;
         }
         .pdf-details-columns {
-            flex-direction: column; /* Stack columns on mobile */
-            gap: 10px; /* Reduced gap */
+            flex-direction: column;
+            gap: 10px;
         }
          .pdf-details-column-left,
          .pdf-details-column-right {
-             min-width: auto; /* Remove min-width */
+             min-width: auto;
          }
         .pdf-details-row {
-             font-size: 0.8rem; /* Reduced font size */
-             margin-bottom: 4px; /* Reduced margin */
-             /* Removed justify-content: space-between on mobile for simpler layout */
+             font-size: 0.8rem;
+             margin-bottom: 4px;
         }
          .pdf-details-label {
-             width: auto; /* Allow width to be determined by content */
-             min-width: 90px; /* Adjusted min-width on mobile */
-             margin-right: 4px; /* Add space between label and value */
+             width: auto;
+             min-width: 90px;
+             margin-right: 4px;
          }
           .pdf-details-value {
-             padding-left: 0; /* Remove padding */
+             padding-left: 0;
           }
-         /* Adjust specific rows in the single-column Owner Details table on mobile */
          .pdf-details-table .pdf-details-label {
-              min-width: 90px; /* Match label width in other details sections on mobile */
+              min-width: 90px;
          }
 
-
        .pdf-declaration {
-           font-size: 0.8rem; /* Reduced font size */
-           padding: 6px; /* Reduced padding */
-           margin: 10px 0; /* Reduced margin */
-            padding-left: 8px; /* Adjusted padding */
+           font-size: 0.8rem;
+           padding: 6px;
+           margin: 10px 0;
+            padding-left: 8px;
        }
 
        .pdf-signatures {
-            flex-direction: column; /* Stack signatures on mobile */
-            gap: 10px; /* Reduced gap */
-            margin: 15px 0 8px 0; /* Reduced margin */
+            flex-direction: column;
+            gap: 10px;
+            margin: 15px 0 8px 0;
        }
         .pdf-signature-block {
-             width: 100%; /* Take full width */
+             width: 100%;
              min-width: auto;
              flex-grow: normal;
         }
          .pdf-signature-line {
-              margin-top: 6px; /* Reduced margin */
-              height: 1.2rem; /* Adjusted height */
+              margin-top: 6px;
+              height: 1.2rem;
          }
          .pdf-signature-block p {
-             font-size: 0.7rem; /* Reduced font size */
-             margin: 3px 0; /* Reduced margin */
+             font-size: 0.7rem;
+             margin: 3px 0;
          }
 
         .pdf-footer {
-             flex-direction: column; /* Stack footer elements on mobile */
-             align-items: center; /* Center elements */
-             gap: 8px; /* Reduced gap */
-             margin-top: 10px; /* Reduced margin */
+             flex-direction: column;
+             align-items: center;
+             gap: 8px;
+             margin-top: 10px;
         }
          .pdf-qr-code {
-             margin-left: 0; /* Remove original margin */
+             margin-left: 0;
          }
          .pdf-qr-placeholder {
-             width: 50px; /* Reduced size */
-             height: 50px; /* Reduced size */
-              font-size: 0.6rem; /* Reduced font size */
-               margin-left: 0; /* Remove original margin */
+             width: 50px;
+             height: 50px;
+              font-size: 0.6rem;
+               margin-left: 0;
          }
          .pdf-stamp {
-              margin-right: 0; /* Remove original margin */
+              margin-right: 0;
          }
          .pdf-stamp-placeholder {
-             width: 70px; /* Reduced size */
-             height: 70px; /* Reduced size */
-              font-size: 0.7rem; /* Reduced font size */
-               margin-right: 0; /* Remove original margin */
+             width: 70px;
+             height: 70px;
+              font-size: 0.7rem;
+               margin-right: 0;
          }
 
        .pdf-contact-footer {
-           font-size: 0.7rem; /* Reduced font size */
-            margin-top: 8px; /* Reduced margin */
-            padding-top: 5px; /* Reduced padding */
-            gap: 8px; /* Reduced gap */
+           font-size: 0.7rem;
+            margin-top: 8px;
+            padding-top: 5px;
+            gap: 8px;
        }
 
        .user-dl-button {
-           font-size: 0.8rem; /* Reduced font size */
-           padding: 0.5rem 1rem; /* Reduced padding */
-            margin-top: 0.8rem; /* Reduced margin */
+           font-size: 0.8rem;
+           padding: 0.5rem 1rem;
+            margin-top: 0.8rem;
        }
 
        .user-dl-pending-notice,
        .user-dl-rejected-notice {
-           font-size: 0.8rem; /* Reduced font size */
-           padding: 0.6rem; /* Reduced padding */
-           gap: 0.4rem; /* Reduced gap */
-            margin-top: 0.8rem; /* Reduced margin */
+           font-size: 0.8rem;
+           padding: 0.6rem;
+           gap: 0.4rem;
+            margin-top: 0.8rem;
        }
         .user-dl-pending-notice svg,
         .user-dl-rejected-notice svg {
              width: 14px;
              height: 14px;
         }
-
 }
