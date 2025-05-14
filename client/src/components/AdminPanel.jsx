@@ -470,8 +470,8 @@ const AdminPanel = () => {
                       <th>Owner</th>
                       <th>Dog Name</th>
                       <th>Status</th>
-                      <th>Vaccination Date</th>
-                      <th>Actions</th> {/* Keep Actions header */}
+                      {!isMobile && <th>Vaccination Date</th>}
+                      {!isMobile && <th>Actions</th>}
                     </tr>
                   </thead>
                   <tbody>
@@ -491,8 +491,8 @@ const AdminPanel = () => {
                             {lic.status}
                           </div>
                         </td>
-                        <td><div className="date-cell"><Calendar size={16} className="cell-icon" /> {formatDate(lic.dog?.dateOfVaccination)}</div></td>
-                        <td className="actions-cell">
+                        {!isMobile && <td><div className="date-cell"><Calendar size={16} className="cell-icon" /> {formatDate(lic.dog?.dateOfVaccination)}</div></td>}
+                        {!isMobile && <td className="actions-cell">
                           {/* Container for buttons in the actions cell */}
                           <div className="action-buttons-container">
                               {/* Show View button always in the table */}
@@ -535,7 +535,7 @@ const AdminPanel = () => {
                                  </div>
                               )}
                           </div>
-                        </td>
+                        </td>}
                       </tr>
                     ))}
                   </tbody>
