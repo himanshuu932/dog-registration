@@ -1,55 +1,70 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import html2pdf from 'html2pdf.js';
 import './styles/Download.css';
-import { 
-  Download, 
-  CheckCircle, 
-  XCircle, 
-  ChevronDown, 
-  ChevronUp, 
-  FileText, 
-  Calendar, 
-  Clock, 
-  AlertCircle, 
-  Image 
+import {
+  Download,
+  CheckCircle,
+  XCircle,
+  ChevronDown,
+  ChevronUp,
+  FileText,
+  Calendar,
+  Clock,
+  AlertCircle,
+  User,
+  Dog,
+  Eye,
+  ChevronLeft, // Added for back button
+  Award, // For certificate icon
+  Syringe, // For vaccination icon
+  Stamp, // For stamp icon - Still needed for the icon outside the PDF in renderCertificateView wrapper
+  Globe, // For website icon - Still needed for the icon outside the PDF in renderCertificateView wrapper
+  Phone, // For phone icon - Still needed for the icon outside the PDF in renderCertificateView wrapper
+  MapPin, // For location icon - Still needed for the icon outside the PDF in renderCertificateView wrapper
+  Image // Import Image icon - still needed for standard view in AdminPanel example, but not used in this file anymore
 } from 'lucide-react';
 
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A';
-  return new Date(dateString).toLocaleDateString();
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-GB");
 };
 
-// Function to get current formatted date
 const getCurrentDate = () => {
   const now = new Date();
-  return now.toLocaleDateString();
+  return now.toLocaleDateString('en-GB');
 };
 
-const StatusBadge = ({ status }) => {
-  let badgeClass = "dl-status-badge";
+const UserStatusBadge = ({ status, isMobile }) => {
+  let badgeClass = "user-dl-status-badge";
   let Icon = AlertCircle;
-  
+  let iconColor = 'var(--user-dl-warning)';
+
   switch(status.toLowerCase()) {
     case 'approved':
-      badgeClass += " dl-status-approved";
+      badgeClass += " user-dl-status-approved";
       Icon = CheckCircle;
+      iconColor = 'var(--user-dl-success)';
       break;
     case 'pending':
-      badgeClass += " dl-status-pending";
+      badgeClass += " user-dl-status-pending";
       Icon = Clock;
+      iconColor = 'var(--user-dl-warning)';
       break;
     case 'rejected':
-      badgeClass += " dl-status-rejected";
+      badgeClass += " user-dl-status-rejected";
       Icon = XCircle;
+      iconColor = 'var(--user-dl-danger)';
       break;
     default:
-      badgeClass += " dl-status-default";
+      badgeClass += " user-dl-status-default";
+      iconColor = 'var(--user-dl-dark)';
   }
-  
+
   return (
     <span className={badgeClass}>
-      <Icon size={16} />
-      <span>{status}</span>
+      <Icon size={16} style={{ color: iconColor }} />
+      {!isMobile && <span>{status}</span>} {/* Hide text on mobile */}
     </span>
   );
 };
@@ -57,11 +72,22 @@ const StatusBadge = ({ status }) => {
 const DogLicenseDownload = () => {
   const [licenses, setLicenses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [expandedId, setExpandedId] = useState(null);
+  const [expandedLicenseId, setExpandedLicenseId] = useState(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [filterStatus, setFilterStatus] = useState('All'); // State for filter
 
   const backend = "https://dog-registration.onrender.com";
-
   const token = localStorage.getItem('token');
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     fetch(`${backend}/api/license/user`, {
@@ -80,12 +106,21 @@ const DogLicenseDownload = () => {
       });
   }, []);
 
-  const toggleCard = (id) => {
-    setExpandedId(expandedId === id ? null : id);
+  const toggleExpanded = (id) => {
+    if (expandedLicenseId === id) {
+      setExpandedLicenseId(null);
+    } else {
+      setExpandedLicenseId(id);
+    }
   };
 
   const downloadPDF = (id, dogName = 'dog') => {
     const element = document.getElementById(`pdf-${id}`);
+     if (!element) {
+        console.error("PDF element not found for ID:", id);
+        return;
+    }
+
     const opt = {
       margin: 0.5,
       filename: `Dog_License_${dogName}.pdf`,
@@ -96,300 +131,349 @@ const DogLicenseDownload = () => {
     html2pdf().from(element).set(opt).save();
   };
 
-  return (
-    <main className="dl-container">
-      <header className="dl-header">
-        <h1 className="dl-title">My Dog License Applications</h1>
-        <div className="dl-filters">
-          <span className="dl-filter-label">Filter by:</span>
-          <button className="dl-filter-btn dl-filter-all dl-filter-active">All</button>
-          <button className="dl-filter-btn dl-filter-approved">Approved</button>
-          <button className="dl-filter-btn dl-filter-pending">Pending</button>
-        </div>
-      </header>
+  const selectedLicense = licenses.find(lic => lic._id === expandedLicenseId);
 
-      {loading ? (
-        <div className="dl-loading">
-          <div className="dl-spinner"></div>
-          <p className="dl-status">Loading license data…</p>
-        </div>
-      ) : licenses.length > 0 ? (
-        <div className="dl-cards-container">
-          {licenses.map(license => {
-            const expanded = expandedId === license._id;
-            const d = license.dog || {};
-            const a = license.address || {};
-            return (
-              <section
-                className={`dl-card ${expanded ? 'expanded' : ''}`}
-                key={license._id}
-                onClick={() => toggleCard(license._id)}
-              >
-                <div className="dl-card-header">
-                  <div className="dl-card-icon">
-                    <FileText size={24} />
-                  </div>
-                  <div className="dl-summary">
-                    <h2>{d.name || 'Unnamed Dog'}</h2>
-                    <div className="dl-license-meta">
-                      <StatusBadge status={license.status} />
-                      <span className="dl-date">
-                        <Calendar size={14} />
-                        Applied: {formatDate(license.createdAt)}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="dl-expand-icon">
-                    {expanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                  </div>
-                </div>
+  // Filter licenses based on the selected filterStatus
+  const filteredLicenses = licenses.filter(license => {
+    if (filterStatus === 'All') {
+      return true;
+    }
+    return license.status.toLowerCase() === filterStatus.toLowerCase();
+  });
 
-                <div className="dl-details">
-                  <div className="dl-quick-info">
-                    <div className="dl-quick-info-item">
-                      <span className="dl-quick-label">Breed:</span>
-                      <span className="dl-quick-value">{d.breed || 'Not specified'}</span>
+
+   const renderCertificateView = (lic) => {
+      const currentDate = new Date().toLocaleDateString('en-GB');
+
+    const expiryDate = lic.dog?.dateOfVaccination ?
+      new Date(new Date(lic.dog.dateOfVaccination).setFullYear(
+        new Date(lic.dog.dateOfVaccination).getFullYear() + 1
+      )).toLocaleDateString('en-GB') : "N/A";
+
+      // Reverted to original class names for PDF layout and removed Lucide icons from PDF content
+      return (
+           <div className="user-dl-certificate-view"> {/* Keep this wrapper for download button and notices */}
+              <div id={`pdf-${lic._id}`} className="pdf-layout"> {/* Original PDF Layout Class */}
+                <div className="pdf-border"> {/* Original PDF Border Class */}
+                  <div className="pdf-header"> {/* Original PDF Header Class */}
+                    <div className="pdf-header-left"> {/* Original PDF Header Left Class */}
+                      <div className="pdf-logo-icon"> {/* Original PDF Logo Icon Class */}
+                         <img src="./logo.png"></img>
+                      </div>
+                      <div className="pdf-org-name">
+                        <h3>Nagar Nigam Gorakhpur</h3>
+                        <h4>नगर निगम गोरखपुर</h4>
+                      </div>
                     </div>
-                    <div className="dl-quick-info-item">
-                      <span className="dl-quick-label">Gender:</span>
-                      <span className="dl-quick-value">{d.sex || 'Not specified'}</span>
-                    </div>
-                    <div className="dl-quick-info-item">
-                      <span className="dl-quick-label">Vaccinated:</span>
-                      <span className="dl-quick-value dl-quick-icon">
-                        {d.vaccinationProofUrl ? 
-                          <><CheckCircle size={16} className="dl-icon-check" /> Yes</> : 
-                          <><XCircle size={16} className="dl-icon-cross" /> No</>
-                        }
-                      </span>
-                    </div>
-                    <div className="dl-quick-info-item">
-                      <span className="dl-quick-label">Microchipped:</span>
-                      <span className="dl-quick-value dl-quick-icon">
-                        {d.microchipped ? 
-                          <><CheckCircle size={16} className="dl-icon-check" /> Yes</> : 
-                          <><XCircle size={16} className="dl-icon-cross" /> No</>
-                        }
-                      </span>
+                    <div className="pdf-header-right"> {/* Original PDF Header Right Class */}
+                      <div className="pdf-date"> {/* Original PDF Date Class */}
+                        <span> Date: {currentDate}</span>
+                      </div>
                     </div>
                   </div>
 
-                  {/* PDF Layout for Download - Kept untouched as requested */}
-                  <div id={`pdf-${license._id}`} className="pdf-layout">
-                    <div className="pdf-border">
-                      <div className="pdf-header">
-                        <div className="pdf-header-left">
-                          <div className="pdf-logo-icon">
-                            <img src="./logo.png" alt="logo" />
+                  <div className="pdf-certificate-title"> {/* Original PDF Certificate Title Class */}
+                    <h2>OFFICIAL DOG LICENSE CERTIFICATE</h2> {/* Changed to h2 to match provided CSS block order */}
+                    <h3>कुत्तों के पंजीकरण के लिए अधिकृत पत्र</h3> {/* Changed to h3 to match provided CSS block order */}
+                  </div>
+
+                  <div className="pdf-body"> {/* Original PDF Body Class - added for structure */}
+                    <div className="pdf-photo-section"> {/* Original PDF Photo Section Class */}
+                      <div className="pdf-info-block"> {/* Original PDF Info Block Class */}
+                        <div className="pdf-info-row"> {/* Original PDF Info Row Class */}
+                          <div className="pdf-info-label">नाम / Name</div> {/* Original PDF Info Label Class */}
+                          <div className="pdf-info-value">: {lic.fullName || "N/A"}</div> {/* Original PDF Info Value Class */}
+                        </div>
+                        <div className="pdf-info-row"> {/* Original PDF Info Row Class */}
+                          <div className="pdf-info-label">पंजीकरण संख्या / Registration No.</div> {/* Original PDF Info Label Class */}
+                          <div className="pdf-info-value">: {lic._id?.substring(0, 20) || "N/A"}</div> {/* Original PDF Info Value Class - Use substring */}
+                        </div>
+                        <div className="pdf-info-row"> {/* Original PDF Info Row Class */}
+                          <div className="pdf-info-label">जारी दिनांक / Issue Date</div> {/* Original PDF Info Label Class */}
+                          <div className="pdf-info-value">: {formatDate(lic.createdAt)}</div> {/* Original PDF Info Value Class */}
+                        </div>
+                        <div className="pdf-info-row"> {/* Original PDF Info Row Class */}
+                          <div className="pdf-info-label">समाप्ति तिथि / Expiry Date</div> {/* Original PDF Info Label Class */}
+                           {/* Assuming expiry is 1 year from vaccination or creation if no vaccination date */}
+                          <div className="pdf-info-value">: {expiryDate}</div> {/* Original PDF Info Value Class */}
+                        </div>
+                      </div>
+                      <div className="pdf-photo-box"> {/* Original PDF Photo Box Class */}
+                        {lic.dog?.avatarUrl ? (
+                          <img src={lic.dog.avatarUrl} alt="Dog" className="pdf-photo" />
+                        ) : (
+                          <div className="pdf-photo-placeholder">प पशु की तस्वीर / Dog's Photo</div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="pdf-details-section"> {/* Original PDF Details Section Class */}
+                      <div className="pdf-section-title">पशु का विवरण / Animal Details</div> {/* Original PDF Section Title Class */}
+                      <div className="pdf-details-columns"> {/* Original PDF Details Columns Class */}
+                        <div className="pdf-details-column-left"> {/* Original PDF Details Column Left Class */}
+                          <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
+                            <div className="pdf-details-label">पशु का नाम / Dog Name</div> {/* Original PDF Details Label Class */}
+                            <div className="pdf-details-value">: {lic.dog?.name || "N/A"}</div> {/* Original PDF Details Value Class */}
                           </div>
-                          <div className="pdf-org-name">
-                            <h3>Nagar Nigam Gorakhpur</h3>
-                            <h4>नगर निगम गोरखपुर</h4>
+                          <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
+                            <div className="pdf-details-label">नस्ल / Breed</div> {/* Original PDF Details Label Class */}
+                            <div className="pdf-details-value">: {lic.dog?.breed || "N/A"}</div> {/* Original PDF Details Value Class */}
+                          </div>
+                          <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
+                            <div className="pdf-details-label">वर्ग / Category</div> {/* Original PDF Details Label Class */}
+                            <div className="pdf-details-value">: {lic.dog?.category || "N/A"}</div> {/* Original PDF Details Value Class */}
+                          </div>
+                          <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
+                            <div className="pdf-details-label">रंग / Color</div> {/* Original PDF Details Label Class */}
+                            <div className="pdf-details-value">: {lic.dog?.color || "N/A"}</div> {/* Original PDF Details Value Class */}
+                          </div>
+                          <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
+                            <div className="pdf-details-label">आयु / Age</div> {/* Original PDF Details Label Class */}
+                            <div className="pdf-details-value">: {lic.dog?.age || "N/A"}</div> {/* Original PDF Details Value Class */}
+                          </div>
+                          <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
+                            <div className="pdf-details-label">टीकाकरण की तारीख / Vaccination Date</div> {/* Original PDF Details Label Class */}
+                            <div className="pdf-details-value">: {formatDate(lic.dog?.dateOfVaccination)}</div> {/* Original PDF Details Value Class */}
                           </div>
                         </div>
-                        <div className="pdf-header-right">
-                          <div className="pdf-date">
-                            <span> Date: {getCurrentDate()}</span>
+                        <div className="pdf-details-column-right"> {/* Original PDF Details Column Right Class */}
+                          <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
+                            <div className="pdf-details-label">लिंग / Gender</div> {/* Original PDF Details Label Class */}
+                            <div className="pdf-details-value">: {lic.dog?.sex || "N/A"}</div> {/* Original PDF Details Value Class */}
+                          </div>
+                          <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
+                            <div className="pdf-details-label">टीकाकरण / Vaccinated</div> {/* Original PDF Details Label Class */}
+                            <div className="pdf-details-value">
+                              : {lic.dog?.dateOfVaccination ? ' हां / Yes' : ' नहीं / No'}
+                            </div> {/* Original PDF Details Value Class */}
+                          </div>
+                          {lic.dog?.vaccinationProofUrl && (
+                            <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
+                              <div className="pdf-details-label">टीकाकरण प्रमाणपत्र / Vaccination Certificate</div> {/* Original PDF Details Label Class */}
+                              <div className="pdf-details-value">
+                                <a
+                                  href={lic.dog.vaccinationProofUrl}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="pdf-vaccine-img" // Using original class name, might need review
+                                >View </a> {/* Use href for link */}
+                              </div> {/* Original PDF Details Value Class */}
+                            </div>
+                          )}
+                          <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
+                            <div className="pdf-details-label">माइक्रोचिप / Microchipped</div> {/* Original PDF Details Label Class */}
+                            <div className="pdf-details-value">
+                              : No {/* Assuming static */}
+                            </div> {/* Original PDF Details Value Class */}
+                          </div>
+                          <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
+                            <div className="pdf-details-label">अगला टीकाकरण / Next Vaccination</div> {/* Original PDF Details Label Class */}
+                            <div className="pdf-details-value">: {formatDate(lic.dog?.dueVaccination)}</div> {/* Original PDF Details Value Class */}
                           </div>
                         </div>
                       </div>
+                    </div>
 
-                      <div className="pdf-certificate-title">
-                        <h3>OFFICIAL DOG LICENSE CERTIFICATE</h3>
-                        <h2>कुत्तों के पंजीकरण के लिए अधिकृत पत्र</h2>
+                    <div className="pdf-details-section"> {/* Original PDF Details Section Class */}
+                      <div className="pdf-section-title">मालिक का विवरण / Owner Details</div> {/* Original PDF Section Title Class */}
+                      <div className="pdf-details-table"> {/* Original PDF Details Table Class */}
+                        <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
+                          <div className="pdf-details-label">पता / Address</div> {/* Original PDF Details Label Class */}
+                          <div className="pdf-details-value">: {`${lic.address?.streetName || ""}, ${lic.address?.city || ""}, ${lic.address?.state || ""} - ${lic.address?.pinCode || "N/A"}`}</div> {/* Original PDF Details Value Class */}
+                        </div>
+                        <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
+                          <div className="pdf-details-label">फोन नंबर / Phone Number</div> {/* Original PDF Details Label Class */}
+                          <div className="pdf-details-value">: {lic.phoneNumber || "N/A"}</div> {/* Original PDF Details Value Class */}
+                        </div>
+                        <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
+                          <div className="pdf-details-label">कुत्तों की संख्या / No. of Dogs</div> {/* Original PDF Details Label Class */}
+                          <div className="pdf-details-value">: {lic.numberOfDogs || "N/A"}</div> {/* Original PDF Details Value Class */}
+                        </div>
+                        <div className="pdf-details-row"> {/* Original PDF Details Row Class */}
+                          <div className="pdf-details-label">घर का क्षेत्रफल / House Area</div> {/* Original PDF Details Label Class */}
+                          <div className="pdf-details-value">: {lic.totalHouseArea ? `${lic.totalHouseArea} sq meter` : "N/A"}</div> {/* Original PDF Details Value Class */}
+                        </div>
                       </div>
+                    </div>
 
-                      <div className="pdf-body">
-                        <div className="pdf-photo-section">
-                          <div className="pdf-info-block">
-                            <div className="pdf-info-row">
-                              <div className="pdf-info-label">नाम / Name</div>
-                              <div className="pdf-info-value">: {license.fullName}</div>
-                            </div>
-                            <div className="pdf-info-row">
-                              <div className="pdf-info-label">पंजीकरण संख्या / Registration No.</div>
-                              <div className="pdf-info-value">: {license._id}</div>
-                            </div>
-                            <div className="pdf-info-row">
-                              <div className="pdf-info-label">जारी दिनांक / Issue Date</div>
-                              <div className="pdf-info-value">: {formatDate(license.createdAt)}</div>
-                            </div>
-                            <div className="pdf-info-row">
-                              <div className="pdf-info-label">समाप्ति तिथि / Expiry Date</div>
-                              <div className="pdf-info-value">: {formatDate(license.expiryDate)}</div>
-                            </div>
-                          </div>
-                          <div className="pdf-photo-box">
-                            {d.avatarUrl ? (
-                              <img src={d.avatarUrl} alt="Dog" className="pdf-photo" />
-                            ) : (
-                              <div className="pdf-photo-placeholder">पशु की तस्वीर / Dog's Photo</div>
-                            )}
-                          </div>
-                        </div>
+                    <div className="pdf-declaration"> {/* Original PDF Declaration Class */}
+                      <p>मैं घोषणा करता/करती हूँ कि उपरोक्त दी गई जानकारी मेरी जानकारी के अनुसार सत्य है।  <b>/</b> I declare that the information provided above is true to the best of my knowledge.</p>
+                    </div>
 
-                        <div className="pdf-details-section">
-                          <div className="pdf-section-title">पशु का विवरण / Animal Details</div>
-                          <div className="pdf-details-columns">
-                            <div className="pdf-details-column-left">
-                              <div className="pdf-details-row">
-                                <div className="pdf-details-label">पशु का नाम / Dog Name</div>
-                                <div className="pdf-details-value">: {d.name}</div>
-                              </div>
-                              <div className="pdf-details-row">
-                                <div className="pdf-details-label">नस्ल / Breed</div>
-                                <div className="pdf-details-value">: {d.breed}</div>
-                              </div>
-                              <div className="pdf-details-row">
-                                <div className="pdf-details-label">वर्ग / Category</div>
-                                <div className="pdf-details-value">: {d.category}</div>
-                              </div>
-                              <div className="pdf-details-row">
-                                <div className="pdf-details-label">रंग / Color</div>
-                                <div className="pdf-details-value">: {d.color}</div>
-                              </div>
-                              <div className="pdf-details-row">
-                                <div className="pdf-details-label">आयु / Age</div>
-                                <div className="pdf-details-value">: {d.age}</div>
-                              </div>
-                              <div className="pdf-details-row">
-                                <div className="pdf-details-label">टीकाकरण की तारीख / Vaccination Date</div>
-                                <div className="pdf-details-value">: {formatDate(d.dateOfVaccination)}</div>
-                              </div>
-                            </div>
-                            <div className="pdf-details-column-right">
-                              <div className="pdf-details-row">
-                                <div className="pdf-details-label">लिंग / Gender</div>
-                                <div className="pdf-details-value">: {d.sex}</div>
-                              </div>
-                              <div className="pdf-details-row">
-                                <div className="pdf-details-label">टीकाकरण / Vaccinated</div>
-                                <div className="pdf-details-value">
-                                  : <span className={d.vaccinationProofUrl ? "status-icon check" : "status-icon cross"}></span>
-                                  {d.vaccinationProofUrl ? ' हां / Yes' : ' नहीं / No'}
-                                </div>
-                              </div>
-                              {d.vaccinationProofUrl && (
-                                <div className="pdf-details-row">
-                                  <div className="pdf-details-label">टीकाकरण प्रमाणपत्र / Vaccination Certificate</div>
-                                  <div className="pdf-details-value">
-                                    <a
-                                      src={d.vaccinationProofUrl}
-                                      alt="Vaccination Certificate"
-                                      className="pdf-vaccine-img" >View </a>
-                                  </div>
-                                </div>
-                              )}
-                              <div className="pdf-details-row">
-                                <div className="pdf-details-label">माइक्रोचिप / Microchipped</div>
-                                <div className="pdf-details-value">
-                                  : <span className={d.microchipped ? "status-icon check" : "status-icon cross"}></span>
-                                  {d.microchipped ? ' हां / Yes' : ' नहीं / No'}
-                                </div>
-                              </div>
-                              <div className="pdf-details-row">
-                                <div className="pdf-details-label">अगला टीकाकरण / Next Vaccination</div>
-                                <div className="pdf-details-value">: {formatDate(d.dueVaccination)}</div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                    <div className="pdf-signatures"> {/* Original PDF Signatures Class */}
+                      <div className="pdf-signature-block"> {/* Original PDF Signature Block Class */}
+                        <div className="pdf-signature-line"></div> {/* Original PDF Signature Line Class */}
+                        <p>आवेदक के हस्ताक्षर / Applicant's Signature</p>
+                      </div>
+                      <div className="pdf-signature-block"> {/* Original PDF Signature Block Class */}
+                        <div className="pdf-signature-line"></div> {/* Original PDF Signature Line Class */}
+                        <p>जारीकर्ता अधिकारी / Issuing Authority</p>
+                      </div>
+                    </div>
 
-                        <div className="pdf-details-section">
-                          <div className="pdf-section-title">मालिक का विवरण / Owner Details</div>
-                          <div className="pdf-details-table">
-                            <div className="pdf-details-row">
-                              <div className="pdf-details-label">पता / Address</div>
-                              <div className="pdf-details-value">: {`${a.streetName}, ${a.city}, ${a.state} - ${a.pinCode}`}</div>
-                            </div>
-                            <div className="pdf-details-row">
-                              <div className="pdf-details-label">फोन नंबर / Phone Number</div>
-                              <div className="pdf-details-value">: {license.phoneNumber}</div>
-                            </div>
-                            <div className="pdf-details-row">
-                              <div className="pdf-details-label">कुत्तों की संख्या / No. of Dogs</div>
-                              <div className="pdf-details-value">: {license.numberOfDogs}</div>
-                            </div>
-                            <div className="pdf-details-row">
-                              <div className="pdf-details-label">घर का क्षेत्रफल / House Area</div>
-                              <div className="pdf-details-value">: {license.totalHouseArea}</div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="pdf-declaration">
-                          <p>मैं घोषणा करता/करती हूँ कि उपरोक्त दी गई जानकारी मेरी जानकारी के अनुसार सत्य है।  <b>/</b> I declare that the information provided above is true to the best of my knowledge.</p>
-                        </div>
-
-                        <div className="pdf-signatures">
-                          <div className="pdf-signature-block">
-                            <div className="pdf-signature-line"></div>
-                            <p>आवेदक के हस्ताक्षर / Applicant's Signature</p>
-                          </div>
-                          <div className="pdf-signature-block">
-                            <div className="pdf-signature-line"></div>
-                            <p>जारीकर्ता अधिकारी / Issuing Authority</p>
-                          </div>
-                        </div>
-
-                        <div className="pdf-footer">
-                          <div className="pdf-qr-code">
-                            <div className="pdf-qr-placeholder"></div>
+                    <div className="pdf-footer"> {/* Original PDF Footer Class */}
+                          <div className="pdf-qr-code"> {/* Original PDF QR Code Class */}
+                             <div className="pdf-qr-placeholder"></div> {/* Original PDF QR Placeholder Class */}
                             <p>QR Code</p>
                           </div>
-                          <div className="pdf-stamp">
-                            <div className="pdf-stamp-placeholder">
-                              <p>OFFICIAL STAMP</p>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="pdf-contact-footer">
-                          <span>Phone: {license.phoneNumber}</span> |
-                          <span>Email: {license.email || 'info@awbi.org'}</span> |
-                          <span>Website: www.awbi.org</span>
-                        </div>
-                      </div>
+                           <div className="pdf-stamp"> {/* Original PDF Stamp Class */}
+                                <div className="pdf-stamp-placeholder"> {/* Original PDF Stamp Placeholder Class */}
+                                    <p>OFFICIAL STAMP</p>
+                                </div>
+                           </div>
                     </div>
-                  </div>
-
-                  {license.status === 'approved' && (
+                    <div className="pdf-contact-footer"> {/* Original PDF Contact Footer Class */}
+                       {lic.phoneNumber || "N/A"} &nbsp;|&nbsp;
+                       info@awbi.org &nbsp;|&nbsp; {/* Updated dummy email */}
+                       www.awbi.org {/* Updated dummy website */}
+                    </div>
+                  </div> {/* End of pdf-body */}
+                </div> {/* End of pdf-border */}
+              </div> {/* End of pdf-layout */}
+               {/* Keep these outside the pdf-layout div so they don't affect the PDF content */}
+               {lic.status === 'approved' && (
                     <button
-                      className="dl-button"
+                      className="user-dl-button user-dl-certificate-download-btn"
                       onClick={(e) => {
-                        e.stopPropagation();
-                        downloadPDF(license._id, d.name);
+                        e.stopPropagation(); // Prevent row click from closing details
+                        downloadPDF(lic._id, lic.dog?.name);
                       }}
                     >
                       <Download size={18} />
                       <span>Download PDF</span>
                     </button>
                   )}
-                  
-                  {license.status === 'pending' && (
-                    <div className="dl-pending-notice">
+
+                  {lic.status === 'pending' && (
+                    <div className="user-dl-pending-notice">
                       <AlertCircle size={18} />
                       <p>Your application is under review. You will be able to download the license once approved.</p>
                     </div>
                   )}
-                  
-                  {license.status === 'rejected' && (
-                    <div className="dl-rejected-notice">
+
+                  {lic.status === 'rejected' && (
+                    <div className="user-dl-rejected-notice">
                       <XCircle size={18} />
                       <p>Your application has been rejected. Please contact support for more information.</p>
                     </div>
                   )}
-                </div>
-              </section>
-            );
-          })}
+           </div>
+      );
+   };
+
+
+  return (
+    <main className="user-dl-container">
+      <header className="user-dl-header">
+        {expandedLicenseId === null ? (
+           <> {/* Use Fragment to group multiple elements */}
+             <h1 className="user-dl-title">My Dog License Applications</h1>
+              {/* Conditionally render filters when certificate is NOT open */}
+             <div className="user-dl-filters">
+               <span className="user-dl-filter-label">Filter by:</span>
+               {/* Added onClick handlers and conditional class for active filter */}
+               <button
+                 className={`user-dl-filter-btn user-dl-filter-all ${filterStatus === 'All' ? 'user-dl-filter-active' : ''}`}
+                 onClick={() => setFilterStatus('All')}
+               >
+                 All
+               </button>
+               <button
+                 className={`user-dl-filter-btn user-dl-filter-approved ${filterStatus === 'Approved' ? 'user-dl-filter-active' : ''}`}
+                 onClick={() => setFilterStatus('Approved')}
+               >
+                 Approved
+               </button>
+               <button
+                 className={`user-dl-filter-btn user-dl-filter-pending ${filterStatus === 'Pending' ? 'user-dl-filter-active' : ''}`}
+                 onClick={() => setFilterStatus('Pending')}
+               >
+                 Pending
+               </button>
+                {/* Added Rejected filter button */}
+                <button
+                 className={`user-dl-filter-btn user-dl-filter-rejected ${filterStatus === 'Rejected' ? 'user-dl-filter-active' : ''}`}
+                 onClick={() => setFilterStatus('Rejected')}
+               >
+                 Rejected
+               </button>
+             </div>
+           </>
+        ) : (
+            <div className="user-dl-back-to-list-header">
+                 <button
+                     className="user-dl-back-to-list-btn"
+                     onClick={() => toggleExpanded(expandedLicenseId)}
+                 >
+                    <ChevronLeft size={24} />
+                    Back to List
+                 </button>
+                 {/* Optional title for details view */}
+            </div>
+        )}
+      </header>
+
+      {loading ? (
+        <div className="user-dl-loading">
+          <div className="user-dl-spinner"></div>
+          <p className="user-dl-status">Loading license data…</p>
         </div>
+      ) : filteredLicenses.length > 0 ? ( // Use filteredLicenses here
+         expandedLicenseId === null ? (
+            <div className="user-dl-table-container">
+               <table className="user-dl-license-table">
+                  <thead>
+                     <tr>
+                        <th>Owner</th>
+                        <th>Dog Name</th>
+                        <th>Status</th>
+                        {!isMobile && <th>Applied Date</th>}
+                        <th>View</th> {/* Keep View header for consistency across views */}
+                     </tr>
+                  </thead>
+                  <tbody>
+                     {filteredLicenses.map(license => ( // Use filteredLicenses here
+                        <tr key={license._id} onClick={() => toggleExpanded(license._id)}>
+                           <td><div className="user-dl-cell user-dl-owner-cell">{!isMobile && <User size={16} className="user-dl-cell-icon" />} {license.fullName}</div></td>
+                           <td><div className="user-dl-cell user-dl-dog-cell">{!isMobile && <Dog size={16} className="user-dl-cell-icon" />} {license.dog?.name || "N/A"}</div></td>
+                           <td><div className="user-dl-cell user-dl-status-cell"><UserStatusBadge status={license.status} isMobile={isMobile} /></div></td>
+                           {!isMobile && <td><div className="user-dl-cell user-dl-date-cell"><Calendar size={16} className="user-dl-cell-icon" /> {formatDate(license.createdAt)}</div></td>}
+                           <td>
+                                <button
+                                   className="user-dl-view-btn"
+                                   onClick={(e) => {
+                                        e.stopPropagation(); // Prevent row click
+                                       toggleExpanded(license._id);
+                                   }}
+                                 >
+                                     <Eye size={16} className="user-dl-btn-icon" /> {!isMobile && 'View'}
+                                </button>
+                           </td>
+                        </tr>
+                     ))}
+                  </tbody>
+               </table>
+            </div>
+         ) : (
+             <div className="user-dl-details-view">
+                 {renderCertificateView(selectedLicense)} {/* Directly render certificate view */}
+             </div>
+         )
       ) : (
-        <div className="dl-empty-state">
-          <div className="dl-empty-icon">
+        <div className="user-dl-empty-state">
+          <div className="user-dl-empty-icon">
             <FileText size={48} />
           </div>
-          <p className="dl-no-data">You have not applied for any licenses yet.</p>
-          <button className="dl-new-application-btn">Apply for a License</button>
+          {/* Updated empty state message based on filter */}
+          <p className="user-dl-no-data">
+             {filterStatus === 'All'
+                ? "You have not applied for any licenses yet."
+                : `No "${filterStatus}" licenses found.`
+             }
+          </p>
+           {filterStatus === 'All' && (
+              <button className="user-dl-new-application-btn" onClick={() => alert('Navigate to application form')}>Apply for a License</button>
+           )}
         </div>
       )}
     </main>
