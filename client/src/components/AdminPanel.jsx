@@ -1,15 +1,56 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react"; // Removed useRef
 import axios from "axios";
-import "./styles/AdminPanel.css";
+import "./styles/AdminPanel.css"; // Ensure the CSS file is correctly linked
+import {
+  Dog,
+  User,
+  Calendar,
+  Phone,
+  MapPin,
+  Home,
+  Check,
+  X,
+  Eye,
+  EyeOff,
+  FileText,
+  Award,
+  Syringe, // Kept for vaccination
+  Stamp, // Kept for official stamp
+  Globe, // Kept for website
+  ChevronLeft, // Added for back button
+} from "lucide-react";
 
 const AdminPanel = () => {
   const [licenses, setLicenses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [expandedRows, setExpandedRows] = useState([]);
+  // State to hold the ID of the currently expanded row (for single expansion)
+  const [expandedRowId, setExpandedRowId] = useState(null);
+  // State to track if the certificate view is active for the expanded row
+  const [certificateView, setCertificateView] = useState({});
 
+  // State for mobile detection
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  // Removed: Ref for the admin panel element (not needed without resizing)
+  // const adminPanelRef = useRef(null);
+
+  // Removed: Handlers for resizing (not needed without resizing)
+  // const startResizing = (e) => { ... };
+
+  // Effect to update isMobile state on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      const mobileNow = window.innerWidth <= 768;
+      setIsMobile(mobileNow);
+      // No layout adjustments needed here anymore, CSS handles desktop/mobile grid
+    };
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []); // No dependency on expandedRowId needed here anymore
 
   const backend = "https://dog-registration.onrender.com";
-
   const token = localStorage.getItem("token");
 
   const fetchLicenses = async () => {
@@ -32,110 +73,519 @@ const AdminPanel = () => {
       });
       alert(`License ${action}d`);
       fetchLicenses(); // refresh
+       // If the updated license is currently expanded, trigger a re-render of details
+       if (expandedRowId === id) {
+           // A simple way to trigger re-render is to just update the licenses state,
+           // which fetchLicenses() already does.
+       }
     } catch (err) {
       alert("Failed to update license status");
     }
   };
 
+  // Modified toggleExpanded for single row expansion and mobile
   const toggleExpanded = (id) => {
-    setExpandedRows((prev) =>
-      prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
-    );
+      if (expandedRowId === id) {
+          // If clicking the already expanded row, collapse it
+          setExpandedRowId(null);
+          setCertificateView({});
+      } else {
+          // If clicking a different row, expand it
+          setExpandedRowId(id);
+          setCertificateView({ [id]: false });
+      }
+  };
+
+
+  const toggleCertificateView = (id) => {
+    setCertificateView((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-GB");
   };
 
   useEffect(() => {
     fetchLicenses();
   }, []);
 
-  return (
-    <div className="admin-panel">
-      <h2>Dog License Applications</h2>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <table className="license-table">
-          <thead>
-            <tr>
-              <th>Owner</th>
-              <th>Dog Name</th>
-              <th>Status</th>
-              <th>Vaccination Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {licenses.map((lic) => (
-              <React.Fragment key={lic._id}>
-                <tr>
-                  <td>{lic.fullName}</td>
-                  <td>{lic.dog?.name || "N/A"}</td>
-                  <td>{lic.status}</td>
-                  <td>{lic.dog?.dateOfVaccination?.slice(0, 10)}</td>
-                  <td>
-                    <button onClick={() => toggleExpanded(lic._id)}>
-                      {expandedRows.includes(lic._id) ? "Hide" : "View"} Details
-                    </button>
-                    {lic.status === "pending" && (
-                      <>
-                        <button onClick={() => updateStatus(lic._id, "approve")}>Approve</button>
-                        <button onClick={() => updateStatus(lic._id, "reject")}>Reject</button>
-                      </>
+  const selectedLicense = licenses.find(lic => lic._id === expandedRowId);
+  // Two column layout only on non-mobile when a row is expanded
+  const isTwoColumnLayout = expandedRowId !== null && !isMobile;
+
+
+  const renderStandardView = (lic) => {
+    return (
+      <div className="license-details standard-form-view">
+         {/* Mobile Actions Bar (Visible on mobile, when status is pending) */}
+        {isMobile && lic.status === 'pending' && (
+             <div className="mobile-details-actions">
+                 <button className="btn-approve" onClick={() => updateStatus(lic._id, "approve")}>
+                   <Check size={16} className="btn-icon" /> Approve
+                 </button>
+                 <button className="btn-reject" onClick={() => updateStatus(lic._id, "reject")}>
+                   <X size={16} className="btn-icon" /> Reject
+                 </button>
+             </div>
+         )}
+
+         <div className="owner-photo-group">
+              <div className="certificate-section owner-details">
+                <div className="section-header">
+                  <User size={16} className="section-icon" />
+                  Owner Information
+                </div>
+                <div className="section-content">
+                  <div className="owner-grid certificate-grid">
+                    <div className="grid-item span-two">
+                      <strong>Name:</strong> {lic.fullName || "N/A"}
+                    </div>
+                     <div className="grid-item">
+                      <strong>Gender:</strong> {lic.gender || "N/A"}
+                    </div>
+                    <div className="grid-item">
+                      <strong>Phone Number:</strong> {lic.phoneNumber || "N/A"}
+                    </div>
+                    <div className="grid-item span-two">
+                      <strong>Address:</strong> {lic.address?.streetName}, {lic.address?.city}, {lic.address?.state} - {lic.address?.pinCode || "N/A"}
+                    </div>
+                     <div className="grid-item">
+                      <strong>Number of Dogs:</strong> {lic.numberOfDogs || "N/A"}
+                    </div>
+                    <div className="grid-item">
+                      <strong>House Area:</strong> {lic.totalHouseArea ? `${lic.totalHouseArea} sq meter` : "N/A"}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            <div className="certificate-section dog-photo-section">
+                <div className="section-header">
+                    <Dog size={16} className="section-icon" />
+                    Dog Photo
+                </div>
+                <div className="section-content">
+                    {lic.dog?.avatarUrl ? (
+                        <div className="avatar-preview">
+                            <img
+                                src={lic.dog.avatarUrl}
+                                alt="Dog Avatar"
+                                className="dog-avatar"
+                            />
+                        </div>
+                    ) : (
+                        <div className="no-data-placeholder">
+                            No Photo
+                        </div>
                     )}
-                  </td>
-                </tr>
-                {expandedRows.includes(lic._id) && (
-                  <tr className="details-row">
-                    <td colSpan="5">
-                      <div className="license-details">
-                        <h4>Owner Information</h4>
-                        <p><strong>Name:</strong> {lic.fullName}</p>
-                        <p><strong>Phone:</strong> {lic.phoneNumber}</p>
-                        <p><strong>Gender:</strong> {lic.gender}</p>
-                        <p><strong>Address:</strong> {lic.address?.streetName}, {lic.address?.city}, {lic.address?.state} - {lic.address?.pinCode}</p>
-                        <p><strong>House Area:</strong> {lic.totalHouseArea}</p>
-                        <p><strong>Number of Dogs:</strong> {lic.numberOfDogs}</p>
-
-                        <h4>Dog Information</h4>
-                        <p><strong>Name:</strong> {lic.dog?.name}</p>
-                        <p><strong>Category:</strong> {lic.dog?.category}</p>
-                        <p><strong>Breed:</strong> {lic.dog?.breed}</p>
-                        <p><strong>Color:</strong> {lic.dog?.color}</p>
-                        <p><strong>Age:</strong> {lic.dog?.age}</p>
-                        <p><strong>Sex:</strong> {lic.dog?.sex}</p>
-                        <p><strong>Date of Vaccination:</strong> {lic.dog?.dateOfVaccination?.slice(0, 10)}</p>
-                        <p><strong>Due Vaccination:</strong> {lic.dog?.dueVaccination?.slice(0, 10)}</p>
-
-                         {lic.dog?.avatarUrl && (
-  <div style={{ marginTop: "10px" }}>
-    <strong>Dog Avatar:</strong>
-    <div>
-
-      <img 
-        src={lic.dog.avatarUrl} 
-        alt="Dog Avatar" 
-        style={{ maxHeight: "120px", borderRadius: "8px", marginTop: "5px" }} 
-      />
-    </div>
-  </div>
-)}
+                </div>
+            </div>
+         </div>
 
 
-                        {lic.dog?.vaccinationProofUrl && (
-                          <p>
-                            <strong>Vaccination Certificate:</strong>{" "}
-                            <a href={lic.dog.vaccinationProofUrl} target="_blank" rel="noreferrer">
-                              View Certificate
-                            </a>
-                          </p>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
+         <div className="certificate-section animal-details">
+          <div className="section-header">
+            <Dog size={16} className="section-icon" />
+            Dog Information
+          </div>
+          <div className="section-content">
+            <div className="detail-grid certificate-grid">
+              <div className="grid-item">
+                <strong>Dog Name:</strong> {lic.dog?.name || "N/A"}
+              </div>
+              <div className="grid-item">
+                <strong>Breed:</strong> {lic.dog?.breed || "N/A"}
+              </div>
+              <div className="grid-item">
+                <strong>Category:</strong> {lic.dog?.category || "N/A"}
+              </div>
+              <div className="grid-item">
+                <strong>Color:</strong> {lic.dog?.color || "N/A"}
+              </div>
+              <div className="grid-item">
+                <strong>Age:</strong> {lic.dog?.age || "N/A"}
+              </div>
+               <div className="grid-item">
+                <strong>Sex:</strong> {lic.dog?.sex || "N/A"}
+              </div>
+               <div className="grid-item">
+                <strong>Vaccinated:</strong> {lic.dog?.dateOfVaccination ? "Yes" : "No"}
+              </div>
+              <div className="grid-item">
+                <strong>Microchipped:</strong> No
+              </div>
+              <div className="grid-item">
+                 <Syringe size={16} className="detail-icon" />
+                <strong>Vaccination Date:</strong> {formatDate(lic.dog?.dateOfVaccination)}
+              </div>
+               <div className="grid-item">
+                 <Calendar size={16} className="detail-icon" />
+                <strong>Next Vaccination Due:</strong> {formatDate(lic.dog?.dueVaccination)}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="certificate-section vaccination-proof-section">
+             <div className="section-header">
+               <FileText size={16} className="section-icon" />
+               Vaccination Certificate
+             </div>
+             <div className="section-content">
+                {lic.dog?.vaccinationProofUrl ? (
+                  <a
+                    href={lic.dog.vaccinationProofUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="vaccination-link"
+                  >
+                    <FileText size={16} className="link-icon" />
+                    View Certificate
+                  </a>
+              ) : (
+                   <div className="no-data-placeholder">
+                       No Certificate
+                   </div>
+               )}
+             </div>
+         </div>
+
+      </div>
+    );
+  };
+
+
+  const renderCertificateView = (lic) => {
+    const currentDate = new Date().toLocaleDateString('en-GB');
+
+    const expiryDate = lic.dog?.dateOfVaccination ?
+      new Date(new Date(lic.dog.dateOfVaccination).setFullYear(
+        new Date(lic.dog.dateOfVaccination).getFullYear() + 1
+      )).toLocaleDateString('en-GB') : "N/A";
+
+    return (
+      <div className="certificate-mode">
+         {/* Mobile Actions Bar (Visible on mobile, when status is pending) */}
+        {isMobile && lic.status === 'pending' && (
+             <div className="mobile-details-actions">
+                 <button className="btn-approve" onClick={() => updateStatus(lic._id, "approve")}>
+                   <Check size={16} className="btn-icon" /> Approve
+                 </button>
+                 <button className="btn-reject" onClick={() => updateStatus(lic._id, "reject")}>
+                   <X size={16} className="btn-icon" /> Reject
+                 </button>
+             </div>
+         )}
+        <div className="certificate-header">
+          <div className="logo-container">
+            <div className="municipal-logo">
+              <Award size={40} />
+            </div>
+            <div className="header-text">
+              <h3>Nagar Nigam Gorakhpur</h3>
+              <p>नगर निगम गोरखपुर</p>
+            </div>
+          </div>
+          <div className="date-container">
+            <Calendar size={16} className="date-icon" />
+            <p><strong>Date:</strong> {currentDate}</p>
+          </div>
+        </div>
+
+        <div className="certificate-title">
+          OFFICIAL DOG LICENSE CERTIFICATE
+          <div className="certificate-subtitle">
+            कुत्तों के पंजीकरण के लिए अधिकृत पत्र
+          </div>
+        </div>
+
+        <div className="certificate-main-info">
+          <div className="certificate-basic-info">
+            <div className="info-row">
+              <strong>नाम / Name:</strong> {lic.fullName || "N/A"}
+            </div>
+            <div className="info-row">
+              <strong>पंजीकरण संख्या / Registration No.:</strong> {lic._id?.substring(0, 20) || "N/A"}
+            </div>
+            <div className="info-row">
+              <strong>जारी दिनांक / Issue Date:</strong> {currentDate}
+            </div>
+            <div className="info-row">
+              <strong>समाप्ति तिथि / Expiry Date:</strong> {expiryDate}
+            </div>
+          </div>
+            <div className="certificate-photo">
+                {lic.dog?.avatarUrl ? (
+                  <img
+                    src={lic.dog.avatarUrl}
+                    alt="Dog Avatar"
+                    className="certificate-dog-photo"
+                  />
+                ) : (
+                  <div className="no-data-placeholder">
+                       No Photo
+                   </div>
                 )}
-              </React.Fragment>
-            ))}
-          </tbody>
-        </table>
+            </div>
+        </div>
+
+        <div className="certificate-section animal-details">
+          <div className="section-header">
+            <Dog size={16} className="section-icon" />
+            पशु का विवरण / Animal Details
+          </div>
+          <div className="section-content">
+            <div className="detail-grid certificate-grid">
+              <div className="grid-item">
+                <strong>पशु का नाम / Dog Name:</strong> {lic.dog?.name || "N/A"}
+              </div>
+              <div className="grid-item">
+                <strong>लिंग / Gender:</strong> {lic.dog?.sex || "N/A"}
+              </div>
+              <div className="grid-item">
+                <strong>नस्ल / Breed:</strong> {lic.dog?.breed || "N/A"}
+              </div>
+               <div className="grid-item">
+                <strong>टीकाकरण / Vaccinated:</strong> {lic.dog?.dateOfVaccination ? "Yes" : "No"}
+              </div>
+              <div className="grid-item">
+                <strong>वर्ग / Category:</strong> {lic.dog?.category || "N/A"}
+              </div>
+              <div className="grid-item">
+                <strong>टीकाकरण प्रमाणपत्र / Vaccination Certificate:</strong>
+                {lic.dog?.vaccinationProofUrl ? (
+                  <a href={lic.dog.vaccinationProofUrl} target="_blank" rel="noreferrer" className="certificate-link">View</a>
+                ) : "N/A"}
+              </div>
+              <div className="grid-item">
+                <strong>रंग / Color:</strong> {lic.dog?.color || "N/A"}
+              </div>
+              <div className="grid-item">
+                <strong>माइक्रोचिप्ड / Microchipped:</strong> No
+              </div>
+              <div className="grid-item">
+                <strong>आयु / Age:</strong> {lic.dog?.age || "N/A"}
+              </div>
+               <div className="grid-item">
+                <strong>अगला टीकाकरण / Next Vaccination:</strong> {formatDate(lic.dog?.dueVaccination)}
+              </div>
+              <div className="grid-item span-two">
+                <strong>टीकाकरण की तारीख / Vaccination Date:</strong> {formatDate(lic.dog?.dateOfVaccination)}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="certificate-section owner-details">
+          <div className="section-header">
+            <User size={16} className="section-icon" />
+            मालिक का विवरण / Owner Details
+          </div>
+          <div className="section-content">
+            <div className="owner-grid certificate-grid">
+              <div className="grid-item span-two">
+                <strong>पता / Address:</strong> {lic.address?.streetName}, {lic.address?.city}, {lic.address?.state} - {lic.address?.pinCode || "N/A"}
+              </div>
+              <div className="grid-item">
+                <strong>फोन नंबर / Phone Number:</strong> {lic.phoneNumber || "N/A"}
+              </div>
+              <div className="grid-item">
+                <strong>कुत्तों की संख्या / No. of Dogs:</strong> {lic.numberOfDogs || "N/A"}
+              </div>
+              <div className="grid-item span-two">
+                <strong>घर का क्षेत्रफल / House Area:</strong> {lic.totalHouseArea ? `${lic.totalHouseArea} sq meter` : "N/A"}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="declaration-box">
+          <p>
+            मैं घोषणा करता/करती हूँ कि उपरोक्त दी गई जानकारी मेरी जानकारी के अनुसार सत्य है। / I declare that the information provided above
+            is true to the best of my knowledge.
+          </p>
+        </div>
+
+        <div className="signature-section">
+          <div className="signature-box">
+            <div className="signature-line"></div>
+            <p>आवेदक के हस्ताक्षर / Applicant's Signature</p>
+          </div>
+          <div className="signature-box">
+            <div className="signature-line"></div>
+            <p>जारीकर्ता अधिकारी / Issuing Authority</p>
+          </div>
+        </div>
+
+        <div className="certificate-footer-elements">
+          <div className="qr-code">
+            <div className="qr-box">{/* QR Code would go here */}QR Code</div>
+          </div>
+          <div className="official-stamp">
+            <Stamp size={40} className="stamp-icon" />
+            <span>OFFICIAL STAMP</span>
+          </div>
+        </div>
+
+        <div className="certificate-footer">
+          <Phone size={14} className="footer-icon" /> {lic.phoneNumber || "N/A"} &nbsp;|&nbsp;
+          <MapPin size={14} className="footer-icon" /> info@awbi.org &nbsp;|&nbsp; {/* Updated dummy email */}
+          <Globe size={14} className="footer-icon" /> www.awbi.org {/* Updated dummy website */}
+        </div>
+      </div>
+    );
+  };
+
+
+   return (
+    <div
+       className={`admin-panel ${isTwoColumnLayout ? 'two-column-layout' : ''}`}
+       // Removed style prop for dynamic gridTemplateColumns
+    >
+      {/* License List Container */}
+      {/* Show list if not mobile OR if mobile and no license is selected */}
+      {(!isMobile || expandedRowId === null) && (
+          <div className="license-list-container">
+              {/* Desktop Title */}
+              {!isMobile && (
+                  <h2><Award className="title-icon" /> Dog License Applications</h2>
+              )}
+               {/* Mobile Title (when list is visible) */}
+               {isMobile && expandedRowId === null && (
+                    <h2 className="mobile-title"><Award className="title-icon" /> Dog License Applications</h2>
+               )}
+
+              {loading ? (
+                <div className="loading-container">
+                  <div className="loading-spinner"></div>
+                  <p>Loading licenses...</p>
+                </div>
+              ) : (
+                <table className="license-table">
+                  <thead>
+                    <tr>
+                      <th>Owner</th>
+                      <th>Dog Name</th>
+                      <th>Status</th>
+                      <th>Vaccination Date</th>
+                      <th>Actions</th> {/* Keep Actions header for desktop */}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {licenses.map((lic) => (
+                      <tr
+                         key={lic._id}
+                         className={expandedRowId === lic._id && !isMobile ? 'expanded-row' : ''} // Highlight expanded row only on desktop
+                         onClick={() => toggleExpanded(lic._id)} // Toggle on row click (works on mobile and desktop)
+                      >
+                        <td><div className="user-cell"><User size={16} className="cell-icon" /> {lic.fullName}</div></td>
+                        <td><div className="dog-cell"><Dog size={16} className="cell-icon" /> {lic.dog?.name || "N/A"}</div></td>
+                        <td>
+                          <div className={`status-badge ${lic.status}`}>
+                            {lic.status === "approved" && <Check size={14} />}
+                            {lic.status === "rejected" && <X size={14} />}
+                            {lic.status === "pending" && <Calendar size={14} />}
+                            {lic.status}
+                          </div>
+                        </td>
+                        <td><div className="date-cell"><Calendar size={16} className="cell-icon" /> {formatDate(lic.dog?.dateOfVaccination)}</div></td>
+                        <td className="actions-cell">
+                          {/* Container for buttons in the actions cell */}
+                          <div className="action-buttons-container">
+                              {/* Show View/Hide button ONLY on non-mobile */}
+                              {!isMobile && (
+                                   <button
+                                      className="btn-view"
+                                      onClick={(e) => {
+                                          e.stopPropagation(); // Prevent row click when clicking button
+                                          toggleExpanded(lic._id);
+                                      }}
+                                    >
+                                      {expandedRowId === lic._id ?
+                                        <><EyeOff size={16} className="btn-icon" /> Hide</> :
+                                        <><Eye size={16} className="btn-icon" /> View</>}
+                                    </button>
+                              )}
+
+                              {/* Show pending actions ONLY if status is pending */}
+                              {lic.status === "pending" && (
+                                 <div className={`pending-actions ${isTwoColumnLayout ? 'icon-only' : ''}`}>
+                                     <button
+                                        className="btn-approve"
+                                        onClick={(e) => {
+                                             e.stopPropagation(); // Prevent row click
+                                            updateStatus(lic._id, "approve");
+                                        }}
+                                      >
+                                        <Check size={16} className="btn-icon" />
+                                        {/* Show text only if NOT two-column layout (desktop normal view) */}
+                                        {!isTwoColumnLayout && "Approve"}
+                                      </button>
+                                      <button
+                                        className="btn-reject"
+                                        onClick={(e) => {
+                                             e.stopPropagation(); // Prevent row click
+                                            updateStatus(lic._id, "reject");
+                                        }}
+                                      >
+                                        <X size={16} className="btn-icon" />
+                                        {/* Show text only if NOT two-column layout (desktop normal view) */}
+                                        {!isTwoColumnLayout && "Reject"}
+                                      </button>
+                                 </div>
+                              )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+          </div>
+      )}
+
+       {/* Removed: Resizable Divider */}
+       {/* {isTwoColumnLayout && (
+        <div
+          className="resizable-divider"
+          onMouseDown={startResizing}
+        ></div>
+      )} */}
+
+
+      {/* Details View Container (rendered alongside the list on desktop, or centered on mobile) */}
+      {/* Show details ONLY if a license is selected */}
+      {selectedLicense && (
+          <div className="license-details-container">
+              {/* Mobile Back to List button (Mobile Only, when details are open) */}
+              {isMobile && (
+                   <div className="mobile-details-header"> {/* Container for mobile details header */}
+                        <button
+                            className="back-to-list-btn"
+                            onClick={() => toggleExpanded(selectedLicense._id)} // Toggle to close details
+                        >
+                           <ChevronLeft size={24} />
+                           Back to List
+                       </button>
+                       {/* Optionally add a title here like "License Details" */}
+                   </div>
+               )}
+
+               <button
+                className="view-toggle-btn"
+                onClick={() => toggleCertificateView(selectedLicense._id)}
+              >
+                {certificateView[selectedLicense._id] ?
+                  <><FileText size={18} className="btn-icon" /> Standard View</> :
+                  <><Award size={18} className="btn-icon" /> Certificate View</>}
+              </button>
+
+              {certificateView[selectedLicense._id]
+                ? renderCertificateView(selectedLicense)
+                : renderStandardView(selectedLicense)}
+          </div>
       )}
     </div>
   );
