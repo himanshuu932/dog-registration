@@ -9,7 +9,7 @@ const GeneralInformation = () => {
 
         <div className="info-card-wrapper">
           <div className="gov-portal-info-card">
-            <h2 className="gov-portal-info-card-title">General Information</h2>
+           
             <p className="moving-warning" aria-live="polite">
               The application gets completed after verification. After 1 month the
               application gets cancelled and the user will
