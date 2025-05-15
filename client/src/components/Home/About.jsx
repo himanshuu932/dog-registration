@@ -1,4 +1,3 @@
-// src/components/About.jsx
 import React from 'react';
 import './styles/About.css';
 
@@ -6,17 +5,12 @@ const About = () => {
   return (
     <section className="About-section">
       <div className="About-container">
-        {/* The About-grid will arrange its direct children (About-images-horizontal-row and About-content) vertically */}
         <div className="About-grid">
            <h2 className="About-section-heading">About Us</h2>
-          {/* Container for all Official Cards arranged horizontally (This will be the top row) */}
-          <div className="About-images-horizontal-row"> {/* <-- New Wrapper Div */}
+          <div className="About-images-horizontal-row">
 
-             {/* Main Official Card */}
-             {/* Removed specific grid-item classes */}
              <div className="About-official-card About-main-official">
                 <div className="About-official-image">
-                  {/* Assuming yogi.png is in your public folder or accessible path */}
                   <img src="./yogi.png" alt="Chief Minister" />
                 </div>
                 <div className="About-official-info">
@@ -25,10 +19,8 @@ const About = () => {
                 </div>
               </div>
 
-              {/* Second Official Card */}
               <div className="About-official-card">
                 <div className="About-official-image">
-                  {/* Using placeholder images */}
                   <img src="https://picsum.photos/seed/Inderajeet Singh/200" alt="Shri Inderajeet Singh" />
                 </div>
                 <div className="About-official-info">
@@ -37,10 +29,8 @@ const About = () => {
                 </div>
               </div>
 
-              {/* Third Official Card */}
               <div className="About-official-card">
                 <div className="About-official-image">
-                   {/* Using placeholder images */}
                   <img src="https://picsum.photos/seed/Sushma Kharkwal/200" alt="Shrmati Sushma Kharkwal" />
                 </div>
                 <div className="About-official-info">
@@ -48,9 +38,8 @@ const About = () => {
                   <p>Mayor GKP</p>
                 </div>
               </div>
-          </div> {/* end About-images-horizontal-row */}
+          </div>
 
-          {/* Text Content (This will be the bottom row) */}
           <div className="About-content">
 
             <div className="About-section-description">
@@ -64,10 +53,10 @@ const About = () => {
               </p>
               <button className="About-btn-primary">More About Us</button>
             </div>
-          </div> {/* end About-content */}
+          </div>
 
-        </div> {/* end About-grid */}
-      </div> {/* end About-container */}
+        </div>
+      </div>
     </section>
   );
 };

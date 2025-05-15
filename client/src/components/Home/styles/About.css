@@ -1,4 +1,3 @@
-/* Modern Reset and Base Styles */
 body {
     margin: 0;
     font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -6,46 +5,43 @@ body {
     color: #333;
 }
 
-/* About Section with improved visuals */
 .About-section {
-    background-color: #1e293b; /* Slightly richer dark blue background */
-    padding: 60px 0; /* Increased padding for more spaciousness */
+    background-color: #1e293b;
+    padding: 60px 0;
     color: #fff;
-    position: relative; /* For potential decorative elements */
-    box-shadow: inset 0 5px 15px rgba(0, 0, 0, 0.2); /* Inner shadow for depth */
+    position: relative;
+    box-shadow: inset 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .About-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 30px; /* Slightly increased padding */
-    position: relative; /* For positioning of potential decorative elements */
-    max-height: 60vh; /* Set max height to 60vh */
-    /* Removed overflow-y: auto; to prevent scrolling */
-    display: flex; /* Use flexbox to better manage content within the fixed height */
+    padding: 0 30px;
+    position: relative;
+    max-height: 60vh;
+    display: flex;
     flex-direction: column;
-    justify-content: center; /* Center content vertically */
+    justify-content: center;
 }
 
 .About-grid {
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Reduced spacing to fit within the height */
+    gap: 20px;
     align-items: center;
-    flex-shrink: 0; /* Prevent shrinking of the grid */
+    flex-shrink: 0;
 }
 
-/* Section Heading with improved styling */
 .About-section-heading {
-    font-size: 3em; /* Reduced font size */
-    margin-bottom: 15px; /* Reduced margin */
-    font-weight: 700; /* Bolder heading */
+    font-size: 3em;
+    margin-bottom: 15px;
+    font-weight: 700;
     color: #fff;
     text-align: center;
-    letter-spacing: 0.5px; /* Subtle letter spacing */
+    letter-spacing: 0.5px;
     position: relative;
-    padding-bottom: 10px; /* Space for the underline */
-    flex-shrink: 0; /* Prevent shrinking */
+    padding-bottom: 10px;
+    flex-shrink: 0;
 }
 
 .About-section-heading::after {
@@ -54,141 +50,135 @@ body {
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 60px; /* Reduced width */
-    height: 2px; /* Reduced height */
-    background-color: #3b82f6; /* Blue accent color */
-    border-radius: 1px; /* Reduced radius */
+    width: 60px;
+    height: 2px;
+    background-color: #f60;
+    border-radius: 1px;
 }
 
-/* Enhanced Container for the Official Cards */
 .About-images-horizontal-row {
     display: flex;
     flex-direction: row;
-    gap: 15px; /* Reduced spacing between cards */
+    gap: 15px;
     width: 100%;
     flex-wrap: wrap;
     justify-content: space-evenly;
-    perspective: 1000px; /* For subtle 3D effect */
-    flex-shrink: 0; /* Prevent shrinking */
+    perspective: 1000px;
+    flex-shrink: 0;
 }
 
-/* Improved Official Card Styling */
 .About-official-card {
     flex: 1;
-    min-width: 180px; /* Reduced min-width */
-    max-width: 350px; /* Reduced max-width */
+    min-width: 180px;
+    max-width: 350px;
     background-color: #fff;
-    border-radius: 8px; /* Reduced rounding */
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Reduced shadow */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    transform: translateZ(0); /* For smoother animations */
+    transform: translateZ(0);
 }
 
 .About-official-card:hover {
-    transform: translateY(-3px); /* Subtle lift effect on hover */
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); /* Reduced shadow */
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
 
-/* Main Official Card distinction */
 .About-official-card.About-main-official {
-    border: 2px solid #3b82f6; /* Blue border highlight */
-    position: relative; /* For position of the highlight element */
+    position: relative;
 }
 
 .About-official-card.About-main-official::before {
     content: '';
     position: absolute;
-    top: -6px; /* Adjusted position */
+    top: -6px;
     left: 50%;
     transform: translateX(-50%);
-    width: 50%; /* Reduced width */
-    height: 4px; /* Reduced height */
+    width: 50%;
+    height: 4px;
     background-color: #3b82f6;
-    border-radius: 2px 2px 0 0; /* Reduced radius */
+    border-radius: 2px 2px 0 0;
 }
 
 .About-official-image {
     width: 100%;
-    height: 150px; /* Reduced height for consistent card appearance */
-    overflow: hidden; /* Ensure images don't overflow */
+    height: 150px;
+    overflow: hidden;
 }
 
 .About-official-image img {
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Ensures images cover the area properly */
+    object-fit: cover;
     transition: transform 0.5s ease;
 }
 
 .About-official-card:hover .About-official-image img {
-    transform: scale(1.03); /* Subtle zoom effect on hover */
+    transform: scale(1.03);
 }
 
 .About-official-info {
-    padding: 15px; /* Reduced padding */
+    padding: 15px;
     text-align: center;
     background-color: #fff;
-    border-top: 1px solid rgba(0, 0, 0, 0.05); /* Subtle separator */
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .About-official-info h3 {
-    font-size: 1.1em; /* Reduced font size */
-    margin: 0 0 5px 0; /* Adjusted margin */
+    font-size: 1.1em;
+    margin: 0 0 5px 0;
     font-weight: 600;
-    color: #1e293b; /* Match section background for cohesion */
+    color: #1e293b;
 }
 
 .About-official-info p {
-    font-size: 0.9em; /* Reduced font size */
+    font-size: 0.9em;
     margin: 0;
-    color: #64748b; /* Softer color for title */
+    color: #64748b;
     font-weight: 500;
 }
 
-/* Enhanced Content Section */
 .About-content {
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    flex-shrink: 0; /* Prevent shrinking */
+    flex-shrink: 0;
 }
 
 .About-section-description {
-    max-width: 700px; /* Reduced max-width */
+    max-width: 900px;
+    margin: 0 auto;
     text-align: center;
 }
 
 .About-section-description p {
-    width:900px;
     text-align: justify;
-    font-size: 1em; /* Reduced font size */
-    line-height: .21.6; /* Adjusted line height */
-    /* Reduced margin */
-    color: #e2e8f0; /* Lighter text for better contrast */
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1); /* Subtle text shadow */
+    font-size: 1em;
+    line-height: 1.6;
+    color: #e2e8f0;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
 }
 
-/* Improved Button Style */
 .About-btn-primary {
     display: inline-block;
-    padding: 10px 25px; /* Reduced padding */
-    border: 2px solid #3b82f6; /* Blue border instead of white */
+    padding: 10px 25px;
+    border: 2px solid #3b82f6;
     color: #fff;
     background-color: transparent;
-    border-radius: 5px; /* Reduced rounding */
+    border-radius: 5px;
     text-decoration: none;
-    font-size: 1em; /* Reduced font size */
+    font-size: 1em;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
-    z-index: 1; /* For the hover effect */
+    z-index: 1;
+    margin-top: 20px;
 }
 
 .About-btn-primary::before {
@@ -212,77 +202,86 @@ body {
     height: 100%;
 }
 
-/* Responsive design improvements */
 @media (max-width: 992px) {
     .About-section-heading {
-        font-size: 2.2em; /* Adjusted font size */
+        font-size: 2.2em;
     }
 
     .About-section-description p {
-        font-size: 0.95em; /* Adjusted font size */
+        font-size: 0.95em;
+    }
+
+     .About-section-description {
+        max-width: 90%;
     }
 }
 
 @media (max-width: 768px) {
     .About-section {
-        padding: 30px 0; /* Reduced padding */
+        padding: 30px 0;
     }
     .About-container {
-   max-height: fit-content;/* Center content vertically */
+   max-height: fit-content;
 }
     .About-grid {
-        gap: 20px; /* Adjusted gap */
+        gap: 20px;
     }
 
     .About-section-heading {
-        font-size: 1.8em; /* Adjusted font size */
+        font-size: 1.8em;
     }
 
     .About-images-horizontal-row {
         flex-direction: column;
-        gap: 15px; /* Adjusted gap */
+        gap: 15px;
         align-items: center;
     }
 
     .About-images-horizontal-row .About-official-card {
         flex: none;
-        width: 90%; /* Adjusted width */
-        max-width: 280px; /* Adjusted max-width */
+        width: 90%;
+        max-width: 280px;
     }
 
     .About-official-image {
-        height: 120px; /* Reduced height */
+        height: 120px;
     }
 
     .About-official-info h3 {
-        font-size: 1em; /* Reduced font size */
+        font-size: 1em;
     }
 
     .About-official-info p {
-        font-size: 0.85em; /* Reduced font size */
+        font-size: 0.85em;
     }
 
     .About-btn-primary {
-        padding: 8px 20px; /* Reduced padding */
-        font-size: 0.9em; /* Reduced font size */
+        padding: 8px 20px;
+        font-size: 0.9em;
+    }
+     .About-section-description {
+        max-width: 90%;
     }
 }
 
 @media (max-width: 480px) {
     .About-container {
-        padding: 0 15px; /* Reduced padding */
+        padding: 0 15px;
     }
 
     .About-section-heading {
-        font-size: 1.5em; /* Reduced font size */
+        font-size: 1.5em;
     }
 
     .About-section-description p {
-        font-size: 0.9em; /* Reduced font size */
-        line-height: 1.5; /* Adjusted line height */
+        font-size: 0.9em;
+        line-height: 1.5;
     }
 
     .About-btn-primary {
-        width: 90%; /* Adjusted width */
+        width: fit-content;
+    }
+     .About-section-description {
+        max-width: 95%;
     }
 }
