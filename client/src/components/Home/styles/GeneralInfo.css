@@ -121,6 +121,7 @@
 .moving-warning {
   white-space: nowrap;
   overflow: hidden;
+  width: fit-content;
   box-sizing: border-box;
   animation: move-text 15s linear infinite;
   display: block;
