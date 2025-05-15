@@ -50,7 +50,7 @@
   transform: translateX(-50%);
   width: 70px; /* Adjusted underline width */
   height: 3px; /* Thinner underline */
-  background: var(--gov-medium-blue); /* Medium blue underline */
+  background: #f90;; /* Medium blue underline */
   border-radius: 2px;
 }
 
