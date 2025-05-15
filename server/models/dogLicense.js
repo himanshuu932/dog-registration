@@ -2,6 +2,12 @@ const mongoose = require("mongoose");
 
 const dogLicenseSchema = new mongoose.Schema(
   {
+     
+    license_Id: { 
+      type: String,
+      unique: true,
+      required: true
+    },
     owner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     fullName: String,
     phoneNumber: String,
@@ -37,5 +43,9 @@ const dogLicenseSchema = new mongoose.Schema(
     timestamps: true 
   }
 );
+
+
+// Enhanced error handling for duplicate licenseIds
+
 
 module.exports = mongoose.model("DogLicense", dogLicenseSchema);

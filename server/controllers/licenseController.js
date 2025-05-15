@@ -71,14 +71,25 @@ exports.applyLicense = async (req, res) => {
       fullName, phoneNumber, gender, streetName, pinCode, city, state, 
       totalHouseArea, numberOfDogs, dogName, dogCategory, dogBreed, 
       dogColor, dogAge, dogSex, dateOfVaccination, dueVaccination,
-      avatarUrl,vaccinationProofUrl, vaccinationProofPublicId,
+      avatarUrl, vaccinationProofUrl, vaccinationProofPublicId,
     } = req.body;
 
+    // Generate license ID
+    const now = new Date();
+    const year = now.getFullYear().toString().slice(-2).padStart(2, '0');
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const day = now.getDate().toString().padStart(2, '0');
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
+    const random = Math.floor(Math.random() * 9000 + 1000).toString();
+    const license_Id = `${year}${month}${day}${hours}${minutes}${seconds}${random}`;
+
     const ownerId = req.user.userId;
-   // console.log("this is user : "+ownerId);
 
     const newLicense = new DogLicense({
       owner: ownerId,
+      license_Id: license_Id, 
       fullName,
       phoneNumber,
       gender,
@@ -102,14 +113,23 @@ exports.applyLicense = async (req, res) => {
       status: 'pending'
     });
 
-    await newLicense.save();
+   
+    const savedLicense = await newLicense.save();
+   
+
     res.status(201).json({ 
       message: "License application submitted",
-      licenseId: newLicense._id
+      licenseId: savedLicense._id,
+      generatedLicenseId: savedLicense.license_Id // Return the generated ID for verification
     });
   } catch (error) {
     console.error("License apply error:", error);
     
+    // More detailed error logging
+    if (error.name === 'ValidationError') {
+      console.error('Validation errors:', error.errors);
+    }
+
     // If license creation fails but file was uploaded, clean up from Cloudinary
     if (req.body.vaccinationProofPublicId) {
       try {
@@ -119,7 +139,10 @@ exports.applyLicense = async (req, res) => {
       }
     }
     
-    res.status(500).json({ message: "Server error while applying license" });
+    res.status(500).json({ 
+      message: "Server error while applying license",
+      error: error.message 
+    });
   }
 };
 
