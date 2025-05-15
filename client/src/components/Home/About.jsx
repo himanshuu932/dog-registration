@@ -11,45 +11,40 @@ const About = () => {
 
              <div className="About-official-card About-main-official">
                 <div className="About-official-image">
-                  <img src="./yogi.png" alt="Chief Minister" />
+                  <img src="./yogi.webp" alt="Chief Minister" />
                 </div>
                 <div className="About-official-info">
                   <h3>Shri Yogi Adityanath</h3>
                   <p>Chief Minister</p>
                 </div>
               </div>
-
-              <div className="About-official-card">
+               <div className="About-official-card">
                 <div className="About-official-image">
-                  <img src="https://picsum.photos/seed/Inderajeet Singh/200" alt="Shri Inderajeet Singh" />
+                  <img src="./Dr._Manglesh_Kumar_Srivastava.webp" alt="Manglesh_Kumar_Srivastava" />
                 </div>
                 <div className="About-official-info">
-                  <h3>Shri Inderajeet Singh</h3>
-                  <p>Nagar Ayukt GKP</p>
-                </div>
-              </div>
-
-              <div className="About-official-card">
-                <div className="About-official-image">
-                  <img src="https://picsum.photos/seed/Sushma Kharkwal/200" alt="Shrmati Sushma Kharkwal" />
-                </div>
-                <div className="About-official-info">
-                  <h3>Shrmati Sushma Kharkwal</h3>
+                  <h3>Manglesh Kumar Srivastava</h3>
                   <p>Mayor GKP</p>
                 </div>
               </div>
+              <div className="About-official-card">
+                <div className="About-official-image">
+                  <img src="./muncipal.webp" alt="Shri Inderajeet Singh" />
+                </div>
+                <div className="About-official-info">
+                  <h3>Sri Gaurav Singh Sogarwal</h3>
+                  <p>Municpal Commissioner</p>
+                </div>
+              </div>
+
+             
           </div>
 
           <div className="About-content">
 
             <div className="About-section-description">
               <p>
-                Nagar Nigam GKP, also known as GKP Municipal Corporation, is
-                the governing body responsible for the administration and
-                development of GKP city. Established with the aim of enhancing the
-                quality of life for citizens, we strive to deliver essential services in areas
-                such as sanitation, water supply, urban planning, and community
-                development.
+               Nagar Nigam Gorakhpur is the governing body of the city of Gorakhpur in the Indian state of Uttar Pradesh. The municipal corporation consists of democratically elected members, is headed by a mayor and administers the city’s infrastructure and public services. Members from the state’s leading various political parties hold elected offices in the corporation. It is the richest Municipal corporation in terms of revenue generated in the state of Uttar Pradesh.
               </p>
               <button className="About-btn-primary">More About Us</button>
             </div>
