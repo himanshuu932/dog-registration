@@ -68,6 +68,7 @@
   background-color: #f5f7fa;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden; /* Added to contain the moving text */
 }
 
 .general-info h2 {
@@ -104,12 +105,35 @@
   line-height: 1.5;
 }
 
+/* Moving Warning Styles */
+.moving-warning {
+  white-space: nowrap; /* Prevents the text from wrapping */
+  overflow: hidden; /* Hides the text outside the container */
+  box-sizing: border-box;
+  animation: move-text 15s linear infinite; /* Adjust duration as needed */
+  display: inline-block; /* Required for animation */
+  padding-left: 100%; /* Start the text off-screen */
+  background-color: yellow; /* Added for visibility of warning */
+  color: red; /* Added for visibility of warning */
+  font-weight: bold; /* Added for visibility of warning */
+}
+
+@keyframes move-text {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%); /* Adjust based on text width and container */
+  }
+}
+
+
 /* Responsive styles */
 @media (max-width: 768px) {
   .info-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .pet-image-container {
     height: 350px;
   }
@@ -119,7 +143,7 @@
   .general-info h2 {
     font-size: 1.5rem;
   }
-  
+
   .municipality-info h3 {
     font-size: 1.2rem;
   }

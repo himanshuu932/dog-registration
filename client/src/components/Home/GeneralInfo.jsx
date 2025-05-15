@@ -20,7 +20,8 @@ const GeneralInformation = () => {
           </div>
           <div className="general-info">
             <h2>General Information</h2>
-            <p>
+            {/* Applied moving-warning class to the warning paragraph */}
+            <p className="moving-warning">
               The application gets completed after verification. After 1 month the
               application gets cancelled and the user will
               be required to register themselves again.

@@ -1,300 +1,288 @@
-/* src/styles/About.css - 2x2 Grid Layout */
-
-:root {
-  --primary-color: #003366; /* A deep, professional blue */
-  --secondary-color: #f4f4f4; /* Light grey for background contrast */
-  --accent-color: #ff6600; /* A vibrant orange for accents */
-  --text-color: #333333; /* Standard dark text */
-  --light-text: #555555; /* Slightly lighter text */
-  --white: #ffffff;
-  --border-radius: 10px;
-  --box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-  --transition: all 0.5s ease;
-}
-
+/* Modern Reset and Base Styles */
 body {
-  font-family: 'Roboto', sans-serif; /* Using a modern, clean font */
-  line-height: 1.7;
-  color: var(--text-color);
-  background-color: var(--white);
+    margin: 0;
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
 }
 
-.about-section {
-  padding: 80px 0;
-  background-color: var(--secondary-color); /* Use light grey background */
+/* About Section with improved visuals */
+.About-section {
+    background-color: #1e293b; /* Slightly richer dark blue background */
+    padding: 60px 0; /* Increased padding for more spaciousness */
+    color: #fff;
+    position: relative; /* For potential decorative elements */
+    box-shadow: inset 0 5px 15px rgba(0, 0, 0, 0.2); /* Inner shadow for depth */
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
+.About-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 30px; /* Slightly increased padding */
+    position: relative; /* For positioning of potential decorative elements */
+    max-height: 60vh; /* Set max height to 60vh */
+    /* Removed overflow-y: auto; to prevent scrolling */
+    display: flex; /* Use flexbox to better manage content within the fixed height */
+    flex-direction: column;
+    justify-content: center; /* Center content vertically */
 }
 
-/* Updated about-grid to be the 2x2 grid container */
-.about-grid {
-  display: grid;
-  /* Define a 2x2 grid: 2 columns (equal width), 2 rows (auto height) */
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: auto auto;
-  gap: 40px; /* Gap between grid items */
-  align-items: start; /* Align items to the top of their grid cell */
-}
-
-/* Left side - Content (Top-Left Grid Item) */
-.about-content {
-  grid-column: 1 / 2; /* Place in the first column */
-  grid-row: 1 / 2; /* Place in the first row */
-  padding-right: 30px; /* Maintain some padding */
-}
-
-.section-heading {
-  font-size: 2.8rem;
-  margin-bottom: 20px;
-  color: var(--primary-color);
-  position: relative;
-  padding-bottom: 15px;
-  font-weight: 700;
-}
-
-.section-heading::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 40%; /* Align to the left of the text content */
-  width: 70px;
-  height: 4px;
-  background-color: var(--accent-color);
-  /* Remove transform if left-aligned */
-  /* transform: translateX(-50%); */
-}
-
-.section-description p {
-  font-size: 1.1rem;
-  margin-bottom: 30px;
-  color: var(--light-text);
-  text-align: justify;
-}
-
-.btn-primary {
-  display: inline-block;
-  background-color: var(--primary-color);
-  color: var(--white);
-  border: none;
-  padding: 14px 30px;
-  font-size: 1rem;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  transition: var(--transition);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: var(--box-shadow);
-}
-
-.btn-primary:hover {
-  background-color: var(--accent-color);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  transform: translateY(-3px);
-}
-
-/* Officials Gallery - Now the individual cards are grid items */
-
-/* Main Official (Top-Right Grid Item) */
-.main-official-grid-item {
-    grid-column: 2 / 3; /* Place in the second column */
-    grid-row: 1 / 2; /* Place in the first row */
-    /* Styles for the container if needed, e.g., centering */
+.About-grid {
     display: flex;
-    justify-content: center;
-    align-items: center; /* Vertically center with text content if needed */
+    flex-direction: column;
+    gap: 20px; /* Reduced spacing to fit within the height */
+    align-items: center;
+    flex-shrink: 0; /* Prevent shrinking of the grid */
 }
 
-
-.official-card {
-  background-color: var(--white);
-  border-radius: var(--border-radius);
-  overflow: hidden;
-  box-shadow: var(--box-shadow);
-  transition: var(--transition);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding-bottom: 20px;
-  width: 100%; /* Card should fill its grid cell */
-  max-width: 100%; /* Limit the max width of the card */
-  height: 100%; /* Allow card to stretch in the grid cell */
-}
-
-.official-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-/* Styling for the main official (Yogi Adityanath) */
-.official-card.main-official {
-   /* No grid positioning needed here as it's handled by .main-official-grid-item */
-}
-
-
-.main-official .official-image {
-  height: 350px; /* Significantly larger image height */
-}
-
-.official-image {
-  width: 100%; /* Make image cover the width of its container */
-  height: 220px; /* Standard image height for others */
-  overflow: hidden;
-}
-
-.official-image img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* Cover the area without distortion */
-  transition: transform 0.5s ease;
-}
-
-.official-card:hover .official-image img {
-  transform: scale(1.05); /* Subtle zoom on hover */
-}
-
-.official-info {
-  padding: 20px 15px 0; /* Adjusted padding */
-  flex-grow: 1; /* Allow info section to grow to fill card height */
-  display: flex;
-  flex-direction: column;
-  justify-content: center; /* Vertically center info content */
-}
-
-.official-info h3 {
-  font-size: 1.3rem;
-  margin-bottom: 5px;
-  color: var(--primary-color);
-  font-weight: 600;
-}
-
-.official-info p {
-  color: var(--light-text);
-  margin: 0;
-  font-size: 0.95rem;
-}
-
-/* Responsive Design */
-@media (max-width: 992px) {
-  .about-grid {
-    grid-template-columns: 1fr; /* Stack columns on smaller screens */
-    grid-template-rows: auto; /* Auto rows */
-    gap: 50px;
-  }
-
-  .about-content {
-    grid-column: 1 / 2; /* Span full column */
-    grid-row: auto; /* Auto row */
-    padding-right: 0;
+/* Section Heading with improved styling */
+.About-section-heading {
+    font-size: 3em; /* Reduced font size */
+    margin-bottom: 15px; /* Reduced margin */
+    font-weight: 700; /* Bolder heading */
+    color: #fff;
     text-align: center;
-  }
+    letter-spacing: 0.5px; /* Subtle letter spacing */
+    position: relative;
+    padding-bottom: 10px; /* Space for the underline */
+    flex-shrink: 0; /* Prevent shrinking */
+}
 
-   .section-heading::after {
-        left: 50%;
-        transform: translateX(-50%);
+.About-section-heading::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px; /* Reduced width */
+    height: 2px; /* Reduced height */
+    background-color: #3b82f6; /* Blue accent color */
+    border-radius: 1px; /* Reduced radius */
+}
+
+/* Enhanced Container for the Official Cards */
+.About-images-horizontal-row {
+    display: flex;
+    flex-direction: row;
+    gap: 15px; /* Reduced spacing between cards */
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    perspective: 1000px; /* For subtle 3D effect */
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+/* Improved Official Card Styling */
+.About-official-card {
+    flex: 1;
+    min-width: 180px; /* Reduced min-width */
+    max-width: 350px; /* Reduced max-width */
+    background-color: #fff;
+    border-radius: 8px; /* Reduced rounding */
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Reduced shadow */
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transform: translateZ(0); /* For smoother animations */
+}
+
+.About-official-card:hover {
+    transform: translateY(-3px); /* Subtle lift effect on hover */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); /* Reduced shadow */
+}
+
+/* Main Official Card distinction */
+.About-official-card.About-main-official {
+    border: 2px solid #3b82f6; /* Blue border highlight */
+    position: relative; /* For position of the highlight element */
+}
+
+.About-official-card.About-main-official::before {
+    content: '';
+    position: absolute;
+    top: -6px; /* Adjusted position */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%; /* Reduced width */
+    height: 4px; /* Reduced height */
+    background-color: #3b82f6;
+    border-radius: 2px 2px 0 0; /* Reduced radius */
+}
+
+.About-official-image {
+    width: 100%;
+    height: 150px; /* Reduced height for consistent card appearance */
+    overflow: hidden; /* Ensure images don't overflow */
+}
+
+.About-official-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures images cover the area properly */
+    transition: transform 0.5s ease;
+}
+
+.About-official-card:hover .About-official-image img {
+    transform: scale(1.03); /* Subtle zoom effect on hover */
+}
+
+.About-official-info {
+    padding: 15px; /* Reduced padding */
+    text-align: center;
+    background-color: #fff;
+    border-top: 1px solid rgba(0, 0, 0, 0.05); /* Subtle separator */
+}
+
+.About-official-info h3 {
+    font-size: 1.1em; /* Reduced font size */
+    margin: 0 0 5px 0; /* Adjusted margin */
+    font-weight: 600;
+    color: #1e293b; /* Match section background for cohesion */
+}
+
+.About-official-info p {
+    font-size: 0.9em; /* Reduced font size */
+    margin: 0;
+    color: #64748b; /* Softer color for title */
+    font-weight: 500;
+}
+
+/* Enhanced Content Section */
+.About-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+.About-section-description {
+    max-width: 700px; /* Reduced max-width */
+    text-align: center;
+}
+
+.About-section-description p {
+    width:900px;
+    text-align: justify;
+    font-size: 1em; /* Reduced font size */
+    line-height: .21.6; /* Adjusted line height */
+    /* Reduced margin */
+    color: #e2e8f0; /* Lighter text for better contrast */
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1); /* Subtle text shadow */
+}
+
+/* Improved Button Style */
+.About-btn-primary {
+    display: inline-block;
+    padding: 10px 25px; /* Reduced padding */
+    border: 2px solid #3b82f6; /* Blue border instead of white */
+    color: #fff;
+    background-color: transparent;
+    border-radius: 5px; /* Reduced rounding */
+    text-decoration: none;
+    font-size: 1em; /* Reduced font size */
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    z-index: 1; /* For the hover effect */
+}
+
+.About-btn-primary::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    background-color: #3b82f6;
+    transition: height 0.3s ease;
+    z-index: -1;
+}
+
+.About-btn-primary:hover {
+    color: #fff;
+    border-color: #3b82f6;
+}
+
+.About-btn-primary:hover::before {
+    height: 100%;
+}
+
+/* Responsive design improvements */
+@media (max-width: 992px) {
+    .About-section-heading {
+        font-size: 2.2em; /* Adjusted font size */
     }
 
-  .main-official-grid-item {
-      grid-column: 1 / 2; /* Span full column */
-      grid-row: auto; /* Auto row */
-      justify-content: center;
-  }
-
-  /* Other official cards become individual stacked grid items */
-  .about-grid .grid-item:nth-child(3) { /* Second official card */
-      grid-column: 1 / 2;
-      grid-row: auto;
-      justify-self: center;
-  }
-   .about-grid .grid-item:nth-child(4) { /* Third official card */
-      grid-column: 1 / 2;
-      grid-row: auto;
-      justify-self: center;
-  }
-
-
-  .official-card {
-      max-width: 350px; /* Limit card width when stacked */
-  }
-
-  .official-card.main-official {
-       max-width: 380px; /* Adjust max width for main official when stacked */
-  }
-
-  .main-official .official-image {
-      height: 300px; /* Adjust large image height */
-  }
-
-  .official-image {
-      height: 200px; /* Adjust standard image height */
-  }
+    .About-section-description p {
+        font-size: 0.95em; /* Adjusted font size */
+    }
 }
 
 @media (max-width: 768px) {
-  .about-section {
-    padding: 60px 0;
-  }
-
-  .section-heading {
-    font-size: 2.3rem;
-  }
-
-  .section-description p {
-    font-size: 1rem;
-  }
-
-   .official-card {
-      max-width: 320px; /* Further limit card width */
-  }
-
-  .official-card.main-official {
-       max-width: 350px;
-  }
-
-  .main-official .official-image {
-      height: 280px;
-  }
-  .official-image {
-      height: 180px;
-  }
+    .About-section {
+        padding: 30px 0; /* Reduced padding */
+    }
+    .About-container {
+   max-height: fit-content;/* Center content vertically */
 }
+    .About-grid {
+        gap: 20px; /* Adjusted gap */
+    }
 
-@media (max-width: 576px) {
-     .official-card {
-        max-width: 300px; /* Even smaller max width */
-     }
-      .official-card.main-official {
-       max-width: 320px;
-     }
+    .About-section-heading {
+        font-size: 1.8em; /* Adjusted font size */
+    }
+
+    .About-images-horizontal-row {
+        flex-direction: column;
+        gap: 15px; /* Adjusted gap */
+        align-items: center;
+    }
+
+    .About-images-horizontal-row .About-official-card {
+        flex: none;
+        width: 90%; /* Adjusted width */
+        max-width: 280px; /* Adjusted max-width */
+    }
+
+    .About-official-image {
+        height: 120px; /* Reduced height */
+    }
+
+    .About-official-info h3 {
+        font-size: 1em; /* Reduced font size */
+    }
+
+    .About-official-info p {
+        font-size: 0.85em; /* Reduced font size */
+    }
+
+    .About-btn-primary {
+        padding: 8px 20px; /* Reduced padding */
+        font-size: 0.9em; /* Reduced font size */
+    }
 }
 
 @media (max-width: 480px) {
-  .section-heading {
-    font-size: 2rem;
-  }
+    .About-container {
+        padding: 0 15px; /* Reduced padding */
+    }
 
-  .btn-primary {
-    padding: 10px 20px;
-    font-size: 0.9rem;
-  }
-   .official-card {
-      width: 90%; /* Allow cards to take more width on very small screens */
-      max-width: none; /* Remove max width to allow width: 90% to work */
-   }
-     .official-card.main-official {
-       width: 90%;
-       max-width: none;
-     }
-   .main-official .official-image {
-      height: 250px;
-  }
-    .official-image {
-      height: 160px;
-  }
+    .About-section-heading {
+        font-size: 1.5em; /* Reduced font size */
+    }
+
+    .About-section-description p {
+        font-size: 0.9em; /* Reduced font size */
+        line-height: 1.5; /* Adjusted line height */
+    }
+
+    .About-btn-primary {
+        width: 90%; /* Adjusted width */
+    }
 }
