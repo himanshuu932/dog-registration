@@ -23,7 +23,7 @@
   justify-content: center;
   overflow: hidden;
 }
-
+/* doggy image  */
 .doggy {
   width: 100%;
   max-width: 750px;
@@ -42,7 +42,7 @@
       background: linear-gradient(135deg, #eff1f4, #003366);
       padding: 20px;
     }
-
+/* for login box */
     .login-box {
       background: white;
       padding: 40px;
@@ -53,7 +53,7 @@
       text-align: center;
       position: relative;
     }
-
+/* for logo  */
     .logo {
       width: 80px;
       margin-bottom: 20px;
