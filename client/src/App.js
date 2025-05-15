@@ -44,7 +44,7 @@ function App() {
   };
 
   useEffect(() => {
-    const MINIMUM_LOAD_TIME = 2000; // 1 second
+    const MINIMUM_LOAD_TIME = 500; // 1 second
     const startTime = Date.now();
 
     const fetchUser = async () => {
