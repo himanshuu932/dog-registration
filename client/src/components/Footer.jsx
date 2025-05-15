@@ -16,7 +16,7 @@ const Footer = () => {
           </p>
           
           <div className="footer-contact">
-            <p className="footer-text">
+            <p className="footer-text-2">
               Stay connected with us
             </p>
             <div className="footer-social">

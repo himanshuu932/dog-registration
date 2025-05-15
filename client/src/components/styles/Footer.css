@@ -24,6 +24,13 @@
 .footer-text {
   margin: 0.5rem 0;
   font-size: 0.9rem;
+  text-align: left;
+  line-height: 1.6;
+  color: #ccc;
+}
+.footer-text-2 {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
   line-height: 1.6;
   color: #ccc;
 }
@@ -68,6 +75,27 @@
   .footer-text {
     margin: 0;
     flex: 0 0 48%;
+ 
+  }
+  
+  .footer-contact {
+    margin-top: 1.5rem;
+    width: 100%;
+    text-align: center;
+  }
+}
+@media (min-width: 480px) {
+  .footer-content {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+    flex-wrap: wrap;
+  }
+  
+  .footer-text {
+    margin: 0;
+    flex: 0 0 48%;
+   
   }
   
   .footer-contact {
