@@ -2,8 +2,9 @@
 import React from 'react';
 import PawIcon from '../icons/PawIcon';
 import './styles/Hero.css';
-
+import { useNavigate } from 'react-router-dom';
 const Hero = () => {
+  const navigate=useNavigate();
   return (
     <div className="hero-section">
       <div className="container">
@@ -14,7 +15,7 @@ const Hero = () => {
               We Encourage to register your pet Identification and provide a search
               database to identify the Pet Information and Owner verification.
             </p>
-            <button className="btn btn-primary">Register Now</button>
+            <button className="btn btn-primary" onClick={()=> navigate('/pet-register')}>Register Now</button>
           </div>
           <div className="hero-image">
             <div className="pet-circle">

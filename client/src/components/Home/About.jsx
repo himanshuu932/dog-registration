@@ -46,7 +46,9 @@ const About = () => {
               <p>
                Nagar Nigam Gorakhpur is the governing body of the city of Gorakhpur in the Indian state of Uttar Pradesh. The municipal corporation consists of democratically elected members, is headed by a mayor and administers the city’s infrastructure and public services. Members from the state’s leading various political parties hold elected offices in the corporation. It is the richest Municipal corporation in terms of revenue generated in the state of Uttar Pradesh.
               </p>
-              <button className="About-btn-primary">More About Us</button>
+             <button className="About-btn-primary" onClick={() => window.location.href = 'https://gorakhpurnagarnigam.up.gov.in/'}>
+  More About Us
+</button>
             </div>
           </div>
 

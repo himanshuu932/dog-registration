@@ -1,40 +1,50 @@
 import React from 'react';
-import './styles/Services.css'; // Link to the CSS file
+import './styles/Services.css';
+import { useNavigate } from 'react-router-dom';
 
 const Services = () => {
-  // Data for services with government-appropriate muted colors for visuals
+  const navigate = useNavigate();
+
+  // Data for services
   const portalServices = [
     {
-      id: 'reg001', // Unique ID
-      heading: 'New Application Submission', // More formal title
-      // visualColor: '#e9eff3', // Muted background color (not strictly needed with image cover)
+      id: 'reg001',
+      heading: 'New Application Submission',
       feeInfo: {
         foreign: '₹ 1000',
         indian: '₹ 200'
       },
-      actionText: 'Start New Application' // Clear action text
+      actionText: 'Start New Application',
+      image: './image1.png',
+      route: '/pet-register'
     },
     {
-      id: 'ren002', // Unique ID
-      heading: 'Existing Application Renewal', // More formal title
-      // visualColor: '#dce4e9', // Muted background color
+      id: 'ren002',
+      heading: 'Existing Application Renewal',
       feeInfo: {
         foreign: '₹ 1000',
         indian: '₹ 200'
       },
-      actionText: 'Renew Application' // Clear action text
+      actionText: 'Renew Application',
+      image: './image2.png',
+      route: '/renew-register'
     },
     {
-      id: 'upd003', // Unique ID
-      heading: 'Update Documentation', // More formal title
-      // visualColor: '#d0dae0', // Muted background color
+      id: 'upd003',
+      heading: 'Update Documentation',
       feeInfo: {
         foreign: '₹ 1000',
         indian: '₹ 200'
       },
-      actionText: 'Submit Updates' // Clear action text
+      actionText: 'Submit Updates',
+      image: './image.png',
+      route: '/pet-register'
     }
   ];
+
+  const handleServiceClick = (route) => { // Corrected to JavaScript syntax
+    navigate(route);
+  };
 
   return (
     <section className="gov-portal-services-module">
@@ -43,17 +53,9 @@ const Services = () => {
         <div className="gov-portal-services-grid-layout">
           {portalServices.map(service => (
             <div className="gov-portal-service-item" key={service.id}>
-              {/* Removed background color style as image will cover */}
               <div className="gov-portal-service-visual">
-                 {/* Using Picsum with the 'dogs' category for random dog images */}
                 <img
-                  // Use a consistent seed for potentially different dogs on each card,
-                  // or remove seed for completely random on each load.
-                  // Using a fixed seed 'dogs' might give the same image,
-                  // using service.id as seed gives different images per card,
-                  // using a random number would give different images per page load.
-                  // Let's use service.id as seed for variety per card.
-                  src={`https://picsum.photos/seed/pet/400/400`}
+                  src={service.image}
                   alt={`Image related to ${service.heading}`}
                   className="gov-portal-service-image-cover"
                 />
@@ -65,12 +67,17 @@ const Services = () => {
                 <div className="gov-portal-service-fee-grid">
                   <div className="gov-portal-service-fee-header">Applicant Type</div>
                   <div className="gov-portal-service-fee-header">Processing Fee</div>
-                  <div className="gov-portal-service-fee-row">Foreign National</div>
+                  <div className="gov-portal-service-fee-row">Foreign Breed</div>
                   <div className="gov-portal-service-fee-row">{service.feeInfo.foreign}</div>
-                  <div className="gov-portal-service-fee-row">Indian Citizen</div>
+                  <div className="gov-portal-service-fee-row">Indian Breed</div>
                   <div className="gov-portal-service-fee-row">{service.feeInfo.indian}</div>
                 </div>
-                <button className="gov-portal-action-button">{service.actionText}</button>
+                <button
+                  className="gov-portal-action-button"
+                  onClick={() => handleServiceClick(service.route)}
+                >
+                  {service.actionText}
+                </button>
               </div>
             </div>
           ))}
