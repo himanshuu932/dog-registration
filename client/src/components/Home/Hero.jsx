@@ -19,7 +19,7 @@ const Hero = () => {
           <div className="hero-image">
             <div className="pet-circle">
               <img
-                src="https://picsum.photos/seed/pet/400/400"
+                src="./dog.webp"
                 alt="pet placeholder"
                 className="responsive-cover"
               />
