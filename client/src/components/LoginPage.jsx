@@ -167,7 +167,7 @@ import React, { useState, useEffect } from "react";
         <div className="login-wrapper">
           {/* Left side for desktop */}
           <div className="login-left">
-            <img src='./d.jpg' alt="Cute Pet" className="doggy" />
+            <img src='./d.webp' alt="Cute Pet" className="doggy" />
           </div>
           <div className="login-right">
             <div className="login-box">
@@ -179,7 +179,7 @@ import React, { useState, useEffect } from "react";
                 <FontAwesomeIcon icon={faArrowLeft} /> Back
               </button>
 
-              <img src='./logo.png' alt="Nagar Nigam Logo" className="logo" />
+              <img src='./logo.webp' alt="Nagar Nigam Logo" className="logo" />
               <h2>Municipal Corporation Gorakhpur</h2>
               <h3>Pet Registration Portal</h3>
 

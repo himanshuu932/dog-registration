@@ -15,7 +15,7 @@ const Services = () => {
         indian: '₹ 200'
       },
       actionText: 'Start New Application',
-      image: './image1.png',
+      image: './image1.webp',
       route: '/pet-register'
     },
     {
@@ -26,7 +26,7 @@ const Services = () => {
         indian: '₹ 200'
       },
       actionText: 'Renew Application',
-      image: './image2.png',
+      image: './image2.webp',
       route: '/renew-register'
     },
     {
@@ -37,7 +37,7 @@ const Services = () => {
         indian: '₹ 200'
       },
       actionText: 'Submit Updates',
-      image: './image.png',
+      image: './image.webp',
       route: '/pet-register'
     }
   ];

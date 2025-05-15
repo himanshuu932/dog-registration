@@ -269,7 +269,7 @@
       .login-wrapper {
         flex-direction: column;
         /* New background image for smaller screens */
-        background-image: url('./bg.png'); /* Replace with your mobile image path */
+        background-image: url('./bg.webp'); /* Replace with your mobile image path */
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;

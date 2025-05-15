@@ -161,7 +161,7 @@ const DogLicenseDownload = () => {
                   <div className="pdf-header">
                     <div className="pdf-header-left">
                       <div className="pdf-logo-icon">
-                         <img src="./logo.png"></img>
+                         <img src="./logo.webp"></img>
                       </div>
                       <div className="pdf-org-name">
                         <h3>Nagar Nigam Gorakhpur</h3>

@@ -96,7 +96,7 @@ function Navbar({ languageType, user, notifications = [], onLogout, onLanguageCh
           </button>
 
           <div className="navbar__logo">
-            <img src="./logo.png" alt="Logo" className="navbar__logo-img" />
+            <img src="./logo.webp" alt="Logo" className="navbar__logo-img" />
             <span className="gov-logo">Nagar Nigam Gorakhpur</span>
           </div>
 
