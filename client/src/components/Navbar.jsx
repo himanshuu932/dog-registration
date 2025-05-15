@@ -4,10 +4,10 @@ import { Bell } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const navItems = [
-  { hi: 'होम',               en: 'Home'               },
-  { hi: 'नई पंजीकरण',       en: 'New Registration'   },
+  { hi: 'होम',            en: 'Home'           },
+  { hi: 'नई पंजीकरण',      en: 'New Registration' },
   { hi: 'पंजीकरण नवीनीकरण',  en: 'Renew Registration' },
-  { hi: 'लाइसेंस डाउनलोड',   en: 'Download License'   },
+  { hi: 'लाइसेंस डाउनलोड',  en: 'Download License'   },
   { hi: 'प्रश्न और प्रतिक्रिया',  en: 'Query & Feedback'   },
 ];
 
@@ -15,25 +15,38 @@ function Navbar({ languageType, user, notifications = [], onLogout, onLanguageCh
   const [showMenu, setShowMenu] = useState(false);
   const [showNotif, setShowNotif] = useState(false);
   const navigate = useNavigate();
-  const notifRef = useRef(null);
-  const menuRef = useRef(null);
-  
+  const notifRef = useRef(null); // Ref for notification dropdown
+  const menuRef = useRef(null); // Ref for the mobile menu container
+  const hamburgerRef = useRef(null); // Ref for the hamburger button
+
   const label = (item) => languageType === 'hi' ? item.hi : item.en;
 
-  // Close notification dropdown when clicking outside
+  // Effect to close dropdowns when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
+      // Close notification dropdown if click is outside notifRef
       if (notifRef.current && !notifRef.current.contains(event.target)) {
         setShowNotif(false);
       }
+
+      // Close mobile menu if click is outside menuRef AND outside hamburgerRef
+      // Only applies if the menu is currently shown
+      if (showMenu && menuRef.current && !menuRef.current.contains(event.target) &&
+          hamburgerRef.current && !hamburgerRef.current.contains(event.target)) {
+        setShowMenu(false);
+      }
     }
-    
+
+    // Add event listener for mousedown clicks on the document
     document.addEventListener('mousedown', handleClickOutside);
+
+    // Cleanup function to remove the event listener
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
+  }, [showMenu, showNotif]); // Depend on showMenu and showNotif to re-run effect when they change
 
+  // Function to handle navigation item clicks
   const handleNavItemClick = (label) => {
     switch (label) {
       case 'Home':
@@ -44,22 +57,25 @@ function Navbar({ languageType, user, notifications = [], onLogout, onLanguageCh
         break;
       case 'Renew Registration':
         navigate('/renew-register');
-        break;  
+        break;
       case 'Download License':
         navigate('/download-license');
         break;
       case 'Query & Feedback':
         navigate('/feedback');
-        break;      
-
+        break;
       default:
         console.warn('Unhandled nav item:', label);
     }
+    // Close the menu after navigating
     setShowMenu(false);
   };
 
+  // Function to toggle the mobile menu visibility
   const toggleMenu = () => {
     setShowMenu(!showMenu);
+    // Close notification dropdown when opening/closing the menu
+    setShowNotif(false);
   };
 
   return (
@@ -67,10 +83,12 @@ function Navbar({ languageType, user, notifications = [], onLogout, onLanguageCh
       <div className="navbar__container">
         {/* Top Row */}
         <div className="navbar__top-row">
+          {/* Hamburger button with ref */}
           <button
+            ref={hamburgerRef} // Attach ref to hamburger button
             className={`hamburger ${showMenu ? 'active' : ''}`}
             aria-label="Toggle menu"
-            onClick={toggleMenu}
+            onClick={toggleMenu} // Use the toggleMenu function
           >
             <span></span>
             <span></span>
@@ -125,54 +143,53 @@ function Navbar({ languageType, user, notifications = [], onLogout, onLanguageCh
               {user && (
                 <span className="navbar__username">{user.username}</span>
               )}
-              
+
               <div className="auth-action">
                 {user
-                  ? <button className="btn btn--gov" onClick={onLogout}>Logout</button>
-                  : <button className="btn btn--gov" onClick={() => navigate('/login')}>Login</button>
+                  ? <button className="btn btn--gov" onClick={() => { setShowMenu(false); onLogout(); }}>Logout</button> 
+                  : <button className="btn btn--gov" onClick={() => { setShowMenu(false); navigate('/login'); }}>Login</button> 
                 }
               </div>
             </div>
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        <div className={`navbar__mobile-menu ${showMenu ? 'show' : ''}`} ref={menuRef}>
+        {/* Mobile Menu with ref */}
+        <div className={`navbar__mobile-menu ${showMenu ? 'show' : ''}`} ref={menuRef}> {/* Attach ref to mobile menu */}
           <ul className="navbar__menu">
             {navItems.map((item, idx) => (
               <li
                 key={idx}
                 className="nav-item nav-item--gov"
-                onClick={() => handleNavItemClick(item.en)}
+                onClick={() => handleNavItemClick(item.en)} // handleNavItemClick now closes the menu
               >
                 {label(item)}
               </li>
             ))}
-            
+
             {/* Mobile-only auth action */}
             <li className="nav-item nav-item--gov mobile-auth">
               {user
-                ? <button className="btn btn--gov" onClick={onLogout}>Logout</button>
-                : <button className="btn btn--gov" onClick={() => navigate('/login')}>Login</button>
+                ? <button className="btn btn--gov" onClick={() => { setShowMenu(false); onLogout(); }}>Logout</button>
+                : <button className="btn btn--gov" onClick={() => { setShowMenu(false); navigate('/login'); }}>Login</button> 
               }
             </li>
           </ul>
         </div>
+         {/* Desktop bottom row for navigation items */}
          <div className='navbar__desktop-only'>
-          {user && (
+          {user && ( // Only show bottom row if user is logged in
           <div className="navbar__bottom-row">
-            <ul className={`navbar__menu ${showMenu ? 'show' : ''}`}>
+            <ul className="navbar__menu"> {/* This menu is only shown on desktop */}
               {navItems.map((item, idx) => (
                 <li
                   key={idx}
                   className="nav-item nav-item--gov"
-                  onClick={() => handleNavItemClick(item.en)}
+                  onClick={() => handleNavItemClick(item.en)} // handleNavItemClick handles navigation and menu closing (though not strictly needed for desktop)
                 >
                   {label(item)}
                 </li>
               ))}
-
-             
             </ul>
           </div>
         )}

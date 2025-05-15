@@ -1,16 +1,22 @@
-/* App.css */
-
-html, body {
-  height: 100%;
-  margin: 0;
+html, body, #root {
+  height: 100vh;
+  background-image: linear-gradient(135deg, #e9f0f9 0%, #d4e3f7 100%);
 }
 
-.app-wrapper {
+body {
+  margin: 0;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  background-image: linear-gradient(135deg, #e9f0f9 0%, #d4e3f7 100%);
 }
 
-.main-content {
+#root {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-image: linear-gradient(135deg, #e9f0f9 0%, #d4e3f7 100%);
+}
+
+main {
   flex: 1;
 }

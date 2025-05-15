@@ -1,77 +1,89 @@
 import React from 'react';
 import './styles/Services.css';
+import { useNavigate } from 'react-router-dom';
 
 const Services = () => {
-  // Mock data
-  const services = [
+  const navigate = useNavigate();
+
+  // Data for services
+  const portalServices = [
     {
-      id: 'new',
-      title: 'New Registration',
-      background: '#f6d365',
-      fees: {
+      id: 'reg001',
+      heading: 'New Application Submission',
+      feeInfo: {
         foreign: '₹ 1000',
         indian: '₹ 200'
       },
-      buttonText: 'Register Now'
+      actionText: 'Start New Application',
+      image: './image1.png',
+      route: '/pet-register'
     },
     {
-      id: 'renewal',
-      title: 'Registration Renewal',
-      background: '#4ad2a9',
-      fees: {
+      id: 'ren002',
+      heading: 'Existing Application Renewal',
+      feeInfo: {
         foreign: '₹ 1000',
         indian: '₹ 200'
       },
-      buttonText: 'Renew Now'
+      actionText: 'Renew Application',
+      image: './image2.png',
+      route: '/renew-register'
     },
     {
-      id: 'update',
-      title: 'Update Rabies Certifications',
-      background: '#b7e49d',
-      fees: {
+      id: 'upd003',
+      heading: 'Update Documentation',
+      feeInfo: {
         foreign: '₹ 1000',
         indian: '₹ 200'
       },
-      buttonText: 'Update Now'
+      actionText: 'Submit Updates',
+      image: './image.png',
+      route: '/pet-register'
     }
   ];
 
+  const handleServiceClick = (route) => { // Corrected to JavaScript syntax
+    navigate(route);
+  };
+
   return (
-    <div className="services-section">
-      <div className="container">
-        <h2>Services We Offer</h2>
-        <div className="services-grid">
-          {services.map(service => (
-            <div className="service-card" key={service.id}>
-              <div
-                className="service-image"
-                style={{ backgroundColor: service.background }}
-              >
+    <section className="gov-portal-services-module">
+      <div className="gov-portal-services-container">
+        <h2 className="gov-portal-services-title">Our Services</h2>
+        <div className="gov-portal-services-grid-layout">
+          {portalServices.map(service => (
+            <div className="gov-portal-service-item" key={service.id}>
+              <div className="gov-portal-service-visual">
                 <img
-                  src={`https://picsum.photos/seed/service${service.id}/300/200`}
-                  alt={service.title}
-                  className="responsive-cover"
+                  src={service.image}
+                  alt={`Image related to ${service.heading}`}
+                  className="gov-portal-service-image-cover"
                 />
-                <div className="service-title">
-                  <h3>{service.title}</h3>
+                <div className="gov-portal-service-heading">
+                  <h3>{service.heading}</h3>
                 </div>
               </div>
-              <div className="service-details">
-                <div className="fee-grid">
-                  <div className="fee-header">New Registration</div>
-                  <div className="fee-header">Certificate Processing Fee</div>
-                  <div className="fee-row">Foreign Breed</div>
-                  <div className="fee-row">{service.fees.foreign}</div>
-                  <div className="fee-row">Indian Breed</div>
-                  <div className="fee-row">{service.fees.indian}</div>
+              <div className="gov-portal-service-details-block">
+                <div className="gov-portal-service-fee-grid">
+                  <div className="gov-portal-service-fee-header">Applicant Type</div>
+                  <div className="gov-portal-service-fee-header">Processing Fee</div>
+                  <div className="gov-portal-service-fee-row">Foreign Breed</div>
+                  <div className="gov-portal-service-fee-row">{service.feeInfo.foreign}</div>
+                  <div className="gov-portal-service-fee-row">Indian Breed</div>
+                  <div className="gov-portal-service-fee-row">{service.feeInfo.indian}</div>
                 </div>
-                <button className="btn btn-secondary">{service.buttonText}</button>
+                <button
+                  className="gov-portal-action-button"
+                  onClick={() => handleServiceClick(service.route)}
+                >
+                  {service.actionText}
+                </button>
               </div>
             </div>
           ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

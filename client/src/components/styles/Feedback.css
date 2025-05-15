@@ -1,26 +1,82 @@
 :root {
+  /* Admin Panel Colors for consistency */
+  --admin-primary: #2c3e50;
+  --admin-primary-light: #34495e;
+  --admin-secondary: #3498db;
+  --admin-secondary-light: #5dade2;
+  --admin-accent: #1abc9c;
+  --admin-success: #23814a;
+  --admin-danger: #d84e3f;
+  --admin-warning: #f39c12;
+  --admin-pending: #f1c40f;
+  --admin-gray-light: #ecf0f1;
+  --admin-gray: #bdc3c7;
+  --admin-gray-dark: #7f8c8d;
+  --admin-white: #ffffff;
+  --admin-black: #2c3e50;
+  --admin-shadow: rgba(0, 0, 0, 0.1);
+  --admin-border-radius: 4px;
+  --admin-font-main: 'Roboto', sans-serif;
+
+  /* User Download Specific Colors - Mapping to Admin colors with user-dl- prefix */
+  --user-dl-primary: var(--admin-primary);
+  --user-dl-primary-light: var(--admin-primary-light);
+  --user-dl-secondary: var(--admin-secondary);
+  --user-dl-secondary-light: var(--admin-secondary-light);
+  --user-dl-accent: var(--admin-accent);
+  --user-dl-success: var(--admin-success);
+  --user-dl-danger: var(--admin-danger);
+  --user-dl-warning: var(--admin-warning);
+  --user-dl-pending: var(--admin-pending);
+  --user-dl-gray-light: var(--admin-gray-light);
+  --user-dl-gray: var(--admin-gray);
+  --user-dl-gray-dark: var(--admin-gray-dark);
+  --user-dl-white: var(--admin-white);
+  --user-dl-black: var(--admin-black);
+  --user-dl-shadow: var(--admin-shadow);
+  --user-dl-border-radius: var(--admin-border-radius);
+  --user-dl-font-main: var(--admin-font-main);
+
+   /* Original gov colors for the PDF layout */
   --gov-blue: #005ea5;
   --gov-light: #f3f2f1;
   --gov-dark-gray: #1f1f1f;
-  --gov-orange: #d47a00;
+  --gov-green: #00703c;
   --text-color: #212b36;
+  --border-color: #0a0a0a;
+  --gov-maroon: #8b0000;
+  --gov-gold: #b8860b;
+
+   /* Re-evaluate existing dl- colors and decide if they are still needed or should be replaced */
+   --dl-primary: #0052cc;
+   --dl-success: #00875a;
+   --dl-warning: #ff8800;
+   --dl-danger: #de350b;
+   --dl-light: #f4f5f7;
+   --dl-medium: #dfe1e6;
+   --dl-dark: #505f79;
+   --dl-white: #ffffff;
+   --dl-black: #172b4d;
+   --dl-card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+   --dl-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .qf-container {
-  max-width: 600px;
+  max-width: 1000px;
   margin: 2rem auto;
+  min-height: 60vh;
   padding: 1.5rem;
-  background: var(--gov-light);
-  border: 1px solid #dcdcdc;
-  border-radius: 8px;
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-  color: var(--text-color);
+  background: var(--user-dl-gray-light); /* Mapped from --gov-light */
+  border: 1px solid var(--user-dl-gray); /* Using user-dl-gray for border */
+  border-radius: var(--user-dl-border-radius); /* Using user-dl border radius */
+  font-family: var(--user-dl-font-main); /* Using user-dl font */
+  color: var(--user-dl-black); /* Mapped from --text-color */
 }
 
 .qf-title {
   font-size: 1.75rem;
   margin-bottom: 1rem;
-  border-bottom: 2px solid var(--gov-blue);
+  border-bottom: 2px solid var(--user-dl-primary); /* Mapped from --gov-blue */
   padding-bottom: 0.5rem;
 }
 
@@ -39,36 +95,36 @@
 .qf-textarea {
   padding: 0.5rem;
   font-size: 1rem;
-  border: 1px solid #aaa;
-  border-radius: 4px;
+  border: 1px solid var(--user-dl-gray); /* Using user-dl-gray for input border */
+  border-radius: 4px; /* Keeping 4px as it's common and close to user-dl */
 }
 
 .qf-input:focus,
 .qf-textarea:focus {
-  outline: 2px solid var(--gov-blue);
-  border-color: var(--gov-blue);
+  outline: 2px solid var(--user-dl-secondary); /* Using user-dl-secondary for focus outline */
+  border-color: var(--user-dl-secondary); /* Using user-dl-secondary for focus border */
 }
 
 .qf-button {
   margin-top: 1.5rem;
   align-self: flex-start;
   padding: 0.75rem 1.5rem;
-  background: var(--gov-orange);
-  color: #fff;
+  background: var(--user-dl-secondary); /* Mapped from --gov-orange to user-dl-secondary */
+  color: var(--user-dl-white); /* Using user-dl-white for text color */
   font-size: 1rem;
   border: none;
-  border-radius: 4px;
+  border-radius: 4px; /* Keeping 4px */
   cursor: pointer;
   transition: background 0.2s ease-in-out;
 }
 
 .qf-button:hover,
 .qf-button:focus {
-  background: #a05a00;
+  background: var(--user-dl-secondary-light); /* Using a lighter shade for hover/focus */
 }
 
 .qf-success {
   font-size: 1.125rem;
-  color: var(--gov-dark-gray);
+  color: var(--user-dl-dark); /* Mapped from --gov-dark-gray */
   font-weight: 600;
 }

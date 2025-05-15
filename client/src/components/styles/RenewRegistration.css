@@ -10,6 +10,7 @@
 .rr-container {
   max-width: 600px;
   margin: 2rem auto;
+   min-height: 60vh;
   padding: 1.5rem;
   background: var(--gov-light);
   border: 1px solid #dcdcdc;

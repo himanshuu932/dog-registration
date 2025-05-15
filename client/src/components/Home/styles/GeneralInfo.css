@@ -1,0 +1,230 @@
+:root {
+  --gov-deep-blue: #054A91;
+  --gov-medium-blue: #3E7CB1;
+  --gov-light-grey-bg: #F4F7F6;
+  --gov-mid-grey-border: #D4D7DD;
+  --gov-dark-text: #333333;
+  --gov-white: #FFFFFF;
+  --gov-hover-blue: #E6F2FF;
+  --gov-subtle-shadow: rgba(0, 74, 145, 0.15);
+  --gov-accent-red: #da1a2b;
+  --gov-warning-bg: #fffacd;
+}
+
+.gov-portal-info-module {
+  padding: 80px 0;
+  background-image: linear-gradient(135deg, #e9f0f9 0%, #d4e3f7 100%);
+  position: relative;
+  font-family: 'Arial', sans-serif;
+  color: var(--gov-dark-text);
+}
+
+.gov-portal-info-container {
+  width: 100%;
+  max-width: 90vw;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.gov-portal-info-title {
+  font-size: 2.2rem;
+  text-align: center;
+  margin-bottom: 50px;
+  font-weight: 700;
+  color: var(--gov-deep-blue);
+  position: relative;
+  padding-bottom: 15px;
+  text-transform: none;
+  text-decoration: none;
+}
+
+.gov-portal-info-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70px;
+  height: 3px;
+  background: #f90;;
+  border-radius: 2px;
+}
+
+.info-card-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 0;
+}
+
+.gov-portal-info-card {
+  background-color: var(--gov-white);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px var(--gov-subtle-shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid var(--gov-mid-grey-border);
+  padding: 30px;
+  max-width: 100%;
+  width: 100%;
+}
+
+.gov-portal-info-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 74, 145, 0.2);
+}
+
+.gov-portal-info-card-title {
+  text-align: center;
+  color: var(--gov-deep-blue);
+  margin-bottom: 25px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.gov-portal-info-card p {
+  color: var(--gov-dark-text);
+  line-height: 1.7;
+  margin-bottom: 25px;
+  font-size: 1.05rem;
+}
+
+.penalty-heading {
+  margin-top: 20px;
+  color: var(--gov-deep-blue);
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.penalty-list {
+  list-style-type: disc;
+  padding-left: 30px;
+  margin-bottom: 20px;
+  background-color: var(--gov-light-grey-bg);
+  border: 1px solid var(--gov-mid-grey-border);
+  border-radius: 6px;
+  padding: 20px 30px;
+}
+
+.penalty-list-item {
+  margin-bottom: 12px;
+  color: var(--gov-dark-text);
+  line-height: 1.6;
+}
+
+.penalty-list-item:last-child {
+    margin-bottom: 0;
+}
+
+.moving-warning {
+  white-space: nowrap;
+  overflow: hidden;
+  width: fit-content;
+  box-sizing: border-box;
+  animation: move-text 15s linear infinite;
+  display: block;
+  padding: 12px 0;
+  background-color: var(--gov-warning-bg);
+  color: var(--gov-accent-red);
+  font-weight: bold;
+  text-align: center;
+  border: none;
+  margin-bottom: 30px;
+  font-size: 1.1rem;
+}
+
+@keyframes move-text {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@media (max-width: 768px) {
+  .gov-portal-info-module {
+    padding: 60px 0;
+  }
+
+  .gov-portal-info-title {
+    font-size: 2rem;
+    margin-bottom: 40px;
+  }
+
+  .gov-portal-info-card {
+    padding: 25px;
+  }
+
+  .gov-portal-info-card-title {
+    font-size: 1.3rem;
+  }
+
+  .gov-portal-info-card p {
+    font-size: 1rem;
+    margin-bottom: 20px;
+  }
+
+  .penalty-heading {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
+
+  .penalty-list {
+    padding: 15px 25px;
+  }
+
+  .penalty-list-item {
+    margin-bottom: 10px;
+  }
+
+  .moving-warning {
+    width: fit-content;
+    padding: 10px 0;
+    margin-bottom: 25px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .gov-portal-info-title {
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+  }
+
+  .gov-portal-info-card {
+    padding: 20px;
+  }
+
+  .gov-portal-info-card-title {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+  }
+
+  .gov-portal-info-card p {
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+  }
+
+  .penalty-heading {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+  }
+
+  .penalty-list {
+    padding: 15px 20px;
+  }
+
+  .penalty-list-item {
+    margin-bottom: 8px;
+  }
+
+  .moving-warning {
+    padding: 8px 0;
+    width: fit-content;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+  }
+}

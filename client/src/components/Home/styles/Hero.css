@@ -30,6 +30,7 @@
 }
 
 .hero-text p {
+  text-align: justify;
   color: var(--light-text);
   margin-bottom: 30px;
   font-size: 1.1rem;
@@ -104,7 +105,7 @@
   .hero-text h1 {
     font-size: 2.3rem;
   }
-  
+
   .pet-circle {
     width: 350px;
     height: 350px;
@@ -116,7 +117,7 @@
     flex-direction: column;
     text-align: center;
   }
-  
+
   .hero-text {
     margin-bottom: 40px;
     max-width: 100%;
@@ -128,4 +129,6 @@
     width: 280px;
     height: 280px;
   }
+ 
+  
 }
