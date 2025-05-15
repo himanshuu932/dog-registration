@@ -189,7 +189,7 @@ const DogLicenseDownload = () => {
                         </div>
                         <div className="pdf-info-row">
                           <div className="pdf-info-label">पंजीकरण संख्या / Registration No.</div>
-                          <div className="pdf-info-value">: {lic._id?.substring(0, 20) || "N/A"}</div>
+                          <div className="pdf-info-value">: {lic.license_Id || "N/A"}</div>
                         </div>
                         <div className="pdf-info-row">
                           <div className="pdf-info-label">जारी दिनांक / Issue Date</div>
