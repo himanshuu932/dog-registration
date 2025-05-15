@@ -167,7 +167,7 @@ import React, { useState, useEffect } from "react";
         <div className="login-wrapper">
           {/* Left side for desktop */}
           <div className="login-left">
-            <img src='./d.webp' alt="Cute Pet" className="doggy" />
+            <img src='./dog1.png' alt="Cute Pet" className="doggy" />
           </div>
           <div className="login-right">
             <div className="login-box">
