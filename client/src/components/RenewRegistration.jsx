@@ -8,7 +8,7 @@ const RenewRegistration = () => {
   const [renewalLoading, setRenewalLoading] = useState(false);
   const [requestSubmitted, setRequestSubmitted] = useState(false);
   const [error, setError] = useState('');
-  const backend = "http://localhost:5000";
+  const backend = "https://dog-registration.onrender.com";
 
   const handleSearch = async (e) => {
     e.preventDefault();
