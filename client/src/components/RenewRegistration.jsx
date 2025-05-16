@@ -33,11 +33,17 @@ const RenewRegistration = () => {
         throw new Error(data.message || 'Failed to fetch license');
       }
 
-      if (data.license) {
-        setLicense(data.license);
-      } else {
-        setError('License not found');
-      }
+ if (data.license) {
+  if (data.license.status === 'renewal_pending') {
+    setError('A renewal request has already been submitted for this license.');
+    setLicense(null);
+  } else {
+    setLicense(data.license);
+  }
+} else {
+  setError('License not found');
+}
+
     } catch (err) {
       setError(err.message || 'Error fetching data. Please try again.');
     } finally {
