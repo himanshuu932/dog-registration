@@ -51,6 +51,11 @@ const AdminPanel = () => {
   }
 });
 
+ // Calculate counts for new registrations and pending renewals
+ const newRegistrationsCount = licenses.filter(lic => lic.status === 'pending').length;
+ const pendingRenewalsCount = licenses.filter(lic => lic.status === 'renewal_pending').length;
+
+
   // Removed: Ref for the admin panel element (not needed without resizing)
   // const adminPanelRef = useRef(null);
 
@@ -553,39 +558,65 @@ return (
     {/* License List Container */}
     {expandedRowId === null && (
       <div className="license-list-container">
-        {/* Tabs for switching between different views */}
-        <div className="admin-tabs">
-           <button
-            className={`admin-tab ${activeTab === 'all' ? 'active' : ''}`}
-            onClick={() => setActiveTab('all')}
-          >
-            <LayoutList size={16} /> All
-          </button>
-          <button
-            className={`admin-tab ${activeTab === 'new' ? 'active' : ''}`}
-            onClick={() => setActiveTab('new')}
-          >
-            <FileText size={16} /> New Applications
-          </button>
-          <button
-            className={`admin-tab ${activeTab === 'renewals' ? 'active' : ''}`}
-            onClick={() => setActiveTab('renewals')}
-          >
-            <Calendar size={16} /> Pending Renewals
-          </button>
-          <button
-            className={`admin-tab ${activeTab === 'approved' ? 'active' : ''}`}
-            onClick={() => setActiveTab('approved')}
-          >
-            <Check size={16} /> Approved
-          </button>
-          <button
-            className={`admin-tab ${activeTab === 'rejected' ? 'active' : ''}`}
-            onClick={() => setActiveTab('rejected')}
-          >
-            <X size={16} /> Rejected
-          </button>
-        </div>
+        {/* Tabs for switching between different views (Desktop) */}
+        {!isMobile && (
+            <div className="admin-tabs-desktop">
+               <button
+                className={`admin-tab ${activeTab === 'all' ? 'active' : ''}`}
+                onClick={() => setActiveTab('all')}
+              >
+                <LayoutList size={16} /> All
+              </button>
+              <button
+                className={`admin-tab ${activeTab === 'new' ? 'active' : ''}`}
+                onClick={() => setActiveTab('new')}
+              >
+                <div style={{ position: 'relative', display: 'inline-block' }}> {/* Container for dot */}
+                  <FileText size={16} />
+                   {newRegistrationsCount > 0 && <span className="notification-dot"></span>} {/* Dot */}
+                </div>
+                 New Applications
+              </button>
+              <button
+                className={`admin-tab ${activeTab === 'renewals' ? 'active' : ''}`}
+                onClick={() => setActiveTab('renewals')}
+              >
+                 <div style={{ position: 'relative', display: 'inline-block' }}> {/* Container for dot */}
+                   <Calendar size={16} />
+                   {pendingRenewalsCount > 0 && <span className="notification-dot"></span>} {/* Dot */}
+                 </div>
+                 Pending Renewals
+              </button>
+              <button
+                className={`admin-tab ${activeTab === 'approved' ? 'active' : ''}`}
+                onClick={() => setActiveTab('approved')}
+              >
+                <Check size={16} /> Approved
+              </button>
+              <button
+                className={`admin-tab ${activeTab === 'rejected' ? 'active' : ''}`}
+                onClick={() => setActiveTab('rejected')}
+              >
+                <X size={16} /> Rejected
+              </button>
+            </div>
+        )}
+
+        {/* Dropdown filter (Mobile) */}
+        {isMobile && (
+            <div className="admin-filter-mobile">
+                <select value={activeTab} onChange={(e) => setActiveTab(e.target.value)}>
+                    <option value="all">All Licenses</option>
+                    <option value="new">New Applications {newRegistrationsCount > 0 && `(${newRegistrationsCount})`}</option> {/* Show count */}
+                    <option value="renewals">Pending Renewals {pendingRenewalsCount > 0 && `(${pendingRenewalsCount})`}</option> {/* Show count */}
+                    <option value="approved">Approved Licenses</option>
+                    <option value="rejected">Rejected Licenses</option>
+                </select>
+                 {activeTab === 'new' && newRegistrationsCount > 0 && <span className="notification-dot"></span>} {/* Dot for active mobile option */}
+                 {activeTab === 'renewals' && pendingRenewalsCount > 0 && <span className="notification-dot"></span>} {/* Dot for active mobile option */}
+            </div>
+        )}
+
 
         {/* Desktop Title */}
         <h2>
@@ -611,12 +642,12 @@ return (
             <table className="license-table">
               <thead>
                 <tr>
-                  {/* Show License # column only for Renewals and Approved */}
+                  {/* Show License # column only for Renewals, Approved, Rejected, and All */}
                   {(activeTab === 'renewals' || activeTab === 'approved' || activeTab === 'rejected' || activeTab === 'all') && <th>License #</th>}
                   <th>Owner</th>
                   <th>Dog Name</th>
                   <th>Status</th>
-                  {/* Show Expiry Date only for Renewals and Approved */}
+                  {/* Show Expiry Date only for Renewals, Approved, and All */}
                   {!isMobile && (activeTab === 'renewals' || activeTab === 'approved' || activeTab === 'all') && <th>Expiry Date</th>}
                   {/* Show Request Date only for Renewals */}
                   {!isMobile && activeTab === 'renewals' && <th>Request Date</th>}
