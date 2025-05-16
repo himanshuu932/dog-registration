@@ -14,7 +14,7 @@ const {
 router.get("/all", verifyToken, isAdmin, getAllLicenses);
 router.patch("/approve/:id", verifyToken, isAdmin, approveLicense);
 router.patch("/reject/:id", verifyToken, isAdmin, rejectLicense);
-router.get('/renewals/pending', verifyToken, isAdmin, getPendingRenewals);
+// router.get('/renewals/pending', verifyToken, isAdmin, getPendingRenewals);
 router.post('/renew-registration/approve', verifyToken, isAdmin, approveRenewal);
 router.post('/renew-registration/reject', verifyToken, isAdmin, rejectRenewal);
 

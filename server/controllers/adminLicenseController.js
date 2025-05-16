@@ -146,14 +146,3 @@ exports.rejectRenewal = async (req, res) => {
   }
 };
 
-exports.getPendingRenewals = async (req, res) => {
-  try {
-    console.log("Entering getPendingRenewals function"); // Add this line
-    const pendingRenewals = await DogLicense.find({ status: "renewal_pending" }).sort({ renewalRequestDate: -1 });
-    console.log("Found renewals:", pendingRenewals.length); // Add this line
-    res.json({ pendingRenewals });
-  } catch (error) {
-    console.error("Fetch pending renewals error:", error);
-    res.status(500).json({ message: "Failed to fetch pending renewals" });
-  }
-};
