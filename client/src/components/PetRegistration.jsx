@@ -43,7 +43,7 @@ const [avatarUrl, setAvatarUrl] = useState('');
 
 
 
-   const backend = "https://dog-registration.onrender.com";
+   const backend = "http://localhost:5000";
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;

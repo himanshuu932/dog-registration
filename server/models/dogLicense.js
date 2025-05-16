@@ -35,7 +35,7 @@ const dogLicenseSchema = new mongoose.Schema(
     expiryDate: Date,
     status: {
       type: String,
-      enum: ['pending', 'approved', 'rejected'],
+      enum: ['pending', 'approved', 'rejected','renewal_pending'],
       default: 'pending',
     },
   },

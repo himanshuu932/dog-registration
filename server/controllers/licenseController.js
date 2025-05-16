@@ -3,6 +3,8 @@ const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
 const path = require('path');
 const { promisify } = require('util');
+const mongoose = require('mongoose');
+
 
 // Configure Cloudinary
 cloudinary.config({
@@ -86,6 +88,8 @@ exports.applyLicense = async (req, res) => {
     const license_Id = `${year}${month}${day}${hours}${minutes}${seconds}${random}`;
 
     const ownerId = req.user.userId;
+
+
 
     const newLicense = new DogLicense({
       owner: ownerId,
@@ -188,3 +192,77 @@ exports.deleteLicense = async (req, res) => {
     res.status(500).json({ message: "Failed to delete license" });
   }
 };
+
+
+
+exports.getLicenseForRenewal = async (req, res) => {
+  try {
+    const { licenseNumber } = req.query;
+
+    if (!licenseNumber) {
+      return res.status(400).json({ message: "License number is required" });
+    }
+
+    console.log("Requested licenseNumber:", licenseNumber);
+console.log("Authenticated user ID:", req.user.userId);
+
+    const license = await DogLicense.findOne({
+      license_Id: licenseNumber,
+     
+
+    });
+
+    if (!license) {
+      return res.status(404).json({ message: "License not found" });
+    }
+
+    res.json({ license });
+  } catch (error) {
+    console.error("Get license for renewal error:", error);
+    res.status(500).json({ message: "Failed to retrieve license" });
+  }
+};
+
+
+// User submits renewal request
+exports.requestLicenseRenewal = async (req, res) => {
+  try {
+    const { licenseNumber } = req.body;
+    
+    if (!licenseNumber) {
+      return res.status(400).json({ message: "License number is required" });
+    }
+
+    const license = await DogLicense.findOne({ 
+      license_Id: licenseNumber,
+     
+    });
+
+    if (!license) {
+      return res.status(404).json({ message: "License not found" });
+    }
+
+    // Check if license is already approved for renewal
+    if (license.status === 'renewal_pending') {
+      return res.status(400).json({ message: "Renewal request already submitted" });
+    }
+
+    // Update the license status to 'renewal_pending'
+    await DogLicense.findByIdAndUpdate(
+      license._id,
+      { 
+        status: 'renewal_pending',
+        renewalRequestDate: new Date() // Track when renewal was requested
+      }
+    );
+
+    res.json({ 
+      message: "Renewal request submitted for admin approval",
+      status: 'renewal_pending'
+    });
+  } catch (error) {
+    console.error("License renewal request error:", error);
+    res.status(500).json({ message: "Failed to submit renewal request" });
+  }
+};
+

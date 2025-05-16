@@ -5,56 +5,96 @@ const RenewRegistration = () => {
   const [licenseNumber, setLicenseNumber] = useState('');
   const [license, setLicense] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [renewed, setRenewed] = useState(false);
+  const [renewalLoading, setRenewalLoading] = useState(false);
+  const [requestSubmitted, setRequestSubmitted] = useState(false);
   const [error, setError] = useState('');
+  const backend = "http://localhost:5000";
 
-  const handleSearch = e => {
+  const handleSearch = async (e) => {
     e.preventDefault();
     setError('');
-    setRenewed(false);
+    setRequestSubmitted(false);
     setLicense(null);
     setLoading(true);
 
-    fetch(`/api/renew-registration?licenseNumber=${encodeURIComponent(licenseNumber)}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.license) {
-          setLicense(data.license);
-        } else {
-          setError('License not found');
+    try {
+      const response = await fetch(
+        `${backend}/api/license/renew-registration?licenseNumber=${encodeURIComponent(licenseNumber)}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
         }
-        setLoading(false);
-      })
-      .catch(() => {
-        setError('Error fetching data. Please try again.');
-        setLoading(false);
-      });
+      );
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to fetch license');
+      }
+
+      if (data.license) {
+        setLicense(data.license);
+      } else {
+        setError('License not found');
+      }
+    } catch (err) {
+      setError(err.message || 'Error fetching data. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleRenew = () => {
+  const handleRenewRequest = async () => {
     setError('');
-    fetch('/api/renew-registration', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ licenseNumber })
-    })
-      .then(res => {
-        if (res.ok) setRenewed(true);
-        else throw new Error();
-      })
-      .catch(() => {
-        setError('Renewal failed. Please try again.');
+    setRenewalLoading(true);
+
+    try {
+      const response = await fetch(`${backend}/api/license/renew-registration/request`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ licenseNumber })
       });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Renewal request failed');
+      }
+
+      setRequestSubmitted(true);
+      setLicense(null);
+      setLicenseNumber('');
+    } catch (err) {
+      setError(err.message || 'Renewal request failed. Please try again.');
+    } finally {
+      setRenewalLoading(false);
+    }
   };
 
   return (
     <main className="rr-container">
       <h1 className="rr-title">Renew Registration</h1>
 
-      {renewed ? (
-        <p className="rr-success">
-          Your registration has been successfully renewed.
-        </p>
+      {requestSubmitted ? (
+        <div className="rr-success-container">
+          <p className="rr-success">
+            Your renewal request has been submitted for admin approval.
+          </p>
+          <p>You will be notified once it's processed.</p>
+          <button 
+            className="rr-button"
+            onClick={() => {
+              setRequestSubmitted(false);
+              setLicenseNumber('');
+            }}
+          >
+            Request Another Renewal
+          </button>
+        </div>
       ) : (
         <>
           <form onSubmit={handleSearch} className="rr-search-form" noValidate>
@@ -70,8 +110,12 @@ const RenewRegistration = () => {
               onChange={e => setLicenseNumber(e.target.value)}
               required
             />
-            <button type="submit" className="rr-button">
-              Search
+            <button 
+              type="submit" 
+              className="rr-button"
+              disabled={loading}
+            >
+              {loading ? 'Searching...' : 'Search'}
             </button>
           </form>
 
@@ -83,27 +127,32 @@ const RenewRegistration = () => {
               <h2 className="rr-subtitle">Current Details</h2>
               <dl>
                 <div className="rr-row">
-                  <dt>Owner</dt>
-                  <dd>{license.owner}</dd>
-                </div>
-                <div className="rr-row">
                   <dt>Dog Name</dt>
-                  <dd>{license.dogName}</dd>
+                  <dd>{license.dog.name}</dd>
                 </div>
                 <div className="rr-row">
                   <dt>License No.</dt>
-                  <dd>{license.licenseNumber}</dd>
+                  <dd>{license.license_Id}</dd>
                 </div>
                 <div className="rr-row">
-                  <dt>Expiry Date</dt>
-                  <dd>{license.expiryDate}</dd>
+                  <dt>Current Expiry Date</dt>
+                  <dd>{new Date(license.expiryDate).toLocaleDateString()}</dd>
+                </div>
+                <div className="rr-row">
+                  <dt>New Expiry Date</dt>
+                  <dd>
+                    {new Date(
+                      new Date().setFullYear(new Date().getFullYear() + 1)
+                    ).toLocaleDateString()}
+                  </dd>
                 </div>
               </dl>
               <button
-                onClick={handleRenew}
+                onClick={handleRenewRequest}
                 className="rr-button rr-button--renew"
+                disabled={renewalLoading}
               >
-                Renew Now
+                {renewalLoading ? 'Submitting...' : 'Request Renewal'}
               </button>
             </section>
           )}

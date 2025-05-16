@@ -21,6 +21,8 @@
   --font-main: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Oxygen', 'Ubuntu', sans-serif;
 }
 
+
+
 /* Base Styles */
 .admin-panel {
   font-family: var(--font-main);
@@ -269,6 +271,15 @@ button {
     gap: 0.5rem; /* Space between approve and reject buttons */
     align-items: center;
     flex-shrink: 0; /* Prevent shrinking */
+}
+
+/* Add this to your CSS */
+.renewal-highlight {
+  background-color: rgba(52, 152, 219, 0.1) !important;
+}
+
+.renewal-highlight:hover {
+  background-color: rgba(52, 152, 219, 0.2) !important;
 }
 
 
@@ -824,6 +835,36 @@ button {
 }
 
 
+.admin-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 0.5rem;
+}
+
+.admin-tab {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0077cc;
+  cursor: pointer;
+  padding: 0.4rem 0.75rem;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.admin-tab:hover {
+  color: #005fa3;
+}
+
+.admin-tab.active {
+  color: #000;
+  border-bottom: 3px solid #0077cc;
+}
+
+
 /* Media Queries (Mobile Styles - Adjusting based on single column for all sizes) */
 @media (max-width: 768px) {
   .admin-panel {
@@ -1022,3 +1063,5 @@ button {
        }
   }
 }
+
+
