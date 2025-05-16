@@ -37,7 +37,12 @@ const RenewRegistration = () => {
   if (data.license.status === 'renewal_pending') {
     setError('A renewal request has already been submitted for this license.');
     setLicense(null);
-  } else {
+  } 
+  
+  else if (data.license.status === 'pending'){
+   setError('Your license application is still under review. You can only request a renewal after it has been approved.');
+  }
+  else {
     setLicense(data.license);
   }
 } else {
