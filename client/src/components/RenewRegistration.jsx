@@ -42,6 +42,11 @@ const RenewRegistration = () => {
   else if (data.license.status === 'pending'){
    setError('Your license application is still under review. You can only request a renewal after it has been approved.');
   }
+
+ else if (data.license.status === 'rejected') {
+  setError('Your license application was rejected. You need to apply for a new registration to proceed.');
+}
+
   else {
     setLicense(data.license);
   }

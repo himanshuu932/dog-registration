@@ -767,6 +767,14 @@ padding-left: 10px;
   margin: 0;
 }
 
+.user-dl-rejection-reason {
+  background-color: #fff8f8;
+  border-left: 3px solid #ff6b6b;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  color: #d33;
+}
+
 /* Styles to force desktop layout for PDF generation */
 .force-desktop-pdf-layout .pdf-border {
     padding: 8px;

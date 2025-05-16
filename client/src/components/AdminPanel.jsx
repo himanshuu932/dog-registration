@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react"; // Removed useRef
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./styles/AdminPanel.css"; // Ensure the CSS file is correctly linked
+import "./styles/AdminPanel.css";
 import {
   Dog,
   User,
@@ -11,69 +11,54 @@ import {
   Check,
   X,
   Eye,
-  EyeOff, // Keep EyeOff icon just in case, but it might not be used in the UI
+  EyeOff,
   FileText,
   Award,
-  Syringe, // Kept for vaccination
-  Stamp, // Kept for official stamp
-  Globe, // Kept for website
-  ChevronLeft, // Added for back button
-  LayoutList, // Added for All category icon
+  Syringe,
+  Stamp,
+  Globe,
+  ChevronLeft,
+  LayoutList,
 } from "lucide-react";
 
 const AdminPanel = () => {
   const [licenses, setLicenses] = useState([]);
   const [loading, setLoading] = useState(true);
-  // State to hold the ID of the currently expanded row (for single expansion)
   const [expandedRowId, setExpandedRowId] = useState(null);
-  // State to track if the certificate view is active for the expanded row
   const [certificateView, setCertificateView] = useState({});
   const [activeTab, setActiveTab] = useState('new');
-
-
-  // State for mobile detection
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   const filteredLicenses = licenses.filter(lic => {
-  switch(activeTab) {
-    case 'all': // Added 'all' case
-        return true; // Show all licenses
-    case 'new':
-      return lic.status === 'pending';
-    case 'renewals':
-      return lic.status === 'renewal_pending';
-    case 'approved':
-      return lic.status === 'approved';
-    case 'rejected':
-      return lic.status === 'rejected';
-    default:
-      return true; // Default to showing all licenses if activeTab is unknown
-  }
-});
+    switch(activeTab) {
+      case 'all':
+        return true;
+      case 'new':
+        return lic.status === 'pending';
+      case 'renewals':
+        return lic.status === 'renewal_pending';
+      case 'approved':
+        return lic.status === 'approved';
+      case 'rejected':
+        return lic.status === 'rejected';
+      default:
+        return true;
+    }
+  });
 
- // Calculate counts for new registrations and pending renewals
- const newRegistrationsCount = licenses.filter(lic => lic.status === 'pending').length;
- const pendingRenewalsCount = licenses.filter(lic => lic.status === 'renewal_pending').length;
+  const newRegistrationsCount = licenses.filter(lic => lic.status === 'pending').length;
+  const pendingRenewalsCount = licenses.filter(lic => lic.status === 'renewal_pending').length;
 
-
-  // Removed: Ref for the admin panel element (not needed without resizing)
-  // const adminPanelRef = useRef(null);
-
-  // Removed: Handlers for resizing (not needed without resizing)
-  // const startResizing = (e) => { ... };
-
-  // Effect to update isMobile state on window resize
   useEffect(() => {
     const handleResize = () => {
       const mobileNow = window.innerWidth <= 768;
       setIsMobile(mobileNow);
-      // No layout adjustments needed here anymore, CSS handles desktop/mobile grid
     };
     window.addEventListener('resize', handleResize);
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, []); // No dependency on expandedRowId needed here anymore
+  }, []);
 
   const backend = "https://dog-registration.onrender.com";
   const token = localStorage.getItem("token");
@@ -91,70 +76,50 @@ const AdminPanel = () => {
     }
   };
 
-
-
-// const fetchPendingRenewals = async () => {
-//   try {
-//     console.log("Fetching pending renewals..."); // Add this
-//     const res = await axios.get(`${backend}/api/admin/renewals/pending`, {
-//       headers: { Authorization: `Bearer ${token}` },
-//     });
-//     console.log("Renewals response:", res.data); // Add this
-//     setPendingRenewals(res.data.pendingRenewals);
-//   } catch (err) {
-//     console.error("Error fetching renewals:", err.response?.data || err.message); // Enhanced error logging
-//     alert("Failed to load pending renewals");
-//   }
-// };
-
-  const updateStatus = async (id, action) => {
+  const updateStatus = async (id, action, reason = '') => {
     try {
-      await axios.patch(`${backend}/api/admin/${action}/${id}`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.patch(
+        `${backend}/api/admin/${action}/${id}`,
+        { ...(action === 'reject' && { reason }) },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       alert(`License ${action}d`);
-      fetchLicenses(); // refresh
-       // If the updated license is currently expanded, trigger a re-render of details
-       if (expandedRowId === id) {
-           // A simple way to trigger re-render is to just update the licenses state,
-           // which fetchLicenses() already does.
-       }
+      fetchLicenses();
     } catch (err) {
       alert("Failed to update license status");
     }
   };
 
-const handleRenewalDecision = async (id, action, reason = '') => {
-  try {
-    const endpoint = action === 'approve'
-      ? `${backend}/api/admin/renew-registration/approve`
-      : `${backend}/api/admin/renew-registration/reject`;
+  const handleRenewalDecision = async (id, action, reason = '') => {
+    try {
+      const endpoint = action === 'approve'
+        ? `${backend}/api/admin/renew-registration/approve`
+        : `${backend}/api/admin/renew-registration/reject`;
 
-    await axios.post(endpoint,
-      { licenseId: id, ...(action === 'reject' && { reason }) },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+      await axios.post(
+        endpoint,
+        { licenseId: id, ...(action === 'reject' && { reason }) },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-    alert(`Renewal ${action}d`);
-    fetchLicenses(); // Refresh the main list
-  } catch (err) {
-    alert(`Failed to ${action} renewal`);
-  }
-};
-
-  // Modified toggleExpanded for single row expansion
-  const toggleExpanded = (id) => {
-      if (expandedRowId === id) {
-          // If clicking the already expanded row, collapse it
-          setExpandedRowId(null);
-          setCertificateView({}); // Also reset certificate view
-      } else {
-          // If clicking a different row, expand it
-          setExpandedRowId(id);
-          setCertificateView({ [id]: false }); // Default to standard view
-      }
+      alert(`Renewal ${action}d`);
+      fetchLicenses();
+    } catch (err) {
+      alert(`Failed to ${action} renewal`);
+    }
   };
 
+  const toggleExpanded = (id) => {
+    if (expandedRowId === id) {
+      setExpandedRowId(null);
+      setCertificateView({});
+    } else {
+      setExpandedRowId(id);
+      setCertificateView({ [id]: false });
+    }
+  };
 
   const toggleCertificateView = (id) => {
     setCertificateView((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -171,114 +136,122 @@ const handleRenewalDecision = async (id, action, reason = '') => {
   }, []);
 
   const selectedLicense = licenses.find(lic => lic._id === expandedRowId);
-  // Removed: isTwoColumnLayout state and calculation
-  // const isTwoColumnLayout = expandedRowId !== null && !isMobile;
-
 
   const renderStandardView = (lic) => {
     return (
       <div className="license-details standard-form-view">
-         {/* Mobile Actions Bar (Visible on mobile, when status is pending) */}
-         {/* Show pending actions ONLY on mobile AND if status is pending */}
         {isMobile && (lic.status === 'pending' || lic.status === 'renewal_pending') && (
-             <div className="mobile-details-actions">
-                 {(lic.status === "pending" || lic.status === "renewal_pending") && (
-                        <>
-                          <button
-                            className="btn-approve"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (lic.status === 'renewal_pending') {
-                                handleRenewalDecision(lic._id, "approve");
-                              } else {
-                                updateStatus(lic._id, "approve");
-                              }
-                            }}
-                          >
-                            <Check size={16} className="btn-icon" /> Approve
-                          </button>
-                          <button
-                            className="btn-reject"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const reason = prompt('Enter rejection reason:');
-                              if (reason) {
-                                if (lic.status === 'renewal_pending') {
-                                  handleRenewalDecision(lic._id, "reject", reason);
-                                } else {
-                                  updateStatus(lic._id, "reject");
-                                }
-                              }
-                            }}
-                          >
-                            <X size={16} className="btn-icon" /> Reject
-                          </button>
-                        </>
-                      )}
-             </div>
-         )}
+          <div className="mobile-details-actions">
+            {(lic.status === "pending" || lic.status === "renewal_pending") && (
+              <>
+                <button
+                  className="btn-approve"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (lic.status === 'renewal_pending') {
+                      handleRenewalDecision(lic._id, "approve");
+                    } else {
+                      updateStatus(lic._id, "approve");
+                    }
+                  }}
+                >
+                  <Check size={16} className="btn-icon" /> Approve
+                </button>
+                <button
+                  className="btn-reject"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const reason = prompt('Enter rejection reason:');
+                    if (reason) {
+                      if (lic.status === 'renewal_pending') {
+                        handleRenewalDecision(lic._id, "reject", reason);
+                      } else {
+                        updateStatus(lic._id, "reject", reason);
+                      }
+                    }
+                  }}
+                >
+                  <X size={16} className="btn-icon" /> Reject
+                </button>
+              </>
+            )}
+          </div>
+        )}
 
-         <div className="owner-photo-group">
-              <div className="certificate-section owner-details">
-                <div className="section-header">
-                  <User size={16} className="section-icon" />
-                  Owner Information
+        {lic.status === 'rejected' && lic.rejectionReason && (
+          <div className="certificate-section rejection-reason">
+            <div className="section-header">
+              <X size={16} className="section-icon" />
+              Rejection Reason
+            </div>
+            <div className="section-content">
+              <div className="rejection-reason-text">
+                {lic.rejectionReason}
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="owner-photo-group">
+          <div className="certificate-section owner-details">
+            <div className="section-header">
+              <User size={16} className="section-icon" />
+              Owner Information
+            </div>
+            <div className="section-content">
+              <div className="owner-grid certificate-grid">
+                <div className="grid-item span-two">
+                  <strong>Name:</strong> {lic.fullName || "N/A"}
                 </div>
-                <div className="section-content">
-                  <div className="owner-grid certificate-grid"> {/* Keep certificate-grid class for styling */}
-                    <div className="grid-item span-two">
-                      <strong>Name:</strong> {lic.fullName || "N/A"}
-                    </div>
-                     <div className="grid-item">
-                      <strong>Gender:</strong> {lic.gender || "N/A"}
-                    </div>
-                    <div className="grid-item">
-                      <strong>Phone Number:</strong> {lic.phoneNumber || "N/A"}
-                    </div>
-                    <div className="grid-item span-two">
-                      <strong>Address:</strong> {lic.address?.streetName}, {lic.address?.city}, {lic.address?.state} - {lic.address?.pinCode || "N/A"}
-                    </div>
-                     <div className="grid-item">
-                      <strong>Number of Dogs:</strong> {lic.numberOfDogs || "N/A"}
-                    </div>
-                    <div className="grid-item">
-                      <strong>House Area:</strong> {lic.totalHouseArea ? `${lic.totalHouseArea} sq meter` : "N/A"}
-                    </div>
-                  </div>
+                <div className="grid-item">
+                  <strong>Gender:</strong> {lic.gender || "N/A"}
+                </div>
+                <div className="grid-item">
+                  <strong>Phone Number:</strong> {lic.phoneNumber || "N/A"}
+                </div>
+                <div className="grid-item span-two">
+                  <strong>Address:</strong> {lic.address?.streetName}, {lic.address?.city}, {lic.address?.state} - {lic.address?.pinCode || "N/A"}
+                </div>
+                <div className="grid-item">
+                  <strong>Number of Dogs:</strong> {lic.numberOfDogs || "N/A"}
+                </div>
+                <div className="grid-item">
+                  <strong>House Area:</strong> {lic.totalHouseArea ? `${lic.totalHouseArea} sq meter` : "N/A"}
                 </div>
               </div>
-
-            <div className="certificate-section dog-photo-section">
-                <div className="section-header">
-                    <Dog size={16} className="section-icon" />
-                    Dog Photo
-                </div>
-                <div className="section-content">
-                    {lic.dog?.avatarUrl ? (
-                        <div className="avatar-preview">
-                            <img
-                                src={lic.dog.avatarUrl}
-                                alt="Dog Avatar"
-                                className="dog-avatar"
-                            />
-                        </div>
-                    ) : (
-                        <div className="no-data-placeholder">
-                            No Photo
-                        </div>
-                    )}
-                </div>
             </div>
-         </div>
+          </div>
 
+          <div className="certificate-section dog-photo-section">
+            <div className="section-header">
+              <Dog size={16} className="section-icon" />
+              Dog Photo
+            </div>
+            <div className="section-content">
+              {lic.dog?.avatarUrl ? (
+                <div className="avatar-preview">
+                  <img
+                    src={lic.dog.avatarUrl}
+                    alt="Dog Avatar"
+                    className="dog-avatar"
+                  />
+                </div>
+              ) : (
+                <div className="no-data-placeholder">
+                  No Photo
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
 
-         <div className="certificate-section animal-details">
+        <div className="certificate-section animal-details">
           <div className="section-header">
             <Dog size={16} className="section-icon" />
             Dog Information
           </div>
           <div className="section-content">
-            <div className="detail-grid certificate-grid"> {/* Keep certificate-grid class for styling */}
+            <div className="detail-grid certificate-grid">
               <div className="grid-item">
                 <strong>Dog Name:</strong> {lic.dog?.name || "N/A"}
               </div>
@@ -294,21 +267,21 @@ const handleRenewalDecision = async (id, action, reason = '') => {
               <div className="grid-item">
                 <strong>Age:</strong> {lic.dog?.age || "N/A"}
               </div>
-               <div className="grid-item">
+              <div className="grid-item">
                 <strong>Sex:</strong> {lic.dog?.sex || "N/A"}
               </div>
-               <div className="grid-item">
+              <div className="grid-item">
                 <strong>Vaccinated:</strong> {lic.dog?.dateOfVaccination ? "Yes" : "No"}
               </div>
               <div className="grid-item">
-                <strong>Microchipped:</strong> No {/* Assuming static for now */}
+                <strong>Microchipped:</strong> No
               </div>
               <div className="grid-item">
-                 <Syringe size={16} className="detail-icon" />
+                <Syringe size={16} className="detail-icon" />
                 <strong>Vaccination Date:</strong> {formatDate(lic.dog?.dateOfVaccination)}
               </div>
-               <div className="grid-item">
-                 <Calendar size={16} className="detail-icon" />
+              <div className="grid-item">
+                <Calendar size={16} className="detail-icon" />
                 <strong>Next Vaccination Due:</strong> {formatDate(lic.dog?.dueVaccination)}
               </div>
             </div>
@@ -316,37 +289,34 @@ const handleRenewalDecision = async (id, action, reason = '') => {
         </div>
 
         <div className="certificate-section vaccination-proof-section">
-             <div className="section-header">
-               <FileText size={16} className="section-icon" />
-               Vaccination Certificate
-             </div>
-             <div className="section-content">
-                {lic.dog?.vaccinationProofUrl ? (
-                  <a
-                    href={lic.dog.vaccinationProofUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="vaccination-link"
-                  >
-                    <FileText size={16} className="link-icon" />
-                    View Certificate
-                  </a>
-              ) : (
-                   <div className="no-data-placeholder">
-                       No Certificate
-                   </div>
-               )}
-             </div>
-         </div>
-
+          <div className="section-header">
+            <FileText size={16} className="section-icon" />
+            Vaccination Certificate
+          </div>
+          <div className="section-content">
+            {lic.dog?.vaccinationProofUrl ? (
+              <a
+                href={lic.dog.vaccinationProofUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="vaccination-link"
+              >
+                <FileText size={16} className="link-icon" />
+                View Certificate
+              </a>
+            ) : (
+              <div className="no-data-placeholder">
+                No Certificate
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     );
   };
 
-
   const renderCertificateView = (lic) => {
     const currentDate = new Date().toLocaleDateString('en-GB');
-
     const expiryDate = lic.dog?.dateOfVaccination ?
       new Date(new Date(lic.dog.dateOfVaccination).setFullYear(
         new Date(lic.dog.dateOfVaccination).getFullYear() + 1
@@ -354,45 +324,58 @@ const handleRenewalDecision = async (id, action, reason = '') => {
 
     return (
       <div className="certificate-mode">
-         {/* Mobile Actions Bar (Visible on mobile, when status is pending) */}
-         {/* Show pending actions ONLY on mobile AND if status is pending */}
         {isMobile && (lic.status === 'pending' || lic.status === 'renewal_pending') && (
-             <div className="mobile-details-actions">
-                 {(lic.status === "pending" || lic.status === "renewal_pending") && (
-                        <>
-                          <button
-                            className="btn-approve"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (lic.status === 'renewal_pending') {
-                                handleRenewalDecision(lic._id, "approve");
-                              } else {
-                                updateStatus(lic._id, "approve");
-                              }
-                            }}
-                          >
-                            <Check size={16} className="btn-icon" /> Approve
-                          </button>
-                          <button
-                            className="btn-reject"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const reason = prompt('Enter rejection reason:');
-                              if (reason) {
-                                if (lic.status === 'renewal_pending') {
-                                  handleRenewalDecision(lic._id, "reject", reason);
-                                } else {
-                                  updateStatus(lic._id, "reject");
-                                }
-                              }
-                            }}
-                          >
-                            <X size={16} className="btn-icon" /> Reject
-                          </button>
-                        </>
-                      )}
-             </div>
-         )}
+          <div className="mobile-details-actions">
+            {(lic.status === "pending" || lic.status === "renewal_pending") && (
+              <>
+                <button
+                  className="btn-approve"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (lic.status === 'renewal_pending') {
+                      handleRenewalDecision(lic._id, "approve");
+                    } else {
+                      updateStatus(lic._id, "approve");
+                    }
+                  }}
+                >
+                  <Check size={16} className="btn-icon" /> Approve
+                </button>
+                <button
+                  className="btn-reject"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const reason = prompt('Enter rejection reason:');
+                    if (reason) {
+                      if (lic.status === 'renewal_pending') {
+                        handleRenewalDecision(lic._id, "reject", reason);
+                      } else {
+                        updateStatus(lic._id, "reject", reason);
+                      }
+                    }
+                  }}
+                >
+                  <X size={16} className="btn-icon" /> Reject
+                </button>
+              </>
+            )}
+          </div>
+        )}
+
+        {lic.status === 'rejected' && lic.rejectionReason && (
+          <div className="certificate-section rejection-reason">
+            <div className="section-header">
+              <X size={16} className="section-icon" />
+              अस्वीकृति का कारण / Rejection Reason
+            </div>
+            <div className="section-content">
+              <div className="rejection-reason-text">
+                {lic.rejectionReason}
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="certificate-header">
           <div className="logo-container">
             <div className="municipal-logo">
@@ -431,19 +414,19 @@ const handleRenewalDecision = async (id, action, reason = '') => {
               <strong>समाप्ति तिथि / Expiry Date:</strong> {expiryDate}
             </div>
           </div>
-            <div className="certificate-photo">
-                {lic.dog?.avatarUrl ? (
-                  <img
-                    src={lic.dog.avatarUrl}
-                    alt="Dog Avatar"
-                    className="certificate-dog-photo"
-                  />
-                ) : (
-                  <div className="no-data-placeholder">
-                       No Photo
-                   </div>
-                )}
-            </div>
+          <div className="certificate-photo">
+            {lic.dog?.avatarUrl ? (
+              <img
+                src={lic.dog.avatarUrl}
+                alt="Dog Avatar"
+                className="certificate-dog-photo"
+              />
+            ) : (
+              <div className="no-data-placeholder">
+                No Photo
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="certificate-section animal-details">
@@ -452,7 +435,7 @@ const handleRenewalDecision = async (id, action, reason = '') => {
             पशु का विवरण / Animal Details
           </div>
           <div className="section-content">
-            <div className="detail-grid certificate-grid"> {/* Keep certificate-grid class for styling */}
+            <div className="detail-grid certificate-grid">
               <div className="grid-item">
                 <strong>पशु का नाम / Dog Name:</strong> {lic.dog?.name || "N/A"}
               </div>
@@ -462,7 +445,7 @@ const handleRenewalDecision = async (id, action, reason = '') => {
               <div className="grid-item">
                 <strong>नस्ल / Breed:</strong> {lic.dog?.breed || "N/A"}
               </div>
-               <div className="grid-item">
+              <div className="grid-item">
                 <strong>टीकाकरण / Vaccinated:</strong> {lic.dog?.dateOfVaccination ? "Yes" : "No"}
               </div>
               <div className="grid-item">
@@ -478,12 +461,12 @@ const handleRenewalDecision = async (id, action, reason = '') => {
                 <strong>रंग / Color:</strong> {lic.dog?.color || "N/A"}
               </div>
               <div className="grid-item">
-                <strong>माइक्रोचिप्ड / Microchipped:</strong> No {/* Assuming static for now */}
+                <strong>माइक्रोचिप्ड / Microchipped:</strong> No
               </div>
               <div className="grid-item">
                 <strong>आयु / Age:</strong> {lic.dog?.age || "N/A"}
               </div>
-               <div className="grid-item">
+              <div className="grid-item">
                 <strong>अगला टीकाकरण / Next Vaccination:</strong> {formatDate(lic.dog?.dueVaccination)}
               </div>
               <div className="grid-item span-two">
@@ -499,7 +482,7 @@ const handleRenewalDecision = async (id, action, reason = '') => {
             मालिक का विवरण / Owner Details
           </div>
           <div className="section-content">
-            <div className="owner-grid certificate-grid"> {/* Keep certificate-grid class for styling */}
+            <div className="owner-grid certificate-grid">
               <div className="grid-item span-two">
                 <strong>पता / Address:</strong> {lic.address?.streetName}, {lic.address?.city}, {lic.address?.state} - {lic.address?.pinCode || "N/A"}
               </div>
@@ -536,7 +519,7 @@ const handleRenewalDecision = async (id, action, reason = '') => {
 
         <div className="certificate-footer-elements">
           <div className="qr-code">
-            <div className="qr-box">{/* QR Code would go here */}QR Code</div>
+            <div className="qr-box">QR Code</div>
           </div>
           <div className="official-stamp">
             <Stamp size={40} className="stamp-icon" />
@@ -546,22 +529,20 @@ const handleRenewalDecision = async (id, action, reason = '') => {
 
         <div className="certificate-footer">
           <Phone size={14} className="footer-icon" /> {lic.phoneNumber || "N/A"} &nbsp;|&nbsp;
-          <MapPin size={14} className="footer-icon" /> info@awbi.org &nbsp;|&nbsp; {/* Updated dummy email */}
-          <Globe size={14} className="footer-icon" /> www.awbi.org {/* Updated dummy website */}
+          <MapPin size={14} className="footer-icon" /> info@awbi.org &nbsp;|&nbsp;
+          <Globe size={14} className="footer-icon" /> www.awbi.org
         </div>
       </div>
     );
   };
 
-return (
-  <div className={`admin-panel`}>
-    {/* License List Container */}
-    {expandedRowId === null && (
-      <div className="license-list-container">
-        {/* Tabs for switching between different views (Desktop) */}
-        {!isMobile && (
+  return (
+    <div className={`admin-panel`}>
+      {expandedRowId === null && (
+        <div className="license-list-container">
+          {!isMobile && (
             <div className="admin-tabs-desktop">
-               <button
+              <button
                 className={`admin-tab ${activeTab === 'all' ? 'active' : ''}`}
                 onClick={() => setActiveTab('all')}
               >
@@ -571,21 +552,21 @@ return (
                 className={`admin-tab ${activeTab === 'new' ? 'active' : ''}`}
                 onClick={() => setActiveTab('new')}
               >
-                <div style={{ position: 'relative', display: 'inline-block' }}> {/* Container for dot */}
+                <div style={{ position: 'relative', display: 'inline-block' }}>
                   <FileText size={16} />
-                   {newRegistrationsCount > 0 && <span className="notification-dot"></span>} {/* Dot */}
+                  {newRegistrationsCount > 0 && <span className="notification-dot"></span>}
                 </div>
-                 New Applications
+                New Applications
               </button>
               <button
                 className={`admin-tab ${activeTab === 'renewals' ? 'active' : ''}`}
                 onClick={() => setActiveTab('renewals')}
               >
-                 <div style={{ position: 'relative', display: 'inline-block' }}> {/* Container for dot */}
-                   <Calendar size={16} />
-                   {pendingRenewalsCount > 0 && <span className="notification-dot"></span>} {/* Dot */}
-                 </div>
-                 Pending Renewals
+                <div style={{ position: 'relative', display: 'inline-block' }}>
+                  <Calendar size={16} />
+                  {pendingRenewalsCount > 0 && <span className="notification-dot"></span>}
+                </div>
+                Pending Renewals
               </button>
               <button
                 className={`admin-tab ${activeTab === 'approved' ? 'active' : ''}`}
@@ -600,217 +581,208 @@ return (
                 <X size={16} /> Rejected
               </button>
             </div>
-        )}
-
-        {/* Dropdown filter (Mobile) */}
-        {isMobile && (
-            <div className="admin-filter-mobile">
-                <select value={activeTab} onChange={(e) => setActiveTab(e.target.value)}>
-                    <option value="all">All Licenses</option>
-                    <option value="new">New Applications {newRegistrationsCount > 0 && `(${newRegistrationsCount})`}</option> {/* Show count */}
-                    <option value="renewals">Pending Renewals {pendingRenewalsCount > 0 && `(${pendingRenewalsCount})`}</option> {/* Show count */}
-                    <option value="approved">Approved Licenses</option>
-                    <option value="rejected">Rejected Licenses</option>
-                </select>
-                 {activeTab === 'new' && newRegistrationsCount > 0 && <span className="notification-dot"></span>} {/* Dot for active mobile option */}
-                 {activeTab === 'renewals' && pendingRenewalsCount > 0 && <span className="notification-dot"></span>} {/* Dot for active mobile option */}
-            </div>
-        )}
-
-
-        {/* Desktop Title */}
-        <h2>
-          <Award className="title-icon" />
-          {activeTab === 'all' && 'All Licenses'} {/* Updated title */}
-          {activeTab === 'new' && 'New Applications'}
-          {activeTab === 'renewals' && 'Pending Renewals'}
-          {activeTab === 'approved' && 'Approved Licenses'}
-          {activeTab === 'rejected' && 'Rejected Licenses'}
-        </h2>
-
-        {loading ? (
-          <div className="loading-container">
-            <div className="loading-spinner"></div>
-            <p>Loading...</p>
-          </div>
-        ) : (
-          filteredLicenses.length === 0 ? (
-            <div className="no-results-message">
-              No licenses found for this category. {/* Updated message */}
-            </div>
-          ) : (
-            <table className="license-table">
-              <thead>
-                <tr>
-                  {/* Show License # column only for Renewals, Approved, Rejected, and All */}
-                  {(activeTab === 'renewals' || activeTab === 'approved' || activeTab === 'rejected' || activeTab === 'all') && <th>License #</th>}
-                  <th>Owner</th>
-                  <th>Dog Name</th>
-                  <th>Status</th>
-                  {/* Show Expiry Date only for Renewals, Approved, and All */}
-                  {!isMobile && (activeTab === 'renewals' || activeTab === 'approved' || activeTab === 'all') && <th>Expiry Date</th>}
-                  {/* Show Request Date only for Renewals */}
-                  {!isMobile && activeTab === 'renewals' && <th>Request Date</th>}
-                   {/* Show Vaccination Date for New, Approved, and All */}
-                  {!isMobile && (activeTab === 'new' || activeTab === 'approved' || activeTab === 'all') && <th>Vaccination Date</th>}
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredLicenses.map((lic) => (
-                  <tr
-                    key={lic._id}
-                    className={`${lic.status === 'renewal_pending' ? 'renewal-highlight' : ''} ${lic.status}`}
-                    onClick={() => toggleExpanded(lic._id)}
-                  >
-                     {(activeTab === 'renewals' || activeTab === 'approved' || activeTab === 'rejected' || activeTab === 'all') && <td>{lic.license_Id || lic._id?.substring(0, 8)}</td>}
-                    <td><User size={16} className="cell-icon" /> {lic.fullName}</td>
-                    <td><Dog size={16} className="cell-icon" /> {lic.dog?.name || "N/A"}</td>
-                    <td>
-                      <div className={`status-badge ${lic.status}`}>
-                        {lic.status === "approved" && <Check size={14} />}
-                        {lic.status === "rejected" && <X size={14} />}
-                        {lic.status === "pending" && <Calendar size={14} />}
-                        {lic.status === "renewal_pending" && <Calendar size={14} />}
-                        {lic.status}
-                      </div>
-                    </td>
-                    {!isMobile && (activeTab === 'renewals' || activeTab === 'approved' || activeTab === 'all') && (
-                      <td><Calendar size={16} className="cell-icon" /> {formatDate(lic.expiryDate)}</td>
-                    )}
-                    {!isMobile && activeTab === 'renewals' && (
-                      <td><Calendar size={16} className="cell-icon" /> {formatDate(lic.renewalRequestDate)}</td>
-                    )}
-                     {!isMobile && (activeTab === 'new' || activeTab === 'approved' || activeTab === 'all') && (
-                       <td><Calendar size={16} className="cell-icon" /> {formatDate(lic.dog?.dateOfVaccination)}</td>
-                     )}
-                    <td className="actions-cell">
-                      <div className="action-buttons-container">
-                        <button
-                          className="btn-view"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleExpanded(lic._id);
-                          }}
-                        >
-                          <Eye size={16} className="btn-icon" />
-                          {!isMobile && 'View'}
-                        </button>
-                        {(lic.status === "pending" || lic.status === "renewal_pending") && (
-                          <>
-                            <button
-                              className="btn-approve"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (lic.status === 'renewal_pending') {
-                                  handleRenewalDecision(lic._id, "approve");
-                                } else {
-                                  updateStatus(lic._id, "approve");
-                                }
-                              }}
-                            >
-                              <Check size={16} className="btn-icon" />
-                              {!isMobile && 'Approve'}
-                            </button>
-                            <button
-                              className="btn-reject"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                const reason = prompt('Enter rejection reason:');
-                                if (reason) {
-                                  if (lic.status === 'renewal_pending') {
-                                    handleRenewalDecision(lic._id, "reject", reason);
-                                } else {
-                                  updateStatus(lic._id, "reject");
-                                }
-                                }
-                              }}
-                            >
-                              <X size={16} className="btn-icon" />
-                              {!isMobile && 'Reject'}
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )
-        )}
-      </div>
-    )}
-
-    {/* Details View Container */}
-    {selectedLicense && (
-      <div className="license-details-container">
-        <div className="mobile-details-header">
-          <button
-            className="back-to-list-btn"
-            onClick={() => toggleExpanded(selectedLicense._id)}
-          >
-            <ChevronLeft size={24} />
-            Back to List
-          </button>
-          <h3>
-            {certificateView[selectedLicense._id]
-              ? 'License Certificate'
-              : 'License Details'}
-          </h3>
-        </div>
-
-        <button
-          className="view-toggle-btn"
-          onClick={() => toggleCertificateView(selectedLicense._id)}
-        >
-          {certificateView[selectedLicense._id] ? (
-            <><FileText size={18} className="btn-icon" /> Standard View</>
-          ) : (
-            <><Award size={18} className="btn-icon" /> Certificate View</>
           )}
-        </button>
 
-        {/* Show pending actions for admins */}
-        {selectedLicense.status === 'pending' || selectedLicense.status === 'renewal_pending' ? (
-          <div className="details-actions">
+          {isMobile && (
+            <div className="admin-filter-mobile">
+              <select value={activeTab} onChange={(e) => setActiveTab(e.target.value)}>
+                <option value="all">All Licenses</option>
+                <option value="new">New Applications {newRegistrationsCount > 0 && `(${newRegistrationsCount})`}</option>
+                <option value="renewals">Pending Renewals {pendingRenewalsCount > 0 && `(${pendingRenewalsCount})`}</option>
+                <option value="approved">Approved Licenses</option>
+                <option value="rejected">Rejected Licenses</option>
+              </select>
+              {activeTab === 'new' && newRegistrationsCount > 0 && <span className="notification-dot"></span>}
+              {activeTab === 'renewals' && pendingRenewalsCount > 0 && <span className="notification-dot"></span>}
+            </div>
+          )}
+
+          <h2>
+            <Award className="title-icon" />
+            {activeTab === 'all' && 'All Licenses'}
+            {activeTab === 'new' && 'New Applications'}
+            {activeTab === 'renewals' && 'Pending Renewals'}
+            {activeTab === 'approved' && 'Approved Licenses'}
+            {activeTab === 'rejected' && 'Rejected Licenses'}
+          </h2>
+
+          {loading ? (
+            <div className="loading-container">
+              <div className="loading-spinner"></div>
+              <p>Loading...</p>
+            </div>
+          ) : (
+            filteredLicenses.length === 0 ? (
+              <div className="no-results-message">
+                No licenses found for this category.
+              </div>
+            ) : (
+              <table className="license-table">
+                <thead>
+                  <tr>
+                    {(activeTab === 'renewals' || activeTab === 'approved' || activeTab === 'rejected' || activeTab === 'all') && <th>License #</th>}
+                    <th>Owner</th>
+                    <th>Dog Name</th>
+                    <th>Status</th>
+                    {!isMobile && (activeTab === 'renewals' || activeTab === 'approved' || activeTab === 'all') && <th>Expiry Date</th>}
+                    {!isMobile && activeTab === 'renewals' && <th>Request Date</th>}
+                    {!isMobile && (activeTab === 'new' || activeTab === 'approved' || activeTab === 'all') && <th>Vaccination Date</th>}
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredLicenses.map((lic) => (
+                    <tr
+                      key={lic._id}
+                      className={`${lic.status === 'renewal_pending' ? 'renewal-highlight' : ''} ${lic.status}`}
+                      onClick={() => toggleExpanded(lic._id)}
+                    >
+                      {(activeTab === 'renewals' || activeTab === 'approved' || activeTab === 'rejected' || activeTab === 'all') && <td>{lic.license_Id || lic._id?.substring(0, 8)}</td>}
+                      <td><User size={16} className="cell-icon" /> {lic.fullName}</td>
+                      <td><Dog size={16} className="cell-icon" /> {lic.dog?.name || "N/A"}</td>
+                      <td>
+                        <div className={`status-badge ${lic.status}`}>
+                          {lic.status === "approved" && <Check size={14} />}
+                          {lic.status === "rejected" && <X size={14} />}
+                          {lic.status === "pending" && <Calendar size={14} />}
+                          {lic.status === "renewal_pending" && <Calendar size={14} />}
+                          {lic.status}
+                        </div>
+                      </td>
+                      {!isMobile && (activeTab === 'renewals' || activeTab === 'approved' || activeTab === 'all') && (
+                        <td><Calendar size={16} className="cell-icon" /> {formatDate(lic.expiryDate)}</td>
+                      )}
+                      {!isMobile && activeTab === 'renewals' && (
+                        <td><Calendar size={16} className="cell-icon" /> {formatDate(lic.renewalRequestDate)}</td>
+                      )}
+                      {!isMobile && (activeTab === 'new' || activeTab === 'approved' || activeTab === 'all') && (
+                        <td><Calendar size={16} className="cell-icon" /> {formatDate(lic.dog?.dateOfVaccination)}</td>
+                      )}
+                      <td className="actions-cell">
+                        <div className="action-buttons-container">
+                          <button
+                            className="btn-view"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleExpanded(lic._id);
+                            }}
+                          >
+                            <Eye size={16} className="btn-icon" />
+                            {!isMobile && 'View'}
+                          </button>
+                          {(lic.status === "pending" || lic.status === "renewal_pending") && (
+                            <>
+                              <button
+                                className="btn-approve"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (lic.status === 'renewal_pending') {
+                                    handleRenewalDecision(lic._id, "approve");
+                                  } else {
+                                    updateStatus(lic._id, "approve");
+                                  }
+                                }}
+                              >
+                                <Check size={16} className="btn-icon" />
+                                {!isMobile && 'Approve'}
+                              </button>
+                              <button
+                                className="btn-reject"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  const reason = prompt('Enter rejection reason:');
+                                  if (reason) {
+                                    if (lic.status === 'renewal_pending') {
+                                      handleRenewalDecision(lic._id, "reject", reason);
+                                    } else {
+                                      updateStatus(lic._id, "reject", reason);
+                                    }
+                                  }
+                                }}
+                              >
+                                <X size={16} className="btn-icon" />
+                                {!isMobile && 'Reject'}
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )
+          )}
+        </div>
+      )}
+
+      {selectedLicense && (
+        <div className="license-details-container">
+          <div className="mobile-details-header">
             <button
-              className="btn-approve"
-              onClick={() => {
-                if (selectedLicense.status === 'renewal_pending') {
-                  handleRenewalDecision(selectedLicense._id, "approve");
-                } else {
-                  updateStatus(selectedLicense._id, "approve");
-                }
-              }}
+              className="back-to-list-btn"
+              onClick={() => toggleExpanded(selectedLicense._id)}
             >
-              <Check size={16} className="btn-icon" /> Approve
+              <ChevronLeft size={24} />
+              Back to List
             </button>
-            <button
-              className="btn-reject"
-              onClick={() => {
-                const reason = prompt('Enter rejection reason:');
-                if (reason) {
-                  if (selectedLicense.status === 'renewal_pending') {
-                    handleRenewalDecision(selectedLicense._id, "reject", reason);
-                  } else {
-                    updateStatus(selectedLicense._id, "reject");
-                  }
-                }
-              }}
-            >
-              <X size={16} className="btn-icon" /> Reject
-            </button>
+            <h3>
+              {certificateView[selectedLicense._id]
+                ? 'License Certificate'
+                : 'License Details'}
+            </h3>
           </div>
-        ) : null}
 
-        {certificateView[selectedLicense._id]
-          ? renderCertificateView(selectedLicense)
-          : renderStandardView(selectedLicense)}
-      </div>
-    )}
-  </div>
-);
+          <button
+            className="view-toggle-btn"
+            onClick={() => toggleCertificateView(selectedLicense._id)}
+          >
+            {certificateView[selectedLicense._id] ? (
+              <><FileText size={18} className="btn-icon" /> Standard View</>
+            ) : (
+              <><Award size={18} className="btn-icon" /> Certificate View</>
+            )}
+          </button>
+
+          {selectedLicense.status === 'pending' || selectedLicense.status === 'renewal_pending' ? (
+            <div className="details-actions">
+              <button
+                className="btn-approve"
+                onClick={() => {
+                  if (selectedLicense.status === 'renewal_pending') {
+                    handleRenewalDecision(selectedLicense._id, "approve");
+                  } else {
+                    updateStatus(selectedLicense._id, "approve");
+                  }
+                }}
+              >
+                <Check size={16} className="btn-icon" /> Approve
+              </button>
+              <button
+                className="btn-reject"
+                onClick={() => {
+                  const reason = prompt('Enter rejection reason:');
+                  if (reason) {
+                    if (selectedLicense.status === 'renewal_pending') {
+                      handleRenewalDecision(selectedLicense._id, "reject", reason);
+                    } else {
+                      updateStatus(selectedLicense._id, "reject", reason);
+                    }
+                  }
+                }}
+              >
+                <X size={16} className="btn-icon" /> Reject
+              </button>
+            </div>
+          ) : null}
+
+          {certificateView[selectedLicense._id]
+            ? renderCertificateView(selectedLicense)
+            : renderStandardView(selectedLicense)}
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default AdminPanel;

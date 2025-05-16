@@ -37,7 +37,16 @@ exports.approveLicense = async (req, res) => {
 
 exports.rejectLicense = async (req, res) => {
   try {
-    const license = await DogLicense.findByIdAndUpdate(req.params.id, { status: "rejected" }, { new: true });
+    const { reason } = req.body; // Get reason from request body
+    const license = await DogLicense.findByIdAndUpdate(
+      req.params.id, 
+      { 
+        status: "rejected",
+        rejectionReason: reason,
+        rejectionDate: new Date()
+      }, 
+      { new: true }
+    );
     if (!license) return res.status(404).json({ message: "License not found" });
     res.json({ message: "License rejected", license });
   } catch (error) {

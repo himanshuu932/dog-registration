@@ -352,12 +352,20 @@ const DogLicenseDownload = () => {
                     </div>
                   )}
 
-                  {lic.status === 'rejected' && (
-                    <div className="user-dl-rejected-notice">
-                      <XCircle size={18} />
-                      <p>Your application has been rejected. Please contact support for more information.</p>
-                    </div>
-                  )}
+                {lic.status === 'rejected' && (
+  <div className="user-dl-rejected-notice">
+    <XCircle size={18} />
+    <div>
+      <p>Your application has been rejected.</p>
+      {lic.rejectionReason && (
+        <div className="user-dl-rejection-reason">
+          <strong>Reason:</strong> {lic.rejectionReason}
+        </div>
+      )}
+      <p>Please contact support for more information.</p>
+    </div>
+  </div>
+)}
            </div>
       );
    };

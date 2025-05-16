@@ -38,6 +38,8 @@ const dogLicenseSchema = new mongoose.Schema(
       enum: ['pending', 'approved', 'rejected','renewal_pending'],
       default: 'pending',
     },
+     rejectionReason: String,  
+    rejectionDate: Date,     
   },
   {
     timestamps: true 
