@@ -767,12 +767,32 @@ padding-left: 10px;
   margin: 0;
 }
 
-.user-dl-rejection-reason {
+.user-dl-rejected-notice {
   background-color: #fff8f8;
-  border-left: 3px solid #ff6b6b;
-  padding: 0.5rem;
+  border: 1px solid #ffebee;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.user-dl-rejected-notice svg {
+  color: #f44336;
+  flex-shrink: 0;
+}
+
+.user-dl-rejection-reason {
+  background-color: #ffebee;
+  border-left: 3px solid #f44336;
+  padding: 0.75rem;
   margin: 0.5rem 0;
-  color: #d33;
+  border-radius: 0 4px 4px 0;
+}
+
+.user-dl-rejection-reason strong {
+  color: #d32f2f;
 }
 
 /* Styles to force desktop layout for PDF generation */

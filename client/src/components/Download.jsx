@@ -352,11 +352,11 @@ const DogLicenseDownload = () => {
                     </div>
                   )}
 
-                {lic.status === 'rejected' && (
+  {lic.status === 'rejected' && (
   <div className="user-dl-rejected-notice">
     <XCircle size={18} />
     <div>
-      <p>Your application has been rejected.</p>
+      <p>Your application has been rejected on {formatDate(lic.rejectionDate)}.</p>
       {lic.rejectionReason && (
         <div className="user-dl-rejection-reason">
           <strong>Reason:</strong> {lic.rejectionReason}
