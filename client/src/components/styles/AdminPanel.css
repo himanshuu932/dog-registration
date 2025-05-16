@@ -842,7 +842,8 @@ button {
 }
 
 
-.admin-tabs {
+/* Desktop Tabs */
+.admin-tabs-desktop {
   display: flex;
   gap: 1rem;
   margin-bottom: 1.5rem;
@@ -852,7 +853,7 @@ button {
   white-space: nowrap; /* Prevent tabs from wrapping */
 }
 
-.admin-tab {
+.admin-tabs-desktop .admin-tab {
   background: none;
   border: none;
   font-size: 1rem;
@@ -865,16 +866,60 @@ button {
    display: inline-flex; /* Align icon and text */
    align-items: center;
    gap: 0.3rem; /* Space between icon and text */
+   position: relative; /* Needed for absolute positioning of the dot */
 }
 
-.admin-tab:hover {
+.admin-tabs-desktop .admin-tab:hover {
   color: var(--primary-light); /* Hover color */
 }
 
-.admin-tab.active {
+.admin-tabs-desktop .admin-tab.active {
   color: var(--primary); /* Active tab color */
   border-bottom: 3px solid var(--primary); /* Active tab indicator */
 }
+
+/* Mobile Dropdown Filter */
+.admin-filter-mobile {
+  display: none; /* Hidden by default */
+  margin-bottom: 1.5rem;
+  width: 100%;
+   position: relative; /* Needed for absolute positioning of the dot */
+}
+
+.admin-filter-mobile select {
+    font-family: var(--font-main);
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--gray);
+    border-radius: var(--border-radius);
+    background-color: var(--white);
+    color: var(--black);
+    cursor: pointer;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+    -webkit-appearance: none; /* Remove default dropdown arrow */
+    -moz-appearance: none;
+    appearance: none;
+     background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%20viewBox%3D%220%200%20292.4%20292.4%22%3E%3Cpath%20fill%3D%22%232c3e50%22%20d%3D%22M287%2C114.7L159.2%2C27.1c-9.5-9.3-25-9.3-34.5%2C0l-128%2C87.6c-10.1%2C10.1-2.9%2C17.3%2C11.4%2C17.3H275.6C289.1%2C132%2C297.1%2C124.9%2C287%2C114.7z%22%2F%3E%3C%2Fsvg%3E'); /* Custom arrow */
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+}
+
+/* Style for the blue dot indicator */
+.notification-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background-color: var(--secondary); /* Blue color for the dot */
+    border-radius: 50%;
+    margin-left: 5px; /* Space between text/icon and dot */
+    position: absolute;
+    top: 1px; /* Adjust position as needed */
+    right: -150px; /* Adjust position as needed */
+}
+
 
 /* Style for the "No results" message */
 .no-results-message {
@@ -895,6 +940,23 @@ button {
   .admin-panel > h2 {
       display: none;
   }
+
+    /* Hide desktop tabs on mobile */
+   .admin-tabs-desktop {
+       display: none;
+   }
+
+   /* Show mobile filter dropdown on mobile */
+   .admin-filter-mobile {
+       display: block;
+   }
+
+    /* Adjust dot position for mobile dropdown */
+    .admin-filter-mobile .notification-dot {
+        top: 12px; /* Adjust position for dropdown */
+        right: 30px; /* Adjust position to not overlap with arrow */
+    }
+
 
   /* Mobile Header (Back to List button) - Always shown when details are open */
   .mobile-details-header {
@@ -941,7 +1003,7 @@ button {
       overflow-x: auto; /* Added for horizontal scrolling on mobile */
        padding: 0 1rem; /* Adjusted horizontal padding on mobile */
       box-shadow: none;
-      min-height: auto; /* Reset min-height on mobile if needed, or adjust */
+      min-height: auto; /* Reset min-height on mobile for better content flow */
   }
    /* The rule to hide the list when details are present is now global */
 
