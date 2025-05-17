@@ -429,18 +429,20 @@ const DogLicenseDownload = () => {
                <table className="user-dl-license-table">
                   <thead>
                      <tr>
+                        <th>Reg. No</th>
                         <th>Owner</th>
-                        <th>Dog Name</th>
+                        {!isMobile && <th>Dog Name</th>}
                         <th>Status</th>
                         {!isMobile && <th>Applied Date</th>}
-                        <th>View</th>
+                        {!isMobile && <th>View</th>}
                      </tr>
                   </thead>
                   <tbody>
                      {filteredLicenses.map(license => (
                         <tr key={license._id} onClick={() => toggleExpanded(license._id)}>
+                        <td><div className="user-dl-cell user-dl-owner-cell">{!isMobile && <User size={16} className="user-dl-cell-icon" />} {license.license_Id || "N/A"}</div></td>
                            <td><div className="user-dl-cell user-dl-owner-cell">{!isMobile && <User size={16} className="user-dl-cell-icon" />} {license.fullName}</div></td>
-                           <td><div className="user-dl-cell user-dl-dog-cell">{!isMobile && <Dog size={16} className="user-dl-cell-icon" />} {license.dog?.name || "N/A"}</div></td>
+                          {!isMobile &&  <td><div className="user-dl-cell user-dl-dog-cell">{!isMobile && <Dog size={16} className="user-dl-cell-icon" />} {license.dog?.name || "N/A"}</div></td>}
                            <td><div className="user-dl-cell user-dl-status-cell"><UserStatusBadge status={license.status} isMobile={isMobile} /></div></td>
                            {!isMobile && <td><div className="user-dl-cell user-dl-date-cell"><Calendar size={16} className="user-dl-cell-icon" /> {formatDate(license.createdAt)}</div></td>}
                            <td>

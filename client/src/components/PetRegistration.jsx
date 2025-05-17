@@ -716,9 +716,9 @@ return (
                   required
                 />
                 <label htmlFor="declaration4">
-                  I hereby assure the Municipal Corporation, Lucknow that, I am not using my pet for any breeding purpose and will follow all the rules and regulation (
+                  I hereby assure the Municipal Corporation, Gorakhpur that, I am not using my pet for any breeding purpose and will follow all the rules and regulation (
                   <a href="#" className="link">View PDF</a>
-                  ) issued by Municipal Corporation, Lucknow from time to time.
+                  ) issued by Municipal Corporation, Gorakhpur from time to time.
                 </label>
               </div>
             </div>
