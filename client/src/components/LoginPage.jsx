@@ -47,27 +47,33 @@ import React, { useState, useEffect } from "react";
         };
       }, []);
 
-      const handleLogin = async (e) => {
-        e.preventDefault();
-        setError("");
-        setSuccess("");
-        setLoading(true);
-        try {
-          const res = await axios.post(
-            `${backend}/api/auth/login`,
-            { username, password },
-            { withCredentials: true }
-          );
-          const { token, user: loggedUser } = res.data;
-          localStorage.setItem("token", token);
-          setUser(loggedUser);
-          navigate("/home");
-        } catch (err) {
-          setError(err.response?.data?.message || "Login failed");
-        } finally {
-          setLoading(false);
-        }
-      };
+  const handleLogin = async (e) => {
+  e.preventDefault();
+  setError("");
+  setSuccess("");
+  setLoading(true);
+  try {
+    const res = await axios.post(
+      `${backend}/api/auth/login`,
+      { username, password },
+      { withCredentials: true }
+    );
+    const { token, user: loggedUser } = res.data;
+    localStorage.setItem("token", token);
+    setUser(loggedUser);
+    
+    // Redirect based on user role
+    if (loggedUser.role === "admin") {
+      navigate("/admin");
+    } else {
+      navigate("/home");
+    }
+  } catch (err) {
+    setError(err.response?.data?.message || "Login failed");
+  } finally {
+    setLoading(false);
+  }
+};
 
       const handleSendOtp = async (e) => {
         e.preventDefault();
