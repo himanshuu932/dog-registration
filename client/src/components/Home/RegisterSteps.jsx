@@ -2,7 +2,7 @@ import React from 'react';
 import './styles/RegisterSteps.css';
 import { useNavigate } from 'react-router-dom';
 
-// Icon components
+// Icon components (These remain the same as they are SVG)
 const MobileIcon = () => (
   <svg viewBox="0 0 384 512" fill="currentColor" className="rs-step-icon">
     <path d="M80 48c-8.8 0-16 7.2-16 16V448c0 8.8 7.2 16 16 16h224c8.8 0 16-7.2 16-16V64c0-8.8-7.2-16-16-16H80zM16 64C16 28.7 44.7 0 80 0h224c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H80c-35.3 0-64-28.7-64-64V64zM160 400h64c8.8 0 16 7.2 16 16s-7.2 16-16 16H160c-8.8 0-16-7.2-16-16s7.2-16 16-16z"/>
@@ -28,53 +28,93 @@ const CertificateIcon = () => (
   </svg>
 );
 
-const HowToRegister = () => {
-  // Define the registration steps
+
+const HowToRegister = ({ languageType = 'en' }) => { // Added languageType prop
   const navigate=useNavigate();
-  const steps = [
-    {
-      id: 'login',
-      title: 'Login',
-      description: 'Login With your Phone number or  E-Mail And OTP',
-      icon: <MobileIcon />
-    },
-    {
-      id: 'otp',
-      title: 'OTP Confirmation',
-      description: 'Verify OTP and Verification Details',
-      icon: <OtpIcon />
-    },
-    {
-      id: 'details',
-      title: 'Enter Details',
-      description: 'Select Breed and enter Required Pet Details',
-      icon: <FormIcon />
-    },
-    {
-      id: 'complete',
-      title: 'Complete',
-      description: 'After Verification certificate will be Issued',
-      icon: <CertificateIcon />
-    }
-  ];
+
+  // Define the registration steps content for both languages
+  const content = {
+      en: {
+          title: 'How to Register',
+          steps: [
+              {
+                  id: 'login',
+                  title: 'Login',
+                  description: 'Login With your Phone number or E-Mail And OTP',
+                  icon: <MobileIcon />
+              },
+              {
+                  id: 'otp',
+                  title: 'OTP Confirmation',
+                  description: 'Verify OTP and Verification Details',
+                  icon: <OtpIcon />
+              },
+              {
+                  id: 'details',
+                  title: 'Enter Details',
+                  description: 'Select Breed and enter Required Pet Details',
+                  icon: <FormIcon />
+              },
+              {
+                  id: 'complete',
+                  title: 'Complete',
+                  description: 'After Verification certificate will be Issued',
+                  icon: <CertificateIcon />
+              }
+          ],
+          buttonText: 'Register Now'
+      },
+      hi: {
+          title: 'पंजीकरण कैसे करें',
+          steps: [
+              {
+                  id: 'login',
+                  title: 'लॉग इन करें',
+                  description: 'अपने फ़ोन नंबर या ई-मेल और ओटीपी से लॉग इन करें',
+                  icon: <MobileIcon />
+              },
+              {
+                  id: 'otp',
+                  title: 'ओटीपी पुष्टि',
+                  description: 'ओटीपी और सत्यापन विवरण सत्यापित करें',
+                  icon: <OtpIcon />
+              },
+              {
+                  id: 'details',
+                  title: 'विवरण दर्ज करें',
+                  description: 'नस्ल चुनें और पालतू जानवर का आवश्यक विवरण दर्ज करें',
+                  icon: <FormIcon />
+              },
+              {
+                  id: 'complete',
+                  title: 'पंजीकरण पूर्ण', // Adjusted translation for clarity
+                  description: 'सत्यापन के बाद प्रमाण पत्र जारी किया जाएगा',
+                  icon: <CertificateIcon />
+              }
+          ],
+          buttonText: 'अभी पंजीकरण करें'
+      }
+  };
+
+  const currentContent = content[languageType] || content.en; // Default to English
 
   return (
     <div className="rs-register-steps-section">
       <div className="rs-container">
-        <h2 className="rs-title">How to Register</h2>
+        <h2 className="rs-title">{currentContent.title}</h2> 
         <div className="rs-steps-container">
-          {steps.map((step, index) => (
+          {currentContent.steps.map((step) => (
             <div className="rs-step-card" key={step.id}>
               <div className="rs-step-icon-container">
                 {step.icon}
               </div>
-              <h3 className="rs-step-title">{step.title}</h3>
-              <p className="rs-step-description">{step.description}</p>
+              <h3 className="rs-step-title">{step.title}</h3> {/* Dynamic title */}
+              <p className="rs-step-description">{step.description}</p> {/* Dynamic description */}
             </div>
           ))}
         </div>
         <div className="rs-register-button-container">
-          <button className="rs-btn rs-btn-primary" onClick={()=>navigate('/pet-register')} >Register Now</button>
+          <button className="rs-btn rs-btn-primary" onClick={()=>navigate('/pet-register')} >{currentContent.buttonText}</button> {/* Dynamic button text */}
         </div>
       </div>
     </div>

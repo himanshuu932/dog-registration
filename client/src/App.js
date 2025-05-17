@@ -44,7 +44,7 @@ function App() {
   };
 
   useEffect(() => {
-    const MINIMUM_LOAD_TIME = 500; // 1 second
+    const MINIMUM_LOAD_TIME = 500; 
     const startTime = Date.now();
 
     const fetchUser = async () => {
@@ -84,7 +84,7 @@ function App() {
         user={user}
         onLogin={handleLogin}
         onLogout={handleLogout}
-        onLanguageChange={handleLanguageChange}
+       setLanguageType={setLanguageType}
       />
 
       <Routes>
@@ -92,8 +92,8 @@ function App() {
           path="/login"
           element={!user ? <LoginPage onLogin={handleLogin} setUser={setUser} /> : <Navigate to="/" />}
         />
-        <Route path="/" element={<PetHome />} />
-        <Route path="/home" element={<PetHome />} />
+        <Route path="/" element={<PetHome languageType={languageType}/>} />
+        <Route path="/home" element={<PetHome languageType={languageType}/>} />
         <Route path="/download-license" element={user ? <DownloadLicense /> : <Navigate to="/login" />} />
         <Route path="/feedback" element={user ? <QueryFeedback /> : <Navigate to="/login" />} />
         <Route path="/pet-register" element={user ? <PetRegistration /> : <Navigate to="/login" />} />

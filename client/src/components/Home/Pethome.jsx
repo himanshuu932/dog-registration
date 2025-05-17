@@ -7,24 +7,24 @@ import HowToRegister from './RegisterSteps';
 import GeneralInformation from './GeneralInfo';
 import Footer from '../Footer';
 
-const Pethome = () => {
+const Pethome = ({languageType}) => {
   // State for active service
  
   return (
     <div className="pet-app">
   
-    <Hero />
+    <Hero languageType={languageType}/>
   {/* About Us Section */}
      {/* About Us Section */}
-      <About />
-  <Services/>
+      <About languageType={languageType}/>
+  <Services languageType={languageType}/>
       {/* How to Register Section */}
-    <HowToRegister />
+    <HowToRegister languageType={languageType} />
 
     
 
       {/* Information Section */}
-      <GeneralInformation />
+      <GeneralInformation languageType={languageType}/>
 
     
     

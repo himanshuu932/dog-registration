@@ -3,15 +3,33 @@ import './styles/Navbar.css';
 import { Bell } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+// Navigation items with translations
 const navItems = [
-  { hi: 'होम',            en: 'Home'           },
+  { hi: 'होम',             en: 'Home'             },
   { hi: 'नई पंजीकरण',      en: 'New Registration' },
   { hi: 'पंजीकरण नवीनीकरण',  en: 'Renew Registration' },
   { hi: 'लाइसेंस डाउनलोड',  en: 'Download License'   },
   { hi: 'प्रश्न और प्रतिक्रिया',  en: 'Query & Feedback'   },
 ];
 
-function Navbar({ languageType, user, notifications = [], onLogout, onLanguageChange }) {
+// Text content for other parts of the navbar
+const textContent = {
+  en: {
+    logoText: 'Nagar Nigam Gorakhpur',
+    login: 'Login',
+    logout: 'Logout',
+    noNotifications: 'No notifications',
+  },
+  hi: {
+    logoText: 'नगर निगम गोरखपुर',
+    login: 'लॉग इन करें',
+    logout: 'लॉग आउट करें',
+    noNotifications: 'कोई सूचना नहीं',
+  }
+};
+
+
+function Navbar({ languageType = 'en', user, notifications = [], onLogout, setLanguageType }) { // Added default value to languageType prop
   const [showMenu, setShowMenu] = useState(false);
   const [showNotif, setShowNotif] = useState(false);
   const navigate = useNavigate();
@@ -19,7 +37,11 @@ function Navbar({ languageType, user, notifications = [], onLogout, onLanguageCh
   const menuRef = useRef(null); // Ref for the mobile menu container
   const hamburgerRef = useRef(null); // Ref for the hamburger button
 
+  // Helper function to get the label in the current language
   const label = (item) => languageType === 'hi' ? item.hi : item.en;
+
+  // Get the current text content based on languageType
+  const currentText = textContent[languageType] || textContent.en; // Default to English
 
   // Effect to close dropdowns when clicking outside
   useEffect(() => {
@@ -46,9 +68,11 @@ function Navbar({ languageType, user, notifications = [], onLogout, onLanguageCh
     };
   }, [showMenu, showNotif]); // Depend on showMenu and showNotif to re-run effect when they change
 
+
   // Function to handle navigation item clicks
-  const handleNavItemClick = (label) => {
-    switch (label) {
+  // Note: Using item.en for the switch case as routes are likely English strings
+  const handleNavItemClick = (englishLabel) => {
+    switch (englishLabel) {
       case 'Home':
         navigate('/home');
         break;
@@ -65,7 +89,7 @@ function Navbar({ languageType, user, notifications = [], onLogout, onLanguageCh
         navigate('/feedback');
         break;
       default:
-        console.warn('Unhandled nav item:', label);
+        console.warn('Unhandled nav item:', englishLabel);
     }
     // Close the menu after navigating
     setShowMenu(false);
@@ -87,7 +111,7 @@ function Navbar({ languageType, user, notifications = [], onLogout, onLanguageCh
           <button
             ref={hamburgerRef} // Attach ref to hamburger button
             className={`hamburger ${showMenu ? 'active' : ''}`}
-            aria-label="Toggle menu"
+            aria-label={languageType === 'hi' ? 'मेनू टॉगल करें' : 'Toggle menu'} // Translate ARIA label
             onClick={toggleMenu} // Use the toggleMenu function
           >
             <span></span>
@@ -97,22 +121,22 @@ function Navbar({ languageType, user, notifications = [], onLogout, onLanguageCh
 
           <div className="navbar__logo">
             <img src="./logo.webp" alt="Logo" className="navbar__logo-img" />
-            <span className="gov-logo">Nagar Nigam Gorakhpur</span>
+            <span className="gov-logo">{currentText.logoText}</span> 
           </div>
 
           <div className="navbar__actions">
             {/* Language toggle and notifications always together */}
             <div className="navbar__controls">
               <div className="lang-toggle-container">
-                <button className="lang-toggle" aria-label="Toggle language">
+                <button className="lang-toggle" aria-label={languageType === 'hi' ? 'भाषा बदलें' : 'Toggle language'}> 
                   <span
                     className={languageType === 'hi' ? 'active' : ''}
-                    onClick={() => onLanguageChange?.('hi')}
+                    onClick={() =>setLanguageType('hi')}
                   >अ</span>
                   <span>/</span>
                   <span
                     className={languageType === 'en' ? 'active' : ''}
-                    onClick={() => onLanguageChange?.('en')}
+                    onClick={() => setLanguageType('en')}
                   >A</span>
                 </button>
               </div>
@@ -121,7 +145,7 @@ function Navbar({ languageType, user, notifications = [], onLogout, onLanguageCh
                 <div className="notif" ref={notifRef}>
                   <button
                     className="notif__icon-btn"
-                    aria-label="Notifications"
+                    aria-label={languageType === 'hi' ? 'सूचनाएं' : 'Notifications'} // Translate ARIA label
                     onClick={() => setShowNotif(!showNotif)}
                   >
                     <Bell size={20} />
@@ -131,7 +155,7 @@ function Navbar({ languageType, user, notifications = [], onLogout, onLanguageCh
                     <ul className="notif__dropdown">
                       {notifications.length > 0
                         ? notifications.map((n, i) => <li key={i} className="notif__item">{n}</li>)
-                        : <li className="notif__empty">No notifications</li>}
+                        : <li className="notif__empty">{currentText.noNotifications}</li>} {/* Dynamic "No notifications" text */}
                     </ul>
                   )}
                 </div>
@@ -141,21 +165,20 @@ function Navbar({ languageType, user, notifications = [], onLogout, onLanguageCh
             {/* Desktop-only elements */}
             <div className="navbar__desktop-only">
               {user && (
-                <span className="navbar__username">{user.username}</span>
+                <span className="navbar__username">{user.username}</span> 
               )}
 
               <div className="auth-action">
                 {user
-                  ? <button className="btn btn--gov" onClick={() => { setShowMenu(false); onLogout(); }}>Logout</button> 
-                  : <button className="btn btn--gov" onClick={() => { setShowMenu(false); navigate('/login'); }}>Login</button> 
-                }
+                  ? <button className="btn btn--gov" onClick={() => { setShowMenu(false); onLogout(); }}>{currentText.logout}</button> 
+                  : <button className="btn btn--gov" onClick={() => { setShowMenu(false); navigate('/login'); }}>{currentText.login}</button>}
               </div>
             </div>
           </div>
         </div>
 
         {/* Mobile Menu with ref */}
-        <div className={`navbar__mobile-menu ${showMenu ? 'show' : ''}`} ref={menuRef}> {/* Attach ref to mobile menu */}
+        <div className={`navbar__mobile-menu ${showMenu ? 'show' : ''}`} ref={menuRef}>
           <ul className="navbar__menu">
             {navItems.map((item, idx) => (
               <li
@@ -163,37 +186,37 @@ function Navbar({ languageType, user, notifications = [], onLogout, onLanguageCh
                 className="nav-item nav-item--gov"
                 onClick={() => handleNavItemClick(item.en)} // handleNavItemClick now closes the menu
               >
-                {label(item)}
+                {label(item)} {/* Dynamic nav item text */}
               </li>
             ))}
 
             {/* Mobile-only auth action */}
             <li className="nav-item nav-item--gov mobile-auth">
               {user
-                ? <button className="btn btn--gov" onClick={() => { setShowMenu(false); onLogout(); }}>Logout</button>
-                : <button className="btn btn--gov" onClick={() => { setShowMenu(false); navigate('/login'); }}>Login</button> 
+                ? <button className="btn btn--gov" onClick={() => { setShowMenu(false); onLogout(); }}>{currentText.logout}</button> 
+                : <button className="btn btn--gov" onClick={() => { setShowMenu(false); navigate('/login'); }}>{currentText.login}</button> 
               }
             </li>
           </ul>
         </div>
-         {/* Desktop bottom row for navigation items */}
-         <div className='navbar__desktop-only'>
-          {user && ( // Only show bottom row if user is logged in
-          <div className="navbar__bottom-row">
-            <ul className="navbar__menu"> {/* This menu is only shown on desktop */}
-              {navItems.map((item, idx) => (
-                <li
-                  key={idx}
-                  className="nav-item nav-item--gov"
-                  onClick={() => handleNavItemClick(item.en)} // handleNavItemClick handles navigation and menu closing (though not strictly needed for desktop)
-                >
-                  {label(item)}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        </div>
+          {/* Desktop bottom row for navigation items */}
+          <div className='navbar__desktop-only'>
+           {user && ( // Only show bottom row if user is logged in (or adjust as needed)
+           <div className="navbar__bottom-row">
+             <ul className="navbar__menu"> {/* This menu is only shown on desktop */}
+               {navItems.map((item, idx) => (
+                 <li
+                   key={idx}
+                   className="nav-item nav-item--gov"
+                   onClick={() => handleNavItemClick(item.en)} // handleNavItemClick handles navigation and menu closing (though not strictly needed for desktop)
+                 >
+                   {label(item)} {/* Dynamic nav item text */}
+                 </li>
+               ))}
+             </ul>
+           </div>
+         )}
+         </div>
       </div>
     </nav>
   );

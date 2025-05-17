@@ -1,54 +1,93 @@
 import React from 'react';
 import './styles/About.css';
 
-const About = () => {
+const About = ({ languageType = 'en' }) => { // Added languageType prop
+
+  // Language content
+  const content = {
+    en: {
+      sectionHeading: 'About Us',
+      officials: [
+        {
+          name: 'Shri Yogi Adityanath',
+          designation: 'Chief Minister',
+          image: './yogi.webp',
+          alt: 'Chief Minister'
+        },
+        {
+          name: 'Manglesh Kumar Srivastava',
+          designation: 'Mayor GKP',
+          image: './Dr._Manglesh_Kumar_Srivastava.webp',
+          alt: 'Manglesh_Kumar_Srivastava'
+        },
+        {
+          name: 'Sri Gaurav Singh Sogarwal',
+          designation: 'Municipal Commissioner',
+          image: './muncipal.webp',
+          alt: 'Shri Inderajeet Singh' // Note: Alt text still refers to 'Shri Inderajeet Singh' from original JSX, might need correction if the image/person changed. Keeping it as per original for now.
+        }
+      ],
+      description: 'Nagar Nigam Gorakhpur is the governing body of the city of Gorakhpur in the Indian state of Uttar Pradesh. The municipal corporation consists of democratically elected members, is headed by a mayor and administers the city’s infrastructure and public services. Members from the state’s leading various political parties hold elected offices in the corporation. It is the richest Municipal corporation in terms of revenue generated in the state of Uttar Pradesh.',
+      buttonText: 'More About Us',
+      buttonLink: 'https://gorakhpurnagarnigam.up.gov.in/'
+    },
+    hi: {
+      sectionHeading: 'हमारे बारे में',
+      officials: [
+        {
+          name: 'श्री योगी आदित्यनाथ', // Assuming name transliteration is appropriate
+          designation: 'मुख्यमंत्री',
+          image: './yogi.webp',
+          alt: 'Chief Minister' // Alt text doesn't need translation unless the image changes
+        },
+        {
+          name: 'मंगलेश कुमार श्रीवास्तव', // Assuming name transliteration is appropriate
+          designation: 'महापौर गोरखपुर',
+          image: './Dr._Manglesh_Kumar_Srivastava.webp',
+          alt: 'Manglesh_Kumar_Srivastava'
+        },
+        {
+          name: 'श्री गौरव सिंह सोगरवाल', // Assuming name transliteration is appropriate
+          designation: 'नगर आयुक्त',
+          image: './muncipal.webp',
+          alt: 'Shri Inderajeet Singh'
+        }
+      ],
+      description: 'नगर निगम गोरखपुर भारतीय राज्य उत्तर प्रदेश के गोरखपुर शहर का शासी निकाय है। नगर निगम में लोकतांत्रिक रूप से चुने गए सदस्य होते हैं, इसका नेतृत्व महापौर करते हैं और यह शहर के बुनियादी ढांचे और सार्वजनिक सेवाओं का प्रशासन करता है। राज्य के प्रमुख विभिन्न राजनीतिक दलों के सदस्य निगम में निर्वाचित पदों पर हैं। यह उत्तर प्रदेश राज्य में राजस्व सृजन के मामले में सबसे धनी नगर निगम है।',
+      buttonText: 'हमारे बारे में और जानें',
+      buttonLink: 'https://gorakhpurnagarnigam.up.gov.in/' // Link remains the same
+    }
+  };
+
+  const currentContent = content[languageType] || content.en; // Default to English
+
   return (
     <section className="About-section">
       <div className="About-container">
         <div className="About-grid">
-           <h2 className="About-section-heading">About Us</h2>
+           <h2 className="About-section-heading">{currentContent.sectionHeading}</h2> {/* Dynamic Heading */}
           <div className="About-images-horizontal-row">
-
-             <div className="About-official-card About-main-official">
+            {currentContent.officials.map((official, index) => ( // Map over officials array
+              <div className={`About-official-card ${index === 0 ? 'About-main-official' : ''}`} key={official.name}> {/* Add class for the first official */}
                 <div className="About-official-image">
-                  <img src="./yogi.webp" alt="Chief Minister" />
+                  <img src={official.image} alt={official.alt} /> {/* Dynamic image src and alt */}
                 </div>
                 <div className="About-official-info">
-                  <h3>Shri Yogi Adityanath</h3>
-                  <p>Chief Minister</p>
+                  <h3>{official.name}</h3> {/* Dynamic name */}
+                  <p>{official.designation}</p> {/* Dynamic designation */}
                 </div>
               </div>
-               <div className="About-official-card">
-                <div className="About-official-image">
-                  <img src="./Dr._Manglesh_Kumar_Srivastava.webp" alt="Manglesh_Kumar_Srivastava" />
-                </div>
-                <div className="About-official-info">
-                  <h3>Manglesh Kumar Srivastava</h3>
-                  <p>Mayor GKP</p>
-                </div>
-              </div>
-              <div className="About-official-card">
-                <div className="About-official-image">
-                  <img src="./muncipal.webp" alt="Shri Inderajeet Singh" />
-                </div>
-                <div className="About-official-info">
-                  <h3>Sri Gaurav Singh Sogarwal</h3>
-                  <p>Municpal Commissioner</p>
-                </div>
-              </div>
-
-             
+            ))}
           </div>
 
           <div className="About-content">
-
             <div className="About-section-description">
               <p>
-               Nagar Nigam Gorakhpur is the governing body of the city of Gorakhpur in the Indian state of Uttar Pradesh. The municipal corporation consists of democratically elected members, is headed by a mayor and administers the city’s infrastructure and public services. Members from the state’s leading various political parties hold elected offices in the corporation. It is the richest Municipal corporation in terms of revenue generated in the state of Uttar Pradesh.
+                {currentContent.description} {/* Dynamic description */}
               </p>
-             <button className="About-btn-primary" onClick={() => window.location.href = 'https://gorakhpurnagarnigam.up.gov.in/'}>
-  More About Us
-</button>
+              <button className="About-btn-primary" onClick={() => window.location.href = currentContent.buttonLink}>
+                {currentContent.buttonText} {/* Dynamic button text */}
+              </button>
             </div>
           </div>
 
