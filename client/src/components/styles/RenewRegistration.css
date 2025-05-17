@@ -1,5 +1,22 @@
 :root {
-  --gov-blue: #005ea5;
+  /* Inheriting some color variables from Download.css for consistency */
+  --rr-primary: var(--admin-primary, #2c3e50); /* Fallback if not defined */
+  --rr-primary-light: var(--admin-primary-light, #34495e);
+  --rr-secondary: var(--admin-secondary, #3498db);
+  --rr-success: var(--admin-success, #23814a);
+  --rr-danger: var(--admin-danger, #d84e3f);
+  --rr-warning: var(--admin-warning, #f39c12);
+  --rr-gray-light: var(--admin-gray-light, #ecf0f1);
+  --rr-gray: var(--admin-gray, #bdc3c7);
+  --rr-dark: var(--admin-gray-dark, #7f8c8d);
+  --rr-white: var(--admin-white, #ffffff);
+  --rr-black: var(--admin-black, #2c3e50);
+  --rr-shadow: var(--admin-shadow, rgba(0, 0, 0, 0.1));
+  --rr-border-radius: var(--admin-border-radius, 4px);
+  --rr-font-main: var(--admin-font-main, 'Roboto', sans-serif);
+
+
+  --gov-blue: #005ea5; /* Keeping some original gov colors if needed */
   --gov-light: #f3f2f1;
   --gov-dark-gray: #1f1f1f;
   --gov-green: #00703c;
@@ -8,112 +25,206 @@
 }
 
 .rr-container {
-  max-width: 600px;
-  margin: 2rem auto;
+   /* Adjusted max-width for the table */
+  margin-left: 2rem;
+  margin-right: 2rem;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
    min-height: 60vh;
   padding: 1.5rem;
-  background: var(--gov-light);
+  background: #fff; /* Keep the original background color */
   border: 1px solid #dcdcdc;
   border-radius: 8px;
-  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-family: var(--rr-font-main); /* Use the inherited font */
   color: var(--text-color);
+  box-shadow: 0 2px 10px var(--rr-shadow); /* Added shadow */
 }
+
+.rr-header { /* Added header styles */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem; /* Increased bottom margin */
+  padding-bottom: 0; /* No padding bottom here, handled by title border */
+  flex-wrap: wrap;
+}
+
 
 .rr-title {
   font-size: 1.75rem;
+  margin-bottom: 0; /* Adjusted margin */
+  border-bottom: 2px solid var(--rr-primary); /* Use primary color */
+  padding-bottom: 0.75rem; /* Increased padding */
+  color: var(--rr-primary); /* Use primary color */
+  width: 100%; /* Ensure title takes full width in header */
+}
+
+.rr-back-to-list-header { /* Added back button header styles */
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 1.5rem; /* Space below the back button header */
+}
+
+.rr-back-to-list-btn { /* Added back button styles */
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--rr-primary); /* Use primary color */
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-right: 1rem;
+    transition: color 0.2s ease;
+}
+
+.rr-back-to-list-btn:hover {
+    color: var(--rr-primary-light); /* Lighter color on hover */
+}
+
+.rr-back-to-list-btn svg {
+    margin-right: 0.5rem;
+}
+
+
+.rr-section {
+    margin-bottom: 2rem; /* Space between sections */
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--rr-gray-light);
+}
+
+.rr-section:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+
+.rr-subtitle {
+  font-size: 1.5rem; /* Slightly larger subtitle */
   margin-bottom: 1rem;
-  border-bottom: 2px solid var(--gov-blue);
-  padding-bottom: 0.5rem;
+  color: var(--rr-dark); /* Use dark gray */
 }
 
 .rr-search-form {
   display: flex;
   flex-direction: column;
+  margin-bottom: 1.5rem; /* Space below the form */
 }
 
 .rr-label {
-  margin-top: 1rem;
-  margin-bottom: 0.25rem;
+  margin-top: 0; /* Adjusted margin */
+  margin-bottom: 0.5rem; /* Adjusted margin */
   font-weight: 600;
+  color: var(--rr-black); /* Use black color */
 }
 
 .rr-input {
-  padding: 0.5rem;
+  padding: 0.75rem; /* Increased padding */
   font-size: 1rem;
-  border: 1px solid #aaa;
-  border-radius: 4px;
+  border: 1px solid var(--rr-gray); /* Use gray color */
+  border-radius: var(--rr-border-radius); /* Use border radius variable */
+  box-sizing: border-box; /* Include padding and border in element's total width and height */
+  width: 100%; /* Make input take full width */
 }
 
 .rr-input:focus {
-  outline: 2px solid var(--gov-blue);
-  border-color: var(--gov-blue);
+  outline: 2px solid var(--rr-secondary); /* Use secondary color for focus */
+  border-color: var(--rr-secondary);
 }
 
 .rr-button {
-  margin-top: 1.5rem;
+  margin-top: 1rem; /* Adjusted margin */
   align-self: flex-start;
   padding: 0.75rem 1.5rem;
-  background: var(--gov-blue);
-  color: #fff;
+  background: var(--rr-primary); /* Use primary color */
+  color: var(--rr-white); /* Use white color */
   font-size: 1rem;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--rr-border-radius); /* Use border radius variable */
   cursor: pointer;
   transition: background 0.2s ease-in-out;
+  font-weight: 500;
+  display: inline-flex; /* Align icon and text */
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.rr-button:hover,
-.rr-button:focus {
-  background: #004b85;
+.rr-button:hover:not(:disabled),
+.rr-button:focus:not(:disabled) {
+  background: var(--rr-primary-light); /* Use primary light on hover */
+}
+
+.rr-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .rr-button--renew {
-  background: var(--gov-green);
+  background: var(--rr-success); /* Use success color for renew button */
 }
 
-.rr-button--renew:hover,
-.rr-button--renew:focus {
-  background: #005d2e;
+.rr-button--renew:hover:not(:disabled),
+.rr-button--renew:focus:not(:disabled) {
+  background: #1e8449; /* Darker shade of success on hover */
 }
+
+.rr-button--small {
+    padding: 0.5rem 1rem; /* Smaller padding for list buttons */
+    font-size: 0.9rem;
+    margin-top: 0; /* No top margin in list item */
+}
+
 
 .rr-status {
   margin-top: 1rem;
-  font-size: 1.125rem;
-  color: var(--gov-dark-gray);
+  font-size: 1rem; /* Adjusted font size */
+  color: var(--rr-dark); /* Use dark gray */
+  text-align: center; /* Center status messages */
 }
 
 .rr-error {
   margin-top: 1rem;
-  font-size: 1.125rem;
-  color: var(--gov-orange);
+  font-size: 1rem; /* Adjusted font size */
+  color: var(--rr-danger); /* Use danger color for errors */
   font-weight: 600;
+  text-align: center; /* Center error messages */
 }
 
 .rr-card {
-  margin-top: 2rem;
-  background: #fff;
+  margin-top: 1.5rem; /* Adjusted margin */
+  background: var(--rr-white); /* Use white background */
   padding: 1.5rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--rr-gray-light); /* Use light gray border */
+  border-radius: var(--rr-border-radius); /* Use border radius variable */
+  box-shadow: 0 2px 8px var(--rr-shadow); /* Use shadow variable */
 }
 
-.rr-subtitle {
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid #e5e5e5;
-  padding-bottom: 0.25rem;
+.rr-searched-license-card {
+    margin-top: 1rem; /* Less margin after search form */
 }
+
+.rr-card-title {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--rr-gray-light);
+    padding-bottom: 0.5rem;
+    color: var(--rr-primary);
+}
+
 
 .rr-card dl {
-  margin: 0 0 1.5rem;
+  margin: 0 0 1rem; /* Adjusted margin */
 }
 
 .rr-row {
   display: flex;
   justify-content: space-between;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #e5e5e5;
+  padding: 0.75rem 0; /* Increased padding */
+  border-bottom: 1px solid var(--rr-gray-light); /* Use light gray border */
+  font-size: 0.95rem; /* Adjusted font size */
+  align-items: center; /* Vertically align items */
 }
 
 .rr-row:last-child {
@@ -122,14 +233,1158 @@
 
 .rr-row dt {
   font-weight: 600;
+  color: var(--rr-dark); /* Use dark gray */
+  display: flex; /* Align icon and text in dt */
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rr-icon {
+    color: var(--rr-secondary); /* Use secondary color for icons */
+    flex-shrink: 0; /* Prevent icon from shrinking */
 }
 
 .rr-row dd {
   margin: 0;
+  color: var(--rr-black); /* Use black color */
+  text-align: right; /* Align dd content to the right */
+  word-break: break-word; /* Break long words */
+  flex-grow: 1; /* Allow dd to take available space */
+}
+
+.rr-row-action {
+    justify-content: flex-end; /* Align action row to the right */
+    padding-top: 1rem; /* Add space above action button */
+}
+
+.rr-row-action dt {
+    display: none; /* Hide label for action row */
+}
+
+
+.rr-success-container {
+  text-align: center;
+  padding: 2rem;
+  background-color: var(--rr-white);
+  border: 1px solid var(--rr-gray-light);
+  border-radius: var(--rr-border-radius);
+  box-shadow: 0 2px 8px var(--rr-shadow);
 }
 
 .rr-success {
-  font-size: 1.125rem;
-  color: var(--gov-dark-gray);
+  font-size: 1.2rem;
+  color: var(--rr-success); /* Use success color */
   font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.rr-success-container p {
+    margin-top: 0.5rem;
+    color: var(--rr-dark);
+}
+
+/* Styles for the list of successful licenses (Table structure) */
+.rr-successful-licenses-section .rr-subtitle {
+    margin-top: 0; /* No top margin for the list subtitle */
+}
+
+.rr-table-container {
+    width: 100%;
+    overflow-x: auto; /* Enable horizontal scrolling on small screens */
+    box-shadow: 0 1px 3px var(--rr-shadow);
+    border-radius: var(--rr-border-radius);
+    overflow: hidden; /* Hide overflow */
+}
+
+.rr-license-table {
+  width: 100%;
+  border-collapse: collapse; /* Collapse borders */
+}
+
+.rr-license-table thead {
+  background-color: var(--rr-primary); /* Use primary color for header */
+  color: var(--rr-white); /* Use white color for header text */
+}
+
+.rr-license-table th {
+  padding: 1rem; /* Padding for header cells */
+  text-align: left;
+  font-weight: 500;
+  white-space: nowrap; /* Prevent text wrapping */
+}
+
+.rr-license-table tbody tr {
+  border-bottom: 1px solid var(--rr-gray-light); /* Border between rows */
+  transition: background-color 0.2s ease;
+}
+
+.rr-license-table tbody tr:hover {
+  background-color: rgba(236, 240, 241, 0.5); /* Light hover effect */
+}
+
+.rr-license-table td {
+  padding: 1rem; /* Padding for data cells */
+  vertical-align: middle;
+  white-space: nowrap; /* Prevent text wrapping */
+   overflow: hidden;
+   text-overflow: ellipsis; /* Add ellipsis for overflow text */
+}
+
+.rr-cell {
+  display: flex;
+  align-items: center;
+}
+
+.rr-cell-icon {
+  margin-right: 0.5rem;
+  color: var(--rr-secondary); /* Use secondary color for icons */
+   flex-shrink: 0;
+}
+
+/* Status Badge Styles (re-using from above, but ensuring it works in table) */
+.rr-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: capitalize;
+  overflow: hidden;
+  background: none;
+  color: inherit;
+}
+
+.rr-status-badge svg {
+     flex-shrink: 0;
+}
+
+.rr-status-approved {
+  background-color: rgba(39, 174, 96, 0.15);
+  color: var(--rr-success);
+}
+
+.rr-status-pending {
+  background-color: rgba(243, 156, 18, 0.15);
+  color: var(--rr-warning);
+}
+
+.rr-status-default {
+    color: var(--rr-dark);
+}
+
+/* View button styles (copied from Download.css) */
+.rr-view-btn {
+  padding: 0.5rem 0.85rem;
+  border-radius: var(--rr-border-radius);
+  font-size: 0.85rem;
+  background-color: var(--rr-primary-light);
+  color: var(--rr-white);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+   display: inline-flex;
+   align-items: center;
+   gap: 0.25rem;
+    white-space: nowrap;
+}
+
+.rr-view-btn:hover {
+  background-color: var(--rr-primary);
+}
+
+.rr-btn-icon {
+    flex-shrink: 0;
+}
+
+
+/* Styles for the certificate view section */
+.rr-certificate-section {
+    padding: 1rem; /* Adjusted padding */
+    background-color: var(--rr-white); /* White background for the certificate area */
+    border: 1px solid var(--rr-gray-light);
+    border-radius: var(--rr-border-radius);
+    box-shadow: 0 4px 15px var(--rr-shadow);
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 0; /* No top margin */
+}
+
+.rr-certificate-view { /* Container for the certificate content */
+     background-color: var(--rr-white);
+    border: 1px solid var(--rr-gray);
+    border-radius: var(--rr-border-radius);
+    padding: 1.5rem;
+     box-shadow: 0 4px 15px var(--rr-shadow);
+     position: relative;
+    overflow: hidden;
+     width: 100%;
+    box-sizing: border-box;
+}
+
+
+/* PDF layout styles (copied directly from Download.css) */
+.pdf-layout {
+  font-family: 'Times New Roman', Times, serif;
+  width: 100%;
+  background: #fff;
+  box-sizing: border-box;
+  margin-bottom: 0;
+  position: relative;
+}
+
+.pdf-layout::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' opacity='0.03'%3E%3Cpath d='M100,0 L200,100 L100,200 L0,100 Z' fill='%238b0000'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.pdf-border {
+  border: 3px double var(--border-color, #0a0a0a); /* Added fallback */
+  padding: 8px;
+  position: relative;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.pdf-certificate-title {
+  text-align: center;
+  margin: 10px 0;
+}
+
+.pdf-certificate-title h2 {
+  font-size: 17px;
+  font-weight: bold;
+  margin: 0 0 6px 0;
+}
+
+.pdf-certificate-title h3 {
+  font-size: 17px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  text-decoration: underline;
+  color: var(--gov-maroon, #8b0000); /* Added fallback */
+  letter-spacing: 1px;
+}
+.pdf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+ border-bottom: 2px solid #333;
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+}
+
+.pdf-header-left {
+  display: flex;
+  align-items: center;
+}
+
+.pdf-logo-icon {
+  height: 50px;
+  width: 50px;
+  margin-right: 10px;
+}
+
+.pdf-logo-icon img {
+ max-width: 100%;
+ max-height: 100%;
+}
+
+.pdf-photo-section {
+ display: flex;
+ justify-content: space-between;
+ margin-bottom: 5px;
+ margin-right: 20px;
+ align-items: flex-start;
+}
+
+.pdf-info-block {
+ flex: 1;
+ margin-right: 10px;
+ margin-left: 10px;
+}
+
+.pdf-info-row {
+ display: flex;
+ margin-bottom: 4px;
+ font-size: 12px;
+ line-height: 1.4;
+  justify-content: space-between;
+}
+
+.pdf-info-label {
+ font-weight: bold;
+ min-width: 180px;
+}
+
+.pdf-info-value {
+ flex: 1;
+ padding-left: 4px;
+}
+
+.pdf-photo-box {
+ width: 100px;
+ height: 120px;
+ border: 2px solid var(--border-color, #0a0a0a); /* Added fallback */
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ overflow: hidden;
+ flex-shrink: 0;
+}
+
+.pdf-photo {
+ width: 100%;
+ height: 100%;
+ object-fit: cover;
+}
+
+.pdf-photo-placeholder {
+ width: 100%;
+ height: 100%;
+ display: flex;
+  flex-direction: column;
+ justify-content: center;
+ align-items: center;
+ text-align: center;
+ font-size: 10px;
+ padding: 3px;
+ box-sizing: border-box;
+ margin-right: 30px;
+}
+
+.pdf-details-section {
+ margin-bottom: 5px;
+ margin-left: 10px;
+}
+
+.pdf-section-title {
+ font-weight: bold;
+ font-size: 14px;
+ border-bottom: 1px solid var(--border-color, #0a0a0a); /* Added fallback */
+ margin-bottom: 8px;
+ padding-bottom: 3px;
+ color: var(--gov-blue, #005ea5); /* Added fallback */
+ background-color: #f9f9f9;
+ padding: 3px;
+ border-left: 4px solid var(--gov-maroon, #8b0000); /* Added fallback */
+}
+
+.pdf-details-columns {
+ display: flex;
+ gap: 15px;
+}
+
+.pdf-details-column-left,
+.pdf-details-column-right {
+ flex: 1;
+}
+
+.pdf-details-table .pdf-details-row {
+ display: flex;
+ margin-bottom: 4px;
+ justify-content: space-between;
+ font-size: 12px;
+ line-height: 1.4;
+}
+
+.pdf-details-table .pdf-details-label {
+ font-weight: bold;
+ min-width: 280px;
+  flex-shrink: 0;
+}
+
+.pdf-details-table .pdf-details-value {
+ flex: 1;
+ padding-left: 4px;
+    word-break: break-word;
+}
+
+.pdf-details-columns .pdf-details-row {
+ display: flex;
+ justify-content: space-between;
+ margin-bottom: 5px;
+ font-size: 12px;
+ line-height: 1.4;
+}
+
+.pdf-details-columns .pdf-details-label {
+ font-weight: bold;
+ width: 180px;
+ flex-shrink: 0;
+}
+
+.pdf-details-columns .pdf-details-value {
+ flex: 1;
+ padding-left: 4px;
+  word-break: break-word;
+}
+
+.pdf-vaccine-img {
+ max-width: 80px;
+ height: auto;
+}
+
+.pdf-declaration {
+  margin: 15px 0;
+ font-size: 12px;
+ text-align: left;
+padding-left: 10px;
+ border: 1px solid #e0e0e0;
+ background-color: #f9f9f9;
+ border-radius: 5px;
+  padding: 8px;
+}
+
+.pdf-declaration p {
+ margin: 4px 0;
+ line-height: 1.5;
+}
+
+.pdf-signatures {
+ display: flex;
+ justify-content: space-between;
+ margin: 20px 0 10px 0;
+}
+
+.pdf-signature-block {
+ text-align: center;
+ width: 48%;
+}
+
+.pdf-signature-line {
+ width: 100%;
+ border-bottom: 1px solid var(--border-color, #0a0a0a); /* Added fallback */
+ margin-bottom: 6px;
+ margin-top:8px ;
+   height: 1.5rem;
+}
+
+.pdf-signature-block p {
+ font-size: 10px;
+ margin: 4px 0;
+}
+
+.pdf-contact-footer {
+ font-size: 10px;
+ text-align: center;
+ margin-top: 10px;
+ padding-top: 6px;
+ border-top: 1px solid #eee;
+ display: flex;
+ justify-content: center;
+ gap: 10px;
+}
+
+.pdf-contact-footer span {
+  white-space: nowrap;
+}
+
+.pdf-footer {
+ display: flex;
+ justify-content: space-between;
+ margin-top: 15px;
+  align-items: center;
+}
+
+.pdf-qr-code {
+ text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pdf-qr-placeholder {
+ width: 60px;
+ height: 60px;
+ border: 1px solid var(--border-color, #0a0a0a); /* Added fallback */
+ display: flex;
+  flex-direction: column;
+ justify-content: center;
+ align-items: center;
+ margin-left: 10px;
+ background: #f5f5f5;
+ position: relative;
+ overflow: hidden;
+}
+
+.pdf-qr-placeholder::before,
+.pdf-qr-placeholder::after {
+ content: "";
+ position: absolute;
+ background: rgba(0, 0, 0, 0.1);
+}
+
+.pdf-qr-placeholder::before {
+ width: 100%;
+ height: 1px;
+ top: 50%;
+ left: 0;
+}
+
+.pdf-qr-placeholder::after {
+ width: 1px;
+ height: 100%;
+ left: 50%;
+ top: 0;
+}
+
+.pdf-qr-code p {
+ font-size: 9px;
+ margin: 4px 0;
+}
+
+.pdf-stamp {
+ display: flex;
+ align-items: flex-end;
+}
+
+.pdf-stamp-placeholder {
+ width: 80px;
+ height: 80px;
+ border: 2px dashed var(--gov-maroon, #8b0000); /* Added fallback */
+ border-radius: 50%;
+ display: flex;
+  flex-direction: column;
+ justify-content: center;
+ align-items: center;
+ text-align: center;
+ font-size: 10px;
+ color: var(--gov-maroon, #8b0000); /* Added fallback */
+ font-weight: bold;
+ transform: rotate(-15deg);
+ position: relative;
+ overflow: hidden;
+ margin-right: 10px;
+}
+
+.pdf-stamp-placeholder::after {
+ content: "";
+ position: absolute;
+ width: 150%;
+ height: 16px;
+ background-color: rgba(139, 0, 0, 0.2);
+ top: 50%;
+ left: -25%;
+ transform: translateY(-50%) rotate(-15deg);
+}
+
+/* Styles to force desktop layout for PDF generation */
+.force-desktop-pdf-layout .pdf-border {
+    padding: 8px;
+}
+
+.force-desktop-pdf-layout .pdf-header {
+    flex-direction: row;
+    align-items: center;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+}
+
+.force-desktop-pdf-layout .pdf-logo-icon {
+    height: 50px;
+    width: 50px;
+    margin-right: 10px;
+}
+
+.force-desktop-pdf-layout .pdf-org-name h3 {
+    font-size: 17px;
+}
+.force-desktop-pdf-layout .pdf-org-name h4 {
+     font-size: 17px;
+}
+
+.force-desktop-pdf-layout .pdf-header-right {
+    margin-top: 0;
+    font-size: initial;
+}
+
+.force-desktop-pdf-layout .pdf-certificate-title h3 {
+    font-size: 17px;
+}
+.force-desktop-pdf-layout .pdf-certificate-title h2 {
+     font-size: 17px;
+}
+
+.force-desktop-pdf-layout .pdf-photo-section {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: initial;
+    margin-bottom: 5px;
+    margin-right: 20px;
+}
+
+.force-desktop-pdf-layout .pdf-info-block {
+    flex: 1;
+    width: auto;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.force-desktop-pdf-layout .pdf-info-row {
+    font-size: 12px;
+    margin-bottom: 4px;
+    justify-content: space-between;
+}
+
+.force-desktop-pdf-layout .pdf-info-label {
+    font-weight: bold;
+    min-width: 180px;
+    margin-right: initial;
+    width: auto;
+}
+
+.force-desktop-pdf-layout .pdf-info-value {
+    flex: 1;
+    padding-left: 4px;
+}
+
+.force-desktop-pdf-layout .pdf-photo-box {
+    width: 100px;
+    height: 120px;
+    margin-right: initial;
+}
+.force-desktop-pdf-layout .pdf-photo-placeholder {
+    font-size: 10px;
+     margin-right: 30px;
+}
+
+.force-desktop-pdf-layout .pdf-details-section {
+    margin-bottom: 5px;
+    margin-left: 10px;
+}
+
+.force-desktop-pdf-layout .pdf-section-title {
+    font-size: 14px;
+    padding: 3px;
+}
+
+.force-desktop-pdf-layout .pdf-details-columns {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+}
+
+.force-desktop-pdf-layout .pdf-details-column-left,
+.force-desktop-pdf-layout .pdf-details-column-right {
+    flex: 1;
+    min-width: initial;
+}
+
+.force-desktop-pdf-layout .pdf-details-table .pdf-details-row {
+     font-size: 12px;
+     margin-bottom: 4px;
+     justify-content: space-between;
+}
+
+.force-desktop-pdf-layout .pdf-details-table .pdf-details-label {
+      font-weight: bold;
+      min-width: 280px;
+       flex-shrink: 0;
+       margin-right: initial;
+}
+
+.force-desktop-pdf-layout .pdf-details-table .pdf-details-value {
+     flex: 1;
+     padding-left: 4px;
+      word-break: break-word;
+}
+
+.force-desktop-pdf-layout .pdf-details-columns .pdf-details-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.force-desktop-pdf-layout .pdf-details-columns .pdf-details-label {
+     font-weight: bold;
+     width: 180px;
+     flex-shrink: 0;
+      margin-right: initial;
+}
+
+.force-desktop-pdf-layout .pdf-details-columns .pdf-details-value {
+     flex: 1;
+     padding-left: 4px;
+      word-break: break-word;
+}
+
+.force-desktop-pdf-layout .pdf-declaration {
+    font-size: 12px;
+    padding: 8px;
+    margin: 15px 0;
+     padding-left: 10px;
+}
+
+.force-desktop-pdf-layout .pdf-signatures {
+    display: flex;
+    flex-direction: row;
+    gap: initial;
+    margin: 20px 0 10px 0;
+}
+
+.force-desktop-pdf-layout .pdf-signature-block {
+     width: 48%;
+     min-width: auto;
+     flex-grow: initial;
+}
+
+.force-desktop-pdf-layout .pdf-signature-line {
+     margin-top: 8px;
+     height: 1.5rem;
+}
+
+.force-desktop-pdf-layout .pdf-signature-block p {
+    font-size: 10px;
+    margin: 4px 0;
+}
+
+.force-desktop-pdf-layout .pdf-footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: initial;
+    margin-top: 15px;
+}
+
+.force-desktop-pdf-layout .pdf-qr-code {
+    margin-left: initial;
+}
+
+.force-desktop-pdf-layout .pdf-qr-placeholder {
+    width: 60px;
+    height: 60px;
+     font-size: 9px;
+      margin-left: 10px;
+}
+.force-desktop-pdf-layout .pdf-qr-code p {
+    font-size: 9px;
+    margin: 4px 0;
+}
+
+.force-desktop-pdf-layout .pdf-stamp {
+     margin-right: initial;
+}
+
+.force-desktop-pdf-layout .pdf-stamp-placeholder {
+    width: 80px;
+    height: 80px;
+     font-size: 10px;
+      margin-right: 10px;
+}
+
+.force-desktop-pdf-layout .pdf-contact-footer {
+    font-size: 10px;
+    margin-top: 10px;
+    padding-top: 6px;
+    gap: 10px;
+}
+
+
+/* Download button in certificate view */
+.rr-certificate-download-btn { /* Changed class prefix */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--rr-success); /* Use success color */
+  color: var(--rr-white);
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 1.5rem;
+   width: auto;
+}
+
+.rr-certificate-download-btn:hover {
+  background-color: #1e8449; /* Darker shade on hover */
+}
+
+/* Pending/Rejected notices in certificate view */
+.rr-pending-notice, /* Changed class prefix */
+.rr-rejected-notice { /* Changed class prefix */
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  margin-top: 1.5rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.rr-pending-notice {
+  background-color: rgba(243, 156, 18, 0.1); /* Using warning color with opacity */
+  color: var(--rr-warning);
+}
+
+.rr-rejected-notice {
+  background-color: rgba(231, 76, 60, 0.1); /* Using danger color with opacity */
+  color: var(--rr-danger);
+}
+
+.rr-pending-notice p,
+.rr-rejected-notice p {
+  margin: 0;
+}
+
+.rr-rejected-notice {
+  background-color: #fff8f8;
+  border: 1px solid #ffebee;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.rr-rejected-notice svg {
+  color: #f44336;
+  flex-shrink: 0;
+}
+
+.rr-rejection-reason { /* Changed class prefix */
+  background-color: #ffebee;
+  border-left: 3px solid #f44336;
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  border-radius: 0 4px 4px 0;
+}
+
+.rr-rejection-reason strong {
+  color: #d32f2f;
+}
+
+
+/* Empty state styles */
+.rr-empty-state {
+  text-align: center;
+  padding: 3rem 0;
+  background-color: var(--rr-white);
+  border-radius: 8px;
+  border: 1px dashed var(--rr-gray);
+  margin: 2rem 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.rr-empty-icon {
+  color: var(--rr-dark);
+  margin-bottom: 1rem;
+}
+
+.rr-no-data {
+  font-size: 1.125rem;
+  color: var(--rr-dark);
+  margin-bottom: 0; /* No bottom margin */
+}
+
+/* Loading spinner */
+.rr-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+}
+
+.rr-spinner {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 3px solid var(--rr-gray);
+  border-top-color: var(--rr-primary);
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+/* Responsive adjustments for table and certificate view */
+@media (max-width: 768px) {
+  .rr-container {
+    padding: 1rem;
+  }
+
+  .rr-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+  }
+
+    .rr-back-to-list-btn {
+       font-size: 0.9rem;
+   }
+
+
+  .rr-subtitle {
+    font-size: 1.3rem;
+  }
+
+  .rr-input {
+    padding: 0.6rem;
+  }
+
+  .rr-button {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+
+  .rr-card {
+    padding: 1rem;
+  }
+
+  .rr-card-title {
+      font-size: 1.1rem;
+  }
+
+  .rr-row {
+    padding: 0.6rem 0;
+    font-size: 0.9rem;
+  }
+
+  .rr-row dt {
+      min-width: 80px;
+  }
+
+  /* Hide columns on mobile */
+  .rr-license-table th:nth-child(2), /* Dog Name */
+  .rr-license-table td:nth-child(2),
+  .rr-license-table th:nth-child(3), /* Applied Date */
+  .rr-license-table td:nth-child(3) {
+      display: none;
+  }
+
+    .rr-license-table td {
+        padding: 0.5rem; /* Reduced padding in mobile table */
+    }
+
+    .rr-status-badge {
+        padding: 0; /* Remove padding on mobile badge */
+        font-size: 0.8rem;
+        min-width: auto;
+         background: none;
+         color: inherit;
+         justify-content: center;
+    }
+     .rr-status-badge svg {
+        margin-right: 0;
+        width: 20px;
+        height: 20px;
+    }
+
+    .rr-cell-icon {
+        display: none; /* Hide icons in mobile table cells */
+    }
+
+    .rr-button--small {
+        padding: 0.4rem 0.8rem; /* Smaller button on mobile */
+        font-size: 0.8rem;
+    }
+
+    /* Responsive styles for certificate view (copied from Download.css) */
+       .rr-certificate-view { /* Changed class prefix */
+           padding: 1rem;
+       }
+
+       .pdf-layout {
+           padding: 3px;
+       }
+
+       .pdf-border {
+           padding: 8px;
+       }
+
+       .pdf-header {
+           flex-direction: column;
+           align-items: flex-start;
+           padding-bottom: 4px;
+           margin-bottom: 8px;
+       }
+        .pdf-logo-icon {
+            height: 35px;
+            width: 35px;
+            margin-right: 6px;
+        }
+         .pdf-org-name h3 {
+             font-size: 0.9rem;
+         }
+          .pdf-org-name h4 {
+             font-size: 0.7rem;
+         }
+        .pdf-header-right {
+             margin-top: 4px;
+             font-size: 0.7rem;
+        }
+
+       .pdf-certificate-title h3 {
+           font-size: 1rem;
+       }
+        .pdf-certificate-title h2 {
+           font-size: 0.8rem;
+        }
+
+       .pdf-photo-section {
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-right: 0;
+       }
+        .pdf-info-block {
+            width: 100%;
+             margin-right: 0;
+             margin-left: 0;
+        }
+        .pdf-info-row {
+            font-size: 0.8rem;
+            margin-bottom: 4px;
+        }
+         .pdf-info-label {
+             min-width: 90px;
+              margin-right: 4px;
+             width: auto;
+         }
+         .pdf-info-value {
+              padding-left: 0;
+         }
+        .pdf-photo-box {
+             width: 80px;
+             height: 100px;
+             margin-right: 0;
+        }
+         .pdf-photo-placeholder {
+             font-size: 0.6rem;
+              margin-right: 0;
+         }
+
+       .pdf-details-section {
+           margin-bottom: 8px;
+            margin-left: 0;
+       }
+        .pdf-section-title {
+           font-size: 0.9rem;
+            padding: 5px 6px;
+        }
+        .pdf-details-columns {
+            flex-direction: column;
+            gap: 10px;
+        }
+         .pdf-details-column-left,
+         .pdf-details-column-right {
+             min-width: auto;
+         }
+        .pdf-details-row {
+             font-size: 0.8rem;
+             margin-bottom: 4px;
+        }
+         .pdf-details-label {
+             width: auto;
+             min-width: 90px;
+             margin-right: 4px;
+         }
+          .pdf-details-value {
+             padding-left: 0;
+          }
+         .pdf-details-table .pdf-details-label {
+              min-width: 90px;
+         }
+
+       .pdf-declaration {
+           font-size: 0.8rem;
+           padding: 6px;
+           margin: 10px 0;
+            padding-left: 8px;
+       }
+
+       .pdf-signatures {
+            flex-direction: column;
+            gap: 10px;
+            margin: 15px 0 8px 0;
+       }
+        .pdf-signature-block {
+             width: 100%;
+             min-width: auto;
+             flex-grow: normal;
+        }
+         .pdf-signature-line {
+              margin-top: 6px;
+              height: 1.2rem;
+         }
+         .pdf-signature-block p {
+             font-size: 0.7rem;
+             margin: 3px 0;
+         }
+
+        .pdf-footer {
+             flex-direction: column;
+             align-items: center;
+             gap: 8px;
+             margin-top: 10px;
+        }
+         .pdf-qr-code {
+             margin-left: 0;
+         }
+         .pdf-qr-placeholder {
+             width: 50px;
+             height: 50px;
+              font-size: 0.6rem;
+               margin-left: 0;
+         }
+         .pdf-stamp {
+              margin-right: 0;
+         }
+         .pdf-stamp-placeholder {
+             width: 70px;
+             height: 70px;
+              font-size: 0.7rem;
+               margin-right: 0;
+         }
+
+       .pdf-contact-footer {
+           font-size: 0.7rem;
+            margin-top: 8px;
+            padding-top: 5px;
+            gap: 8px;
+       }
+
+       .rr-certificate-download-btn { /* Changed class prefix */
+           font-size: 0.8rem;
+           padding: 0.5rem 1rem;
+            margin-top: 0.8rem;
+       }
+
+        .rr-pending-notice, /* Changed class prefix */
+       .rr-rejected-notice { /* Changed class prefix */
+           font-size: 0.8rem;
+           padding: 0.6rem;
+           gap: 0.4rem;
+            margin-top: 0.8rem;
+       }
+        .rr-pending-notice svg,
+        .rr-rejected-notice svg {
+             width: 14px;
+             height: 14px;
+        }
 }
