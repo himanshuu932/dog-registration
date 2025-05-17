@@ -94,15 +94,15 @@ function App() {
         />
         <Route path="/" element={<PetHome languageType={languageType}/>} />
         <Route path="/home" element={<PetHome languageType={languageType}/>} />
-        <Route path="/download-license" element={user ? <DownloadLicense /> : <Navigate to="/login" />} />
-        <Route path="/feedback" element={user ? <QueryFeedback /> : <Navigate to="/login" />} />
-        <Route path="/pet-register" element={user ? <PetRegistration /> : <Navigate to="/login" />} />
-        <Route path="/renew-register" element={user ? <RenewRegistration /> : <Navigate to="/login" />} />
-        <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
-        <Route path="/admin" element={user && user.role === "admin" ? <AdminPanel /> : <Navigate to="/login" />} />
+        <Route path="/download-license" element={user ? <DownloadLicense languageType={languageType}/> : <Navigate to="/login" />} />
+        <Route path="/feedback" element={user ? <QueryFeedback languageType={languageType}/> : <Navigate to="/login" />} />
+        <Route path="/pet-register" element={user ? <PetRegistration languageType={languageType}/> : <Navigate to="/login" />} />
+        <Route path="/renew-register" element={user ? <RenewRegistration languageType={languageType}/> : <Navigate to="/login" />} />
+        <Route path="/profile" element={user ? <Profile languageType={languageType}/> : <Navigate to="/login" />} />
+        <Route path="/admin" element={user && user.role === "admin" ? <AdminPanel languageType={languageType} /> : <Navigate to="/login" />} />
       </Routes>
 
-      <Footer />
+      <Footer languageType={languageType}/>
     </div>
   );
 }
