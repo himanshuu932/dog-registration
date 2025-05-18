@@ -50,7 +50,7 @@ function App() {
     const fetchUser = async () => {
       const token = localStorage.getItem("token");
 
-      if (!token) {
+      if (!token)   {
         const elapsed = Date.now() - startTime;
         const delay = Math.max(0, MINIMUM_LOAD_TIME - elapsed);
         setTimeout(() => setLoading(false), delay);
