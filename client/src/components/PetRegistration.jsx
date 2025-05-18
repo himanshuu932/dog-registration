@@ -10,14 +10,28 @@ const PetRegistrationForm = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [avatarFile, setAvatarFile] = useState(null);
-const [avatarFileName, setAvatarFileName] = useState('');
-const [avatarUrl, setAvatarUrl] = useState('');
-
+  const [avatarFileName, setAvatarFileName] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState('');
   const [vaccinationProof, setVaccinationProof] = useState({
     url: '',
     publicId: ''
   });
+
+  // Animal type data
+  const animalBreeds = {
+    Dog: ['Any', 'Labrador', 'German Shepherd', 'Golden Retriever', 'Other'],
+    Cat: ['Any', 'Persian', 'Siamese', 'Maine Coon', 'Other'],
+    Rabbit: ['Any', 'Dutch', 'Lionhead', 'Flemish Giant', 'Other']
+  };
+
+  const animalCategories = {
+    Dog: ['Indian/Desi', 'Foreign Breed'],
+    Cat: ['Indian', 'Foreign'],
+    Rabbit: ['Domestic', 'Foreign']
+  };
+
   const [formData, setFormData] = useState({
+    animalType: 'Dog', // New field for animal type
     fullName: '',
     phoneNumber: '',
     gender: '',
@@ -27,12 +41,12 @@ const [avatarUrl, setAvatarUrl] = useState('');
     state: '',
     totalHouseArea: '',
     numberOfDogs: '1',
-    dogName: '',
-    dogCategory: '',
-    dogBreed: '',
-    dogColor: '',
-    dogAge: '',
-    dogSex: '',
+    petName: '',
+    petCategory: '',
+    petBreed: '',
+    petColor: '',
+    petAge: '',
+    petSex: '',
     dateOfVaccination: '',
     dueVaccination: '',
     declaration1: false,
@@ -41,9 +55,7 @@ const [avatarUrl, setAvatarUrl] = useState('');
     declaration4: false
   });
 
-
-
-   const backend = "https://dog-registration.onrender.com";
+  const backend = "https://dog-registration.onrender.com";
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -68,14 +80,14 @@ const [avatarUrl, setAvatarUrl] = useState('');
       if (!formData.city.trim()) newErrors.city = 'City is required';
       if (!formData.state.trim()) newErrors.state = 'State is required';
       if (!formData.totalHouseArea) newErrors.totalHouseArea = 'Total house area is required';
-      if (!formData.numberOfDogs) newErrors.numberOfDogs = 'Number of dogs is required';
+      if (!formData.numberOfDogs) newErrors.numberOfDogs = 'Number of animals is required';
     } else if (activeTab === 2) {
-      if (!formData.dogName.trim()) newErrors.dogName = 'Dog Name is required';
-      if (!formData.dogCategory) newErrors.dogCategory = 'Dog Category is required';
-      if (!formData.dogBreed) newErrors.dogBreed = 'Dog Breed is required';
-      if (!formData.dogColor.trim()) newErrors.dogColor = 'Dog Colour is required';
-      if (!formData.dogAge) newErrors.dogAge = 'Dog Age is required';
-      if (!formData.dogSex) newErrors.dogSex = 'Dog Sex is required';
+      if (!formData.petName.trim()) newErrors.petName = `${formData.animalType} Name is required`;
+      if (!formData.petCategory) newErrors.petCategory = `${formData.animalType} Category is required`;
+      if (!formData.petBreed) newErrors.petBreed = `${formData.animalType} Breed is required`;
+      if (!formData.petColor.trim()) newErrors.petColor = `${formData.animalType} Colour is required`;
+      if (!formData.petAge) newErrors.petAge = `${formData.animalType} Age is required`;
+      if (!formData.petSex) newErrors.petSex = `${formData.animalType} Sex is required`;
       if (!formData.dateOfVaccination) newErrors.dateOfVaccination = 'Vaccination Date is required';
       if (!formData.dueVaccination) newErrors.dueVaccination = 'Due Date is required';
     }
@@ -93,8 +105,7 @@ const [avatarUrl, setAvatarUrl] = useState('');
     setActiveTab((prev) => prev - 1);
   };
 
-
-   const handleFileChange = (e) => {
+  const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setFile(selectedFile);
@@ -154,53 +165,51 @@ const [avatarUrl, setAvatarUrl] = useState('');
   };
 
   const handleAvatarChange = (e) => {
-  const selectedFile = e.target.files[0];
-  if (selectedFile) {
-    setAvatarFile(selectedFile);
-    setAvatarFileName(selectedFile.name);
-  }
-};
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setAvatarFile(selectedFile);
+      setAvatarFileName(selectedFile.name);
+    }
+  };
 
-const handleAvatarUpload = async () => {
-  if (!avatarFile) {
-    alert('Please select a file first');
-    return;
-  }
+  const handleAvatarUpload = async () => {
+    if (!avatarFile) {
+      alert('Please select a file first');
+      return;
+    }
 
-  const validTypes = ['image/jpeg', 'image/png'];
-  if (!validTypes.includes(avatarFile.type)) {
-    alert('Only JPG or PNG files are allowed for avatar');
-    return;
-  }
+    const validTypes = ['image/jpeg', 'image/png'];
+    if (!validTypes.includes(avatarFile.type)) {
+      alert('Only JPG or PNG files are allowed for avatar');
+      return;
+    }
 
-  if (avatarFile.size > 5000000) { // 5MB
-    alert('File size must be less than 5MB');
-    return;
-  }
+    if (avatarFile.size > 5000000) { // 5MB
+      alert('File size must be less than 5MB');
+      return;
+    }
 
-  try {
-    const formData = new FormData();
-    formData.append('file', avatarFile);
+    try {
+      const formData = new FormData();
+      formData.append('file', avatarFile);
 
-    const token = localStorage.getItem('token');
-    const response = await axios.post(`${backend}/api/license/upload`, formData, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'multipart/form-data'
-      }
-    });
+      const token = localStorage.getItem('token');
+      const response = await axios.post(`${backend}/api/license/upload`, formData, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
 
-    setAvatarUrl(response.data.url);
-    alert('Avatar uploaded successfully!');
-  } catch (error) {
-    console.error('Avatar upload error:', error);
-    alert('Failed to upload avatar');
-  }
-};
+      setAvatarUrl(response.data.url);
+      alert('Avatar uploaded successfully!');
+    } catch (error) {
+      console.error('Avatar upload error:', error);
+      alert('Failed to upload avatar');
+    }
+  };
 
-
-
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.declaration1 || !formData.declaration2 || !formData.declaration3 || !formData.declaration4) {
@@ -221,12 +230,32 @@ const handleSubmit = async (e) => {
         return;
       }
 
-      const submissionData = {
-        ...formData,
-        avatarUrl,
-        vaccinationProofUrl: vaccinationProof.url,
-        vaccinationProofPublicId: vaccinationProof.publicId
-      };
+// In the handleSubmit function, update the submissionData object:
+const submissionData = {
+  animalType: formData.animalType,
+  fullName: formData.fullName,
+  phoneNumber: formData.phoneNumber,
+  gender: formData.gender,
+  streetName: formData.streetName,
+  pinCode: formData.pinCode,
+  city: formData.city,
+  state: formData.state,
+  totalHouseArea: formData.totalHouseArea,
+  numberOfAnimals: formData.numberOfDogs, // Changed to match backend
+ pet: {
+  name: formData.petName,
+  category: formData.petCategory,
+  breed: formData.petBreed,
+  color: formData.petColor,
+  age: formData.petAge,
+  sex: formData.petSex,
+  dateOfVaccination: formData.dateOfVaccination,
+  dueVaccination: formData.dueVaccination,
+  vaccinationProofUrl: vaccinationProof.url,
+  vaccinationProofPublicId: vaccinationProof.publicId,
+  avatarUrl: avatarUrl
+}
+};
 
       const res = await axios.post(`${backend}/api/license/apply`, submissionData, {
         headers: {
@@ -241,7 +270,6 @@ const handleSubmit = async (e) => {
       alert(err.response?.data?.message || 'Something went wrong. Please try again.');
     }
   };
-
 
   const renderError = (field) =>
     errors[field] && <span className="error-text">{errors[field]}</span>;
@@ -278,6 +306,20 @@ return (
             <h2 className="section-title">Pet Owner Information</h2>
             <div className="form-row">
               <div className="form-group">
+                <label htmlFor="animalType">Animal Type<span className="required">*</span></label>
+                <select 
+                  id="animalType" 
+                  name="animalType" 
+                  value={formData.animalType} 
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="Dog">Dog</option>
+                  <option value="Cat">Cat</option>
+                  <option value="Rabbit">Rabbit</option>
+                </select>
+              </div>
+              <div className="form-group">
                 <label htmlFor="fullName">Full Name<span className="required">*</span></label>
                 <input type="text" id="fullName" name="fullName" value={formData.fullName} onChange={handleChange} />
                 {renderError('fullName')}
@@ -287,6 +329,9 @@ return (
                 <input type="tel" id="phoneNumber" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} />
                 {renderError('phoneNumber')}
               </div>
+            </div>
+
+            <div className="form-row">
               <div className="form-group">
                 <label htmlFor="gender">Gender<span className="required">*</span></label>
                 <select id="gender" name="gender" value={formData.gender} onChange={handleChange}>
@@ -297,9 +342,6 @@ return (
                 </select>
                 {renderError('gender')}
               </div>
-            </div>
-
-            <div className="form-row">
               <div className="form-group">
                 <label htmlFor="streetName">Street Name<span className="required">*</span></label>
                 <input type="text" id="streetName" name="streetName" value={formData.streetName} onChange={handleChange} />
@@ -323,9 +365,6 @@ return (
                 <input type="text" id="state" name="state" value={formData.state} onChange={handleChange} />
                 {renderError('state')}
               </div>
-            </div>
-
-            <div className="form-row">
               <div className="form-group">
                 <label htmlFor="totalHouseArea">Total House Area<span className="required">*</span></label>
                 <select id="totalHouseArea" name="totalHouseArea" value={formData.totalHouseArea} onChange={handleChange}>
@@ -336,8 +375,11 @@ return (
                 </select>
                 {renderError('totalHouseArea')}
               </div>
+            </div>
+
+            <div className="form-row">
               <div className="form-group">
-                <label htmlFor="numberOfDogs">Number of Dogs<span className="required">*</span></label>
+                <label htmlFor="numberOfDogs">Number of Animals<span className="required">*</span></label>
                 <input type="number" id="numberOfDogs" name="numberOfDogs" min="1" value={formData.numberOfDogs} onChange={handleChange} />
                 {renderError('numberOfDogs')}
               </div>
@@ -348,110 +390,114 @@ return (
         {activeTab === 2 && (
           <div className="form-step">
             <div className="pet-info-section">
-              <h2 className="section-title">Pet 1</h2>
-              <p className="section-subtitle">Enter Pet 1</p>
+              <h2 className="section-title">{formData.animalType} 1</h2>
+              <p className="section-subtitle">Enter {formData.animalType} 1</p>
 
               <div className="upload-section">
-              <div className="pet-avatar">
-  <div className="pet-icon">
-    {avatarUrl ? (
-      <img src={avatarUrl} alt="Dog Avatar" className="avatar-preview" />
-    ) : (
-      <img src="/dog-icon.png" alt="Dog Icon" />
-    )}
-  </div>
-  <input
-  type="file"
-  id="avatarUpload"
-  accept=".jpg,.jpeg,.png"
-  onChange={handleAvatarChange}
-  style={{ display: 'none' }}
-/>
-
-<label htmlFor="avatarUpload" className="upload-btn">Choose Image</label>
-
-<button 
-  type="button" 
-  className="upload-btn"
-  onClick={handleAvatarUpload}
->
-  Upload
-</button>
-
-  <p className="upload-note">* Upload the image of your Pet</p>
-  <p className="upload-format">* Only jpeg, jpg and png format allowed with the maximum size of 5MB.</p>
-  {avatarFileName && <p className="file-chosen">{avatarFileName}</p>}
-</div>
+                <div className="pet-avatar">
+                  <div className="pet-icon">
+                    {avatarUrl ? (
+                      <img src={avatarUrl} alt={`${formData.animalType} Avatar`} className="avatar-preview" />
+                    ) : (
+                      <img 
+                        src={formData.animalType === 'Dog' ? '/dog-icon.png' : 
+                             formData.animalType === 'Cat' ? '/cat-icon.png' : '/rabbit-icon.png'} 
+                        alt={`${formData.animalType} Icon`} 
+                      />
+                    )}
+                  </div>
+                  <input
+                    type="file"
+                    id="avatarUpload"
+                    accept=".jpg,.jpeg,.png"
+                    onChange={handleAvatarChange}
+                    style={{ display: 'none' }}
+                  />
+                  <label htmlFor="avatarUpload" className="upload-btn">Choose Image</label>
+                  <button 
+                    type="button" 
+                    className="upload-btn"
+                    onClick={handleAvatarUpload}
+                  >
+                    Upload
+                  </button>
+                  <p className="upload-note">* Upload the image of your {formData.animalType}</p>
+                  <p className="upload-format">* Only jpeg, jpg and png format allowed with the maximum size of 5MB.</p>
+                  {avatarFileName && <p className="file-chosen">{avatarFileName}</p>}
+                </div>
 
                 <div className="pet-form">
                   <div className="form-row">
                     <div className="form-group">
-                      <label htmlFor="dogName">Dog Name<span className="required">*</span></label>
+                      <label htmlFor="petName">{formData.animalType} Name<span className="required">*</span></label>
                       <input
                         type="text"
-                        id="dogName"
-                        name="dogName"
-                        placeholder="Enter Full Name"
-                        value={formData.dogName}
+                        id="petName"
+                        name="petName"
+                        placeholder={`Enter ${formData.animalType} Name`}
+                        value={formData.petName}
                         onChange={handleChange}
                         required
                       />
+                      {renderError('petName')}
                     </div>
                     <div className="form-group">
-                      <label htmlFor="dogCategory">Category of Dog<span className="required">*</span></label>
+                      <label htmlFor="petCategory">Category of {formData.animalType}<span className="required">*</span></label>
                       <select
-                        id="dogCategory"
-                        name="dogCategory"
-                        value={formData.dogCategory}
+                        id="petCategory"
+                        name="petCategory"
+                        value={formData.petCategory}
                         onChange={handleChange}
                         required
                       >
                         <option value="">Select Category</option>
-                        <option value="Indian/Desi">Indian/Desi</option>
-                        <option value="Foreign Breed">Foreign Breed</option>
+                        {animalCategories[formData.animalType].map(category => (
+                          <option key={category} value={category}>{category}</option>
+                        ))}
                       </select>
+                      {renderError('petCategory')}
                     </div>
                   </div>
 
                   <div className="form-row">
                     <div className="form-group">
-                      <label htmlFor="dogBreed">Dog Breed<span className="required">*</span></label>
+                      <label htmlFor="petBreed">{formData.animalType} Breed<span className="required">*</span></label>
                       <select
-                        id="dogBreed"
-                        name="dogBreed"
-                        value={formData.dogBreed}
+                        id="petBreed"
+                        name="petBreed"
+                        value={formData.petBreed}
                         onChange={handleChange}
                         required
                       >
                         <option value="">Select Breed</option>
-                        <option value="Any">Any</option>
-                        <option value="Labrador">Labrador</option>
-                        <option value="German Shepherd">German Shepherd</option>
-                        <option value="Golden Retriever">Golden Retriever</option>
-                        <option value="Other">Other</option>
+                        {animalBreeds[formData.animalType].map(breed => (
+                          <option key={breed} value={breed}>{breed}</option>
+                        ))}
                       </select>
+                      {renderError('petBreed')}
                     </div>
                     <div className="form-group">
-                      <label htmlFor="dogColor">Dog Colour<span className="required">*</span></label>
+                      <label htmlFor="petColor">{formData.animalType} Colour<span className="required">*</span></label>
                       <input
                         type="text"
-                        id="dogColor"
-                        name="dogColor"
-                        placeholder="Enter Pet Colour"
-                        value={formData.dogColor}
+                        id="petColor"
+                        name="petColor"
+                        placeholder={`Enter ${formData.animalType} Colour`}
+                        value={formData.petColor}
                         onChange={handleChange}
                         required
                       />
+                      {renderError('petColor')}
                     </div>
                   </div>
 
                   <div className="form-row">
                     <div className="form-group">
-                      <label htmlFor="dogAge">Age of Dog<span className="required">*</span></label>
+                      <label htmlFor="petAge">Age of {formData.animalType}<span className="required">*</span></label>
                       <select
-                        id="dogAge"
-                        name="dogAge"
-                        value={formData.dogAge}
+                        id="petAge"
+                        name="petAge"
+                        value={formData.petAge}
                         onChange={handleChange}
                         required
                       >
@@ -462,13 +508,14 @@ return (
                         <option value="2-5 years">2-5 years</option>
                         <option value="> 5 years">More than 5 years</option>
                       </select>
+                      {renderError('petAge')}
                     </div>
                     <div className="form-group">
-                      <label htmlFor="dogSex">Sex of Dog<span className="required">*</span></label>
+                      <label htmlFor="petSex">Sex of {formData.animalType}<span className="required">*</span></label>
                       <select
-                        id="dogSex"
-                        name="dogSex"
-                        value={formData.dogSex}
+                        id="petSex"
+                        name="petSex"
+                        value={formData.petSex}
                         onChange={handleChange}
                         required
                       >
@@ -476,6 +523,7 @@ return (
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
                       </select>
+                      {renderError('petSex')}
                     </div>
                   </div>
 
@@ -490,6 +538,7 @@ return (
                         onChange={handleChange}
                         required
                       />
+                      {renderError('dateOfVaccination')}
                     </div>
                     <div className="form-group">
                       <label htmlFor="dueVaccination">Due date of Vaccination<span className="required">*</span></label>
@@ -501,11 +550,14 @@ return (
                         onChange={handleChange}
                         required
                       />
+                      {renderError('dueVaccination')}
                     </div>
                   </div>
 
                   <div className="form-group full-width">
-                    <label htmlFor="vaccinationCertificate">Upload Rabies Vaccination Certificate<span className="required">*</span></label>
+                    <label htmlFor="vaccinationCertificate">
+                      Upload {formData.animalType === 'Dog' ? 'Rabies' : 'Vaccination'} Certificate<span className="required">*</span>
+                    </label>
                     <div className="file-input-container">
                       <input
                         type="file"
@@ -519,12 +571,12 @@ return (
                         Choose File
                       </label>
                       <button 
-  type="button" 
-  className="upload-btn" 
-  onClick={uploadFile}
->
-  Upload Certificate
-</button>
+                        type="button" 
+                        className="upload-btn" 
+                        onClick={uploadFile}
+                      >
+                        Upload Certificate
+                      </button>
                       <span className="file-chosen">{fileName}</span>
                     </div>
                     {renderError('vaccinationCertificate')}
@@ -590,56 +642,56 @@ return (
                   <span className="preview-value">{formData.totalHouseArea || 'Not provided'}</span>
                 </div>
                 <div className="preview-item">
-                  <span className="preview-label">Number of Dogs :</span>
+                  <span className="preview-label">Number of Animals :</span>
                   <span className="preview-value">{formData.numberOfDogs || '1'}</span>
                 </div>
               </div>
             </div>
             
-            <h2 className="section-title">Pet Details 1</h2>
+            <h2 className="section-title">{formData.animalType} Details 1</h2>
             <div className="preview-section">
               <div className="preview-row">
                 <div className="preview-item">
-                  <span className="preview-label">Dog Name :</span>
-                  <span className="preview-value">{formData.dogName || 'Not provided'}</span>
+                  <span className="preview-label">{formData.animalType} Name:</span>
+                  <span className="preview-value">{formData.petName || 'Not provided'}</span>
                 </div>
                 <div className="preview-item">
-                  <span className="preview-label">Dog Category :</span>
-                  <span className="preview-value">{formData.dogCategory || 'Not provided'}</span>
-                </div>
-              </div>
-              
-              <div className="preview-row">
-                <div className="preview-item">
-                  <span className="preview-label">Dog Breed :</span>
-                  <span className="preview-value">{formData.dogBreed || 'Not provided'}</span>
-                </div>
-                <div className="preview-item">
-                  <span className="preview-label">Dog Colour :</span>
-                  <span className="preview-value">{formData.dogColor || 'Not provided'}</span>
+                  <span className="preview-label">{formData.animalType} Category:</span>
+                  <span className="preview-value">{formData.petCategory || 'Not provided'}</span>
                 </div>
               </div>
               
               <div className="preview-row">
                 <div className="preview-item">
-                  <span className="preview-label">Age of Dog :</span>
-                  <span className="preview-value">{formData.dogAge || 'Not provided'}</span>
+                  <span className="preview-label">{formData.animalType} Breed:</span>
+                  <span className="preview-value">{formData.petBreed || 'Not provided'}</span>
                 </div>
                 <div className="preview-item">
-                  <span className="preview-label">Sex of Dog :</span>
-                  <span className="preview-value">{formData.dogSex || 'Not provided'}</span>
+                  <span className="preview-label">{formData.animalType} Colour:</span>
+                  <span className="preview-value">{formData.petColor || 'Not provided'}</span>
                 </div>
               </div>
               
               <div className="preview-row">
                 <div className="preview-item">
-                  <span className="preview-label">Date of Vaccination :</span>
+                  <span className="preview-label">Age of {formData.animalType}:</span>
+                  <span className="preview-value">{formData.petAge || 'Not provided'}</span>
+                </div>
+                <div className="preview-item">
+                  <span className="preview-label">Sex of {formData.animalType}:</span>
+                  <span className="preview-value">{formData.petSex || 'Not provided'}</span>
+                </div>
+              </div>
+              
+              <div className="preview-row">
+                <div className="preview-item">
+                  <span className="preview-label">Date of Vaccination:</span>
                   <span className="preview-value">
                     {formData.dateOfVaccination ? new Date(formData.dateOfVaccination).toLocaleDateString() : 'Not provided'}
                   </span>
                 </div>
                 <div className="preview-item">
-                  <span className="preview-label">Rabies Vaccine Due Date :</span>
+                  <span className="preview-label">Vaccine Due Date:</span>
                   <span className="preview-value">
                     {formData.dueVaccination ? new Date(formData.dueVaccination).toLocaleDateString() : 'Not provided'}
                   </span>
@@ -648,7 +700,7 @@ return (
               
               <div className="preview-row">
                 <div className="preview-item">
-                  <span className="preview-label">Rabies Vaccination Certificate :</span>
+                  <span className="preview-label">Vaccination Certificate:</span>
                   <span className="preview-value">
                     {vaccinationProof.url ? (
                       <a href={vaccinationProof.url} target="_blank" rel="noopener noreferrer">

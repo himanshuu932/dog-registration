@@ -3,6 +3,13 @@ const mongoose = require("mongoose");
 const dogLicenseSchema = new mongoose.Schema(
   {
      
+    
+    animalType: {
+      type: String,
+      enum: ['Dog', 'Cat', 'Rabbit'],
+      required: true,
+    },
+     
     license_Id: { 
       type: String,
       unique: true,
@@ -19,8 +26,8 @@ const dogLicenseSchema = new mongoose.Schema(
       state: String,
     },
     totalHouseArea: String,
-    numberOfDogs: Number,
-    dog: {
+    numberOfAnimals: Number,
+    pet: {
       name: String,
       category: String,
       breed: String,
@@ -47,7 +54,6 @@ const dogLicenseSchema = new mongoose.Schema(
 );
 
 
-// Enhanced error handling for duplicate licenseIds
 
 
 module.exports = mongoose.model("DogLicense", dogLicenseSchema);

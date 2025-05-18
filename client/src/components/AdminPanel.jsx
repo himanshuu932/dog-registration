@@ -213,7 +213,7 @@ const AdminPanel = () => {
                   <strong>Address:</strong> {lic.address?.streetName}, {lic.address?.city}, {lic.address?.state} - {lic.address?.pinCode || "N/A"}
                 </div>
                 <div className="grid-item">
-                  <strong>Number of Dogs:</strong> {lic.numberOfDogs || "N/A"}
+                  <strong>Number of Dogs:</strong> {lic.numberOfAnimals || "N/A"}
                 </div>
                 <div className="grid-item">
                   <strong>House Area:</strong> {lic.totalHouseArea ? `${lic.totalHouseArea} sq meter` : "N/A"}
@@ -228,10 +228,10 @@ const AdminPanel = () => {
               Dog Photo
             </div>
             <div className="section-content">
-              {lic.dog?.avatarUrl ? (
+              {lic.pet?.avatarUrl ? (
                 <div className="avatar-preview">
                   <img
-                    src={lic.dog.avatarUrl}
+                    src={lic.pet.avatarUrl}
                     alt="Dog Avatar"
                     className="dog-avatar"
                   />
@@ -253,36 +253,36 @@ const AdminPanel = () => {
           <div className="section-content">
             <div className="detail-grid certificate-grid">
               <div className="grid-item">
-                <strong>Dog Name:</strong> {lic.dog?.name || "N/A"}
+                <strong>Dog Name:</strong> {lic.pet?.name || "N/A"}
               </div>
               <div className="grid-item">
-                <strong>Breed:</strong> {lic.dog?.breed || "N/A"}
+                <strong>Breed:</strong> {lic.pet?.breed || "N/A"}
               </div>
               <div className="grid-item">
-                <strong>Category:</strong> {lic.dog?.category || "N/A"}
+                <strong>Category:</strong> {lic.pet?.category || "N/A"}
               </div>
               <div className="grid-item">
-                <strong>Color:</strong> {lic.dog?.color || "N/A"}
+                <strong>Color:</strong> {lic.pet?.color || "N/A"}
               </div>
               <div className="grid-item">
-                <strong>Age:</strong> {lic.dog?.age || "N/A"}
+                <strong>Age:</strong> {lic.pet?.age || "N/A"}
               </div>
               <div className="grid-item">
-                <strong>Sex:</strong> {lic.dog?.sex || "N/A"}
+                <strong>Sex:</strong> {lic.pet?.sex || "N/A"}
               </div>
               <div className="grid-item">
-                <strong>Vaccinated:</strong> {lic.dog?.dateOfVaccination ? "Yes" : "No"}
+                <strong>Vaccinated:</strong> {lic.pet?.dateOfVaccination ? "Yes" : "No"}
               </div>
               <div className="grid-item">
                 <strong>Microchipped:</strong> No
               </div>
               <div className="grid-item">
                 <Syringe size={16} className="detail-icon" />
-                <strong>Vaccination Date:</strong> {formatDate(lic.dog?.dateOfVaccination)}
+                <strong>Vaccination Date:</strong> {formatDate(lic.pet?.dateOfVaccination)}
               </div>
               <div className="grid-item">
                 <Calendar size={16} className="detail-icon" />
-                <strong>Next Vaccination Due:</strong> {formatDate(lic.dog?.dueVaccination)}
+                <strong>Next Vaccination Due:</strong> {formatDate(lic.pet?.dueVaccination)}
               </div>
             </div>
           </div>
@@ -294,9 +294,9 @@ const AdminPanel = () => {
             Vaccination Certificate
           </div>
           <div className="section-content">
-            {lic.dog?.vaccinationProofUrl ? (
+            {lic.pet?.vaccinationProofUrl ? (
               <a
-                href={lic.dog.vaccinationProofUrl}
+                href={lic.pet.vaccinationProofUrl}
                 target="_blank"
                 rel="noreferrer"
                 className="vaccination-link"
@@ -317,9 +317,9 @@ const AdminPanel = () => {
 
   const renderCertificateView = (lic) => {
     const currentDate = new Date().toLocaleDateString('en-GB');
-    const expiryDate = lic.dog?.dateOfVaccination ?
-      new Date(new Date(lic.dog.dateOfVaccination).setFullYear(
-        new Date(lic.dog.dateOfVaccination).getFullYear() + 1
+    const expiryDate = lic.pet?.dateOfVaccination ?
+      new Date(new Date(lic.pet.dateOfVaccination).setFullYear(
+        new Date(lic.pet.dateOfVaccination).getFullYear() + 1
       )).toLocaleDateString('en-GB') : "N/A";
 
     return (
@@ -415,9 +415,9 @@ const AdminPanel = () => {
             </div>
           </div>
           <div className="certificate-photo">
-            {lic.dog?.avatarUrl ? (
+            {lic.pet?.avatarUrl ? (
               <img
-                src={lic.dog.avatarUrl}
+                src={lic.pet.avatarUrl}
                 alt="Dog Avatar"
                 className="certificate-dog-photo"
               />
@@ -437,40 +437,40 @@ const AdminPanel = () => {
           <div className="section-content">
             <div className="detail-grid certificate-grid">
               <div className="grid-item">
-                <strong>पशु का नाम / Dog Name:</strong> {lic.dog?.name || "N/A"}
+                <strong>पशु का नाम / Dog Name:</strong> {lic.pet?.name || "N/A"}
               </div>
               <div className="grid-item">
-                <strong>लिंग / Gender:</strong> {lic.dog?.sex || "N/A"}
+                <strong>लिंग / Gender:</strong> {lic.pet?.sex || "N/A"}
               </div>
               <div className="grid-item">
-                <strong>नस्ल / Breed:</strong> {lic.dog?.breed || "N/A"}
+                <strong>नस्ल / Breed:</strong> {lic.pet?.breed || "N/A"}
               </div>
               <div className="grid-item">
-                <strong>टीकाकरण / Vaccinated:</strong> {lic.dog?.dateOfVaccination ? "Yes" : "No"}
+                <strong>टीकाकरण / Vaccinated:</strong> {lic.pet?.dateOfVaccination ? "Yes" : "No"}
               </div>
               <div className="grid-item">
-                <strong>वर्ग / Category:</strong> {lic.dog?.category || "N/A"}
+                <strong>वर्ग / Category:</strong> {lic.pet?.category || "N/A"}
               </div>
               <div className="grid-item">
                 <strong>टीकाकरण प्रमाणपत्र / Vaccination Certificate:</strong>
-                {lic.dog?.vaccinationProofUrl ? (
-                  <a href={lic.dog.vaccinationProofUrl} target="_blank" rel="noreferrer" className="certificate-link">View</a>
+                {lic.pet?.vaccinationProofUrl ? (
+                  <a href={lic.pet.vaccinationProofUrl} target="_blank" rel="noreferrer" className="certificate-link">View</a>
                 ) : "N/A"}
               </div>
               <div className="grid-item">
-                <strong>रंग / Color:</strong> {lic.dog?.color || "N/A"}
+                <strong>रंग / Color:</strong> {lic.pet?.color || "N/A"}
               </div>
               <div className="grid-item">
                 <strong>माइक्रोचिप्ड / Microchipped:</strong> No
               </div>
               <div className="grid-item">
-                <strong>आयु / Age:</strong> {lic.dog?.age || "N/A"}
+                <strong>आयु / Age:</strong> {lic.pet?.age || "N/A"}
               </div>
               <div className="grid-item">
-                <strong>अगला टीकाकरण / Next Vaccination:</strong> {formatDate(lic.dog?.dueVaccination)}
+                <strong>अगला टीकाकरण / Next Vaccination:</strong> {formatDate(lic.pet?.dueVaccination)}
               </div>
               <div className="grid-item span-two">
-                <strong>टीकाकरण की तारीख / Vaccination Date:</strong> {formatDate(lic.dog?.dateOfVaccination)}
+                <strong>टीकाकरण की तारीख / Vaccination Date:</strong> {formatDate(lic.pet?.dateOfVaccination)}
               </div>
             </div>
           </div>
@@ -490,7 +490,7 @@ const AdminPanel = () => {
                 <strong>फोन नंबर / Phone Number:</strong> {lic.phoneNumber || "N/A"}
               </div>
               <div className="grid-item">
-                <strong>कुत्तों की संख्या / No. of Dogs:</strong> {lic.numberOfDogs || "N/A"}
+                <strong>कुत्तों की संख्या / No. of Dogs:</strong> {lic.numberOfAnimals || "N/A"}
               </div>
               <div className="grid-item span-two">
                 <strong>घर का क्षेत्रफल / House Area:</strong> {lic.totalHouseArea ? `${lic.totalHouseArea} sq meter` : "N/A"}
@@ -639,7 +639,7 @@ const AdminPanel = () => {
                     >
                       {(activeTab === 'renewals' || activeTab === 'approved' || activeTab === 'rejected' || activeTab === 'all') && <td>{lic.license_Id || lic._id?.substring(0, 8)}</td>}
                       <td><User size={16} className="cell-icon" /> {lic.fullName}</td>
-                      <td><Dog size={16} className="cell-icon" /> {lic.dog?.name || "N/A"}</td>
+                      <td><Dog size={16} className="cell-icon" /> {lic.pet?.name || "N/A"}</td>
                       <td>
                         <div className={`status-badge ${lic.status}`}>
                           {lic.status === "approved" && <Check size={14} />}
@@ -656,7 +656,7 @@ const AdminPanel = () => {
                         <td><Calendar size={16} className="cell-icon" /> {formatDate(lic.renewalRequestDate)}</td>
                       )}
                       {!isMobile && (activeTab === 'new' || activeTab === 'approved' || activeTab === 'all') && (
-                        <td><Calendar size={16} className="cell-icon" /> {formatDate(lic.dog?.dateOfVaccination)}</td>
+                        <td><Calendar size={16} className="cell-icon" /> {formatDate(lic.pet?.dateOfVaccination)}</td>
                       )}
                       <td className="actions-cell">
                         <div className="action-buttons-container">

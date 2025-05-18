@@ -87,23 +87,37 @@ const UserStatusBadge = ({ status, isMobile, languageType = 'en' }) => { // Adde
   );
 };
 
+
+
+const getAnimalLabel = (animalType = 'Pet') => {
+  const lower = animalType.toLowerCase();
+  switch (lower) {
+    case 'dog': return 'Dog';
+    case 'cat': return 'Cat';
+    case 'rabbit': return 'Rabbit';
+    default: return 'Pet';
+  }
+};
+
+
+
 // Helper function to render the certificate view
 const renderCertificateView = (lic, isMobile, downloadPDF, languageType = 'en') => { // Added languageType prop
     const currentDate = new Date().toLocaleDateString('en-GB');
 
-    const expiryDate = lic.dog?.dateOfVaccination ?
-      new Date(new Date(lic.dog.dateOfVaccination).setFullYear(
-        new Date(lic.dog.dateOfVaccination).getFullYear() + 1
+    const expiryDate = lic.pet?.dateOfVaccination ?
+      new Date(new Date(lic.pet.dateOfVaccination).setFullYear(
+        new Date(lic.pet.dateOfVaccination).getFullYear() + 1
       )).toLocaleDateString('en-GB') : "N/A";
 
     const certificateText = {
         en: {
             orgNameEn: 'Nagar Nigam Gorakhpur',
             orgNameHi: 'नगर निगम गोरखपुर', // Keep Hindi name as it's bilingual on certificate
-            certificateTitleEn: 'OFFICIAL DOG LICENSE CERTIFICATE',
+            certificateTitleEn: 'OFFICIAL PET LICENSE CERTIFICATE',
             certificateTitleHi: 'कुत्तों के पंजीकरण के लिए अधिकृत पत्र', // Keep Hindi title as it's bilingual
             dateLabel: 'Date:',
-            photoPlaceholder: 'Dog\'s Photo', // This text is inside the placeholder div
+            photoPlaceholder: 'Pet\'s Photo', // This text is inside the placeholder div
              // Keep combined labels as they are already in the original certificate layout
              // e.g., 'नाम / Name', 'पंजीकरण संख्या / Registration No.', etc.
             declaration: <>मैं घोषणा करता/करती हूँ कि उपरोक्त दी गई जानकारी मेरी जानकारी के अनुसार सत्य है।  <b>/</b> I declare that the information provided above is true to the best of my knowledge.</>,
@@ -120,10 +134,10 @@ const renderCertificateView = (lic, isMobile, downloadPDF, languageType = 'en') 
         hi: {
              orgNameEn: 'Nagar Nigam Gorakhpur',
             orgNameHi: 'नगर निगम गोरखपुर',
-            certificateTitleEn: 'OFFICIAL DOG LICENSE CERTIFICATE',
+            certificateTitleEn: 'OFFICIAL PET LICENSE CERTIFICATE',
             certificateTitleHi: 'कुत्तों के पंजीकरण के लिए अधिकृत पत्र',
             dateLabel: 'दिनांक:',
-            photoPlaceholder: 'प पशु की तस्वीर',
+            photoPlaceholder: ' पशु की तस्वीर',
              // Keep combined labels as they are already in the original certificate layout
             declaration: <>मैं घोषणा करता/करती हूँ कि उपरोक्त दी गई जानकारी मेरी जानकारी के अनुसार सत्य है।  <b>/</b> I declare that the information provided above is true to the best of my knowledge.</>,
             applicantSignature: 'आवेदक के हस्ताक्षर / Applicant\'s Signature',
@@ -187,8 +201,8 @@ const renderCertificateView = (lic, isMobile, downloadPDF, languageType = 'en') 
                    </div>
                  </div>
                  <div className="pdf-photo-box">
-                   {lic.dog?.avatarUrl ? (
-                     <img src={lic.dog.avatarUrl} alt="Dog" className="pdf-photo" />
+                   {lic.pet?.avatarUrl ? (
+                     <img src={lic.pet.avatarUrl} alt="Dog" className="pdf-photo" />
                    ) : (
                      <div className="pdf-photo-placeholder">{currentCertText.photoPlaceholder}</div> 
                    )}
@@ -196,51 +210,51 @@ const renderCertificateView = (lic, isMobile, downloadPDF, languageType = 'en') 
                </div>
 
                <div className="pdf-details-section">
-                 <div className="pdf-section-title">पशु का विवरण / Animal Details</div>
+                 <div className="pdf-section-title">पशु का विवरण / Pet Details</div>
                  <div className="pdf-details-columns">
                    <div className="pdf-details-column-left">
                      <div className="pdf-details-row">
-                       <div className="pdf-details-label">पशु का नाम / Dog Name</div>
-                       <div className="pdf-details-value">: {lic.dog?.name || "N/A"}</div>
+                       <div className="pdf-details-label">पशु का नाम / Pet Name</div>
+                       <div className="pdf-details-value">: {lic.pet?.name || "N/A"}</div>
                      </div>
                      <div className="pdf-details-row">
                        <div className="pdf-details-label">नस्ल / Breed</div>
-                       <div className="pdf-details-value">: {lic.dog?.breed || "N/A"}</div>
+                       <div className="pdf-details-value">: {lic.pet?.breed || "N/A"}</div>
                      </div>
                      <div className="pdf-details-row">
                        <div className="pdf-details-label">वर्ग / Category</div>
-                       <div className="pdf-details-value">: {lic.dog?.category || "N/A"}</div>
+                       <div className="pdf-details-value">: {lic.pet?.category || "N/A"}</div>
                      </div>
                      <div className="pdf-details-row">
                        <div className="pdf-details-label">रंग / Color</div>
-                       <div className="pdf-details-value">: {lic.dog?.color || "N/A"}</div>
+                       <div className="pdf-details-value">: {lic.pet?.color || "N/A"}</div>
                      </div>
                      <div className="pdf-details-row">
                        <div className="pdf-details-label">आयु / Age</div>
-                       <div className="pdf-details-value">: {lic.dog?.age || "N/A"}</div>
+                       <div className="pdf-details-value">: {lic.pet?.age || "N/A"}</div>
                      </div>
                      <div className="pdf-details-row">
                        <div className="pdf-details-label">टीकाकरण की तारीख / Vaccination Date</div>
-                       <div className="pdf-details-value">: {formatDate(lic.dog?.dateOfVaccination)}</div>
+                       <div className="pdf-details-value">: {formatDate(lic.pet?.dateOfVaccination)}</div>
                      </div>
                    </div>
                    <div className="pdf-details-column-right">
                      <div className="pdf-details-row">
                        <div className="pdf-details-label">लिंग / Gender</div>
-                       <div className="pdf-details-value">: {lic.dog?.sex || "N/A"}</div>
+                       <div className="pdf-details-value">: {lic.pet?.sex || "N/A"}</div>
                      </div>
                      <div className="pdf-details-row">
                        <div className="pdf-details-label">टीकाकरण / Vaccinated</div>
                        <div className="pdf-details-value">
-                         : {lic.dog?.dateOfVaccination ? ' हां / Yes' : ' नहीं / No'}
+                         : {lic.pet?.dateOfVaccination ? ' हां / Yes' : ' नहीं / No'}
                        </div>
                      </div>
-                     {lic.dog?.vaccinationProofUrl && (
+                     {lic.pet?.vaccinationProofUrl && (
                        <div className="pdf-details-row">
                          <div className="pdf-details-label">टीकाकरण प्रमाणपत्र / Vaccination Certificate</div>
                          <div className="pdf-details-value">
                            <a
-                             href={lic.dog.vaccinationProofUrl}
+                             href={lic.pet.vaccinationProofUrl}
                              target="_blank"
                              rel="noreferrer"
                              className="pdf-vaccine-img"
@@ -256,7 +270,7 @@ const renderCertificateView = (lic, isMobile, downloadPDF, languageType = 'en') 
                      </div>
                      <div className="pdf-details-row">
                        <div className="pdf-details-label">अगला टीकाकरण / Next Vaccination</div>
-                       <div className="pdf-details-value">: {formatDate(lic.dog?.dueVaccination)}</div>
+                       <div className="pdf-details-value">: {formatDate(lic.pet?.dueVaccination)}</div>
                      </div>
                    </div>
                  </div>
@@ -274,8 +288,11 @@ const renderCertificateView = (lic, isMobile, downloadPDF, languageType = 'en') 
                      <div className="pdf-details-value">: {lic.phoneNumber || "N/A"}</div>
                    </div>
                    <div className="pdf-details-row">
-                     <div className="pdf-details-label">कुत्तों की संख्या / No. of Dogs</div>
-                     <div className="pdf-details-value">: {lic.numberOfDogs || "N/A"}</div>
+                    <div className="pdf-details-label">
+  {`जानवरों की संख्या / No. of ${getAnimalLabel(lic.animalType)}s`}
+</div>
+
+                     <div className="pdf-details-value">:{lic.numberOfAnimals || "N/A"}</div>
                    </div>
                    <div className="pdf-details-row">
                      <div className="pdf-details-label">घर का क्षेत्रफल / House Area</div>
@@ -324,7 +341,7 @@ const renderCertificateView = (lic, isMobile, downloadPDF, languageType = 'en') 
                 className="user-dl-button user-dl-certificate-download-btn"
                 onClick={(e) => {
                   e.stopPropagation();
-                  downloadPDF(lic._id, lic.dog?.name);
+                  downloadPDF(lic._id, lic.pet?.name);
                 }}
               >
                 <Download size={18} />
@@ -385,7 +402,7 @@ const DogLicenseDownload = ({ languageType = 'en' }) => { // Added languageType 
             tableHeaders: {
                 regNo: 'Reg. No',
                 owner: 'Owner',
-                dogName: 'Dog Name',
+                dogName: 'Pet Name',
                 status: 'Status',
                 appliedDate: 'Applied Date',
                 view: 'View'
@@ -582,7 +599,7 @@ const DogLicenseDownload = ({ languageType = 'en' }) => { // Added languageType 
                        <tr key={license._id} onClick={() => toggleExpanded(license._id)}>
                          <td><div className="user-dl-cell user-dl-reg-no-cell">{!isMobile && <User size={16} className="user-dl-cell-icon" />} {license.license_Id || "N/A"}</div></td>
                          <td><div className="user-dl-cell user-dl-owner-cell">{!isMobile && <User size={16} className="user-dl-cell-icon" />} {license.fullName}</div></td>
-                         {!isMobile && <td><div className="user-dl-cell user-dl-dog-cell">{!isMobile && <Dog size={16} className="user-dl-cell-icon" />} {license.dog?.name || "N/A"}</div></td>}
+                         {!isMobile && <td><div className="user-dl-cell user-dl-dog-cell">{!isMobile && <Dog size={16} className="user-dl-cell-icon" />} {license.pet?.name || "N/A"}</div></td>}
                          <td><div className="user-dl-cell user-dl-status-cell"><UserStatusBadge status={license.status} isMobile={isMobile} languageType={languageType} /></div></td> {/* Pass languageType */}
                          {!isMobile && <td><div className="user-dl-cell user-dl-date-cell"><Calendar size={16} className="user-dl-cell-icon" /> {formatDate(license.createdAt)}</div></td>}
                          <td>

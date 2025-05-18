@@ -70,10 +70,12 @@ exports.uploadVaccinationProof = async (req, res) => {
 exports.applyLicense = async (req, res) => {
   try {
     const {
+        animalType,
       fullName, phoneNumber, gender, streetName, pinCode, city, state, 
-      totalHouseArea, numberOfDogs, dogName, dogCategory, dogBreed, 
+      totalHouseArea, numberOfAnimals, dogName, dogCategory, dogBreed, 
       dogColor, dogAge, dogSex, dateOfVaccination, dueVaccination,
       avatarUrl, vaccinationProofUrl, vaccinationProofPublicId,
+       pet,
     } = req.body;
 
     // Generate license ID
@@ -91,31 +93,26 @@ exports.applyLicense = async (req, res) => {
 
 
 
-    const newLicense = new DogLicense({
-      owner: ownerId,
-      license_Id: license_Id, 
-      fullName,
-      phoneNumber,
-      gender,
-      address: { streetName, pinCode, city, state },
-      totalHouseArea,
-      numberOfDogs,
-      dog: {
-        name: dogName,
-        category: dogCategory,
-        breed: dogBreed,
-        color: dogColor,
-        age: dogAge,
-        sex: dogSex,
-        dateOfVaccination,
-        dueVaccination,
-        avatarUrl,
-        vaccinationProofUrl,
-        vaccinationProofPublicId 
-      },
-      expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-      status: 'pending'
-    });
+// In the applyLicense function, update the newLicense object:
+const newLicense = new DogLicense({
+  owner: ownerId,
+  license_Id: license_Id,
+  animalType: animalType, // Make sure this is included
+  fullName,
+  phoneNumber,
+  gender,
+  address: { // Keep as object to match schema
+    streetName,
+    pinCode,
+    city,
+    state
+  },
+  totalHouseArea,
+  numberOfAnimals, // Changed to match schema
+  pet,
+  expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+  status: 'pending'
+});
 
    
     const savedLicense = await newLicense.save();
