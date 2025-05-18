@@ -243,9 +243,10 @@ function LoginPage({ user, setUser, languageType }) {
   return (
     <div className="login-wrapper">
       {/* Left side for desktop */}
-      <div className="login-left">
+      {!isMobile &&(<div className="login-left">
         <img src='./dog1.webp' alt="Cute Pet" className="doggy" />
-      </div>
+      </div>)
+      }
       <div className="login-right">
         <div className="login-box">
           {/* Back Button - Always Visible */}
