@@ -264,7 +264,7 @@
     }
 
     /* Mobile Responsive */
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
       .login-wrapper {
         flex-direction: column;
         /* New background image for smaller screens */

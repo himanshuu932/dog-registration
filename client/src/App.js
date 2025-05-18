@@ -50,7 +50,7 @@ function App() {
     const fetchUser = async () => {
       const token = localStorage.getItem("token");
 
-      if (!token) {
+      if (!token)   {
         const elapsed = Date.now() - startTime;
         const delay = Math.max(0, MINIMUM_LOAD_TIME - elapsed);
         setTimeout(() => setLoading(false), delay);
@@ -90,7 +90,7 @@ function App() {
       <Routes>
         <Route
           path="/login"
-          element={!user ? <LoginPage onLogin={handleLogin} setUser={setUser} /> : <Navigate to="/" />}
+          element={!user ? <LoginPage languageType={languageType} onLogin={handleLogin} setUser={setUser} /> : <Navigate to="/" />}
         />
         <Route path="/" element={<PetHome languageType={languageType}/>} />
         <Route path="/home" element={<PetHome languageType={languageType}/>} />

@@ -1,12 +1,59 @@
+/* General body and wrapper styles */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f4f7f9; /* Default background, will be overridden by bg.webp on mobile/tablet */
+  margin: 0;
+  padding: 0;
+}
+
+.login-wrapper {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Left Side - Image (Visible on Desktop) */
+.login-left {
+  flex: 0.4; /* Adjust flex ratio as needed */
+  background-color: #ebeff3; /* Background for the image side */
+  display: flex; /* Ensure flex for centering image */
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Style for the image */
+.doggy {
+  width: 100%;
+  height: 100%; /* Make image fill the container */
+  object-fit: cover; /* Cover the area without distorting aspect ratio */
+  /* Remove box-shadow and border-radius here if you only want them on the login-box */
+}
+
+
+/* Right Side - Login Form Container */
+.login-right {
+  flex: 0.6; /* Adjust flex ratio as needed */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  /* Desktop background - can add a color or gradient here if not using bg.webp */
+   background-color: #ffffff; /* Example background color for desktop right side */
+}
+
+/* Styles from the provided snippet for the login container */
 .login-container {
   text-align: center;
   max-width: 400px;
-  margin: 5% auto;
+  width: 100%; /* Make it responsive */
+  /* margin: 5% auto; Removed margin auto as flexbox handles centering */
   padding: 20px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  font-family: 'Segoe UI', sans-serif;
+  /* font-family is already set on body */
   background-color: #f9f9f9;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Added a subtle shadow */
 }
 
 .input-field {
@@ -14,6 +61,8 @@
   padding: 10px;
   margin: 10px 0;
   font-size: 16px;
+  border: 1px solid #ccc; /* Added border for clarity */
+  border-radius: 4px; /* Added border radius */
 }
 
 .login-button {
@@ -24,17 +73,24 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.3s ease; /* Added transition */
+}
+
+.login-button:hover {
+  background-color: #003f7f; /* Darken button on hover */
 }
 
 .error-message {
   color: red;
   margin: 10px 0;
+  font-size: 0.9em; /* Slightly smaller font size */
 }
 
 .tab-buttons {
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
+  border-bottom: 1px solid #eee; /* Added a subtle separator */
 }
 
 .tab-buttons button {
@@ -43,10 +99,104 @@
   font-size: 14px;
   border: none;
   cursor: pointer;
-  background: #eee;
+  background: none; /* Remove default grey background */
+  color: #005ea5; /* Color for inactive tabs */
+  position: relative; /* Needed for active tab indicator */
+  transition: color 0.3s ease; /* Added transition */
 }
 
+.tab-buttons button:hover {
+    color: #003f7f; /* Darken text on hover */
+}
+
+
 .tab-buttons .active-tab {
-  background: #005ea5;
-  color: white;
+  background: none; /* Active tab button itself has no background */
+  color: #005ea5; /* Active tab text color */
+  font-weight: bold; /* Make active tab text bold */
+}
+
+.tab-buttons .active-tab::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; /* Position the indicator below the text */
+    left: 50%; /* Start from the center */
+    transform: translateX(-50%); /* Center the indicator */
+    width: calc(100% - 10px); /* Make the indicator slightly narrower than the button */
+    height: 2px;
+    background-color: #005ea5; /* Color of the active tab indicator */
+    transition: width 0.3s ease; /* Added transition for the indicator */
+}
+
+
+/* Mobile and Tablet Responsive Styles */
+@media (max-width: 768px) {
+  .login-wrapper {
+    flex-direction: column; /* Stack elements vertically */
+    height: 100vh; /* Ensure full height */
+    background-image: url('./bg.webp'); /* Background image for mobile/tablet */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    align-items: center; /* Center content horizontally */
+    justify-content: center; /* Center content vertically */
+    padding: 20px; /* Add some padding */
+  }
+
+  .login-left {
+    display: none; /* Hide the image on mobile/tablet */
+  }
+
+  .login-right {
+    flex: 1; /* Make the login form container take full width */
+    width: 100%;
+    height: auto; /* Adjust height */
+    min-height: auto;
+    background: none; /* Remove any background from login-right itself */
+    display: flex; /* Ensure flex for centering */
+    justify-content: center; /* Center the login box */
+    align-items: center; /* Center the login box */
+  }
+
+  .login-container {
+    width: 95%; /* Adjust width for smaller screens */
+    margin: 0; /* Remove margin auto, flexbox handles centering */
+    padding: 20px; /* Adjust padding */
+     background-color: rgba(255, 255, 255, 0.9); /* Optional: Add a semi-transparent background to the login box */
+     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); /* Adjust shadow for visibility against background image */
+
+  }
+
+  .tab-buttons button {
+      flex-grow: 1; /* Distribute space evenly among buttons */
+      margin: 0;
+  }
+    .tab-buttons .active-tab::after {
+      width: 100%; /* Make indicator full width on mobile */
+      bottom: -1px;
+    }
+
+
+}
+
+/* Further adjustments for very small screens if needed */
+@media (max-width: 480px) {
+  .login-container {
+    padding: 15px;
+  }
+
+  .input-field {
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  .login-button {
+    padding: 8px 15px;
+    font-size: 14px;
+  }
+
+  .tab-buttons button {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
 }

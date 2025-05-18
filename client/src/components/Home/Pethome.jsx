@@ -5,7 +5,7 @@ import About from './About';
 import Services from './Services';
 import HowToRegister from './RegisterSteps';
 import GeneralInformation from './GeneralInfo';
-import Footer from '../Footer';
+
 
 const Pethome = ({languageType}) => {
   // State for active service
