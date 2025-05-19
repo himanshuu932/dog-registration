@@ -1,126 +1,139 @@
 import React, { useEffect, useState } from "react";
 import html2pdf from 'html2pdf.js';
-import './styles/Download.css';
+import './styles/Download.css'; // Ensure this CSS file exists and is styled
 import {
-  Download,
+  Download as DownloadIcon,
   CheckCircle,
   XCircle,
-  ChevronDown,
-  ChevronUp,
+  ChevronLeft,
   FileText,
   Calendar,
   Clock,
   AlertCircle,
   User,
-  Dog,
+  Dog, // Maintained for getPetIcon, can be removed if PawPrint is always used for 'dog'
   Eye,
-  ChevronLeft,
-  Award,
-  Syringe,
-  Stamp,
-  Globe,
-  Phone,
-  MapPin,
-  Image
+  Award, // Used in certificate text but not directly imported in original. Added for completeness.
+  Stamp, // Used in certificate text
+  Globe, // Used in certificate text
+  Phone, // Used in certificate text
+  MapPin, // Used in certificate text
+  PawPrint // Generic Pet Icon
 } from 'lucide-react';
 
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A';
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-GB");
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "Invalid Date";
+    return date.toLocaleDateString("en-GB");
+  } catch(e) {
+    return "Invalid Date";
+  }
 };
 
-const getCurrentDate = () => {
-  const now = new Date();
-  return now.toLocaleDateString('en-GB');
-};
-
-const UserStatusBadge = ({ status, isMobile, languageType = 'en' }) => { // Added languageType prop
+const UserStatusBadge = ({ status, isMobile, languageType = 'en' }) => {
   const statusText = {
     en: {
       approved: 'Approved',
       pending: 'Pending',
-      rejected: 'Rejected'
+      rejected: 'Rejected',
+      renewal_pending: 'Renewal Pending'
     },
     hi: {
       approved: 'स्वीकृत',
       pending: 'लंबित',
-      rejected: 'अस्वीकृत'
+      rejected: 'अस्वीकृत',
+      renewal_pending: 'नवीनीकरण लंबित है'
     }
   };
 
   const currentStatusText = statusText[languageType] || statusText.en;
+  const lowerStatus = status?.toLowerCase();
 
   let badgeClass = "user-dl-status-badge";
-  let Icon = AlertCircle; // Default icon
-  let iconColor = 'var(--user-dl-warning)'; // Default color
+  let IconToRender = AlertCircle; // Renamed to avoid conflict with 'Icon' variable name
+  let iconColor = 'var(--user-dl-warning)';
 
-  switch(status.toLowerCase()) {
+  switch(lowerStatus) {
     case 'approved':
       badgeClass += " user-dl-status-approved";
-      Icon = CheckCircle;
+      IconToRender = CheckCircle;
       iconColor = 'var(--user-dl-success)';
       break;
     case 'pending':
-      badgeClass += " user-dl-status-pending";
-      Icon = Clock; // Use Clock icon for pending
+    case 'renewal_pending':
+      badgeClass += " user-dl-status-pending"; // renewal_pending can share pending style
+      IconToRender = Clock;
       iconColor = 'var(--user-dl-warning)';
       break;
     case 'rejected':
       badgeClass += " user-dl-status-rejected";
-      Icon = XCircle;
+      IconToRender = XCircle;
       iconColor = 'var(--user-dl-danger)';
       break;
-    default: // Fallback for any other unknown status
+    default:
       badgeClass += " user-dl-status-default";
-      Icon = AlertCircle;
+      IconToRender = AlertCircle;
       iconColor = 'var(--user-dl-dark)';
   }
 
-  const displayStatusText = currentStatusText[status.toLowerCase()] || status; // Fallback to original status string
+  const displayStatusText = currentStatusText[lowerStatus] || status || "Unknown";
 
   return (
     <span className={badgeClass}>
-      <Icon size={16} style={{ color: iconColor }} />
+      <IconToRender size={16} style={{ color: iconColor }} />
       {!isMobile && <span>{displayStatusText}</span>}
     </span>
   );
 };
 
-
-
-const getAnimalLabel = (animalType = 'Pet') => {
-  const lower = animalType.toLowerCase();
+const getAnimalLabel = (animalType = 'Pet', plural = false) => {
+  const lower = animalType?.toLowerCase();
+  let label;
   switch (lower) {
-    case 'dog': return 'Dog';
-    case 'cat': return 'Cat';
-    case 'rabbit': return 'Rabbit';
-    default: return 'Pet';
+    case 'dog': label = 'Dog'; break;
+    case 'cat': label = 'Cat'; break;
+    case 'rabbit': label = 'Rabbit'; break;
+    default: label = 'Pet';
+  }
+  return plural ? `${label}s` : label;
+};
+
+const getPetIcon = (animalType) => {
+  const lower = animalType?.toLowerCase();
+  switch (lower) {
+    case 'dog': return Dog;
+    case 'cat': return PawPrint; // Replace with Cat specific icon if available
+    case 'rabbit': return PawPrint; // Replace with Rabbit specific icon if available
+    default: return PawPrint;
   }
 };
 
+const renderCertificateView = (lic, isMobile, downloadPDFCallback, languageType = 'en') => {
+    if (!lic || !lic.pet) { // Added check for lic.pet
+        console.warn("License data or pet data is missing for certificate rendering.");
+        return <div className="user-dl-error-notice">Could not load certificate data. Pet details are missing.</div>;
+    }
 
-
-// Helper function to render the certificate view
-const renderCertificateView = (lic, isMobile, downloadPDF, languageType = 'en') => { // Added languageType prop
     const currentDate = new Date().toLocaleDateString('en-GB');
+    const PetSpecificIcon = getPetIcon(lic.animalType);
 
-    const expiryDate = lic.pet?.dateOfVaccination ?
-      new Date(new Date(lic.pet.dateOfVaccination).setFullYear(
-        new Date(lic.pet.dateOfVaccination).getFullYear() + 1
-      )).toLocaleDateString('en-GB') : "N/A";
+    const expiryDate = lic.expiryDate ? formatDate(lic.expiryDate) : // Prefer lic.expiryDate
+                       lic.pet?.dateOfVaccination ?
+                       new Date(new Date(lic.pet.dateOfVaccination).setFullYear(
+                         new Date(lic.pet.dateOfVaccination).getFullYear() + 1
+                       )).toLocaleDateString('en-GB') : "N/A";
 
     const certificateText = {
         en: {
-            orgNameEn: 'Nagar Nigam Gorakhpur',
-            orgNameHi: 'नगर निगम गोरखपुर', // Keep Hindi name as it's bilingual on certificate
-            certificateTitleEn: 'OFFICIAL PET LICENSE CERTIFICATE',
-            certificateTitleHi: 'कुत्तों के पंजीकरण के लिए अधिकृत पत्र', // Keep Hindi title as it's bilingual
+            orgNameEn: 'Nagar Nigam Gorakhpur', // Replace with actual or make dynamic via props
+            orgNameHi: 'नगर निगम गोरखपुर',
+            certificateTitleEn: 'PET LICENSE CERTIFICATE', // Changed
+            certificateTitleHi: 'पालतू पशु पंजीकरण प्रमाण पत्र', // Changed
             dateLabel: 'Date:',
-            photoPlaceholder: 'Pet\'s Photo', // This text is inside the placeholder div
-             // Keep combined labels as they are already in the original certificate layout
-             // e.g., 'नाम / Name', 'पंजीकरण संख्या / Registration No.', etc.
-            declaration: <>मैं घोषणा करता/करती हूँ कि उपरोक्त दी गई जानकारी मेरी जानकारी के अनुसार सत्य है।  <b>/</b> I declare that the information provided above is true to the best of my knowledge.</>,
+            photoPlaceholder: `${getAnimalLabel(lic.animalType)}'s Photo`,
+            declaration: <>मैं घोषणा करता/करती हूँ कि उपरोक्त दी गई जानकारी मेरी जानकारी के अनुसार सत्य है। <b>/</b> I declare that the information provided above is true to the best of my knowledge.</>,
             applicantSignature: 'आवेदक के हस्ताक्षर / Applicant\'s Signature',
             issuingAuthority: 'जारीकर्ता अधिकारी / Issuing Authority',
             qrCodeLabel: 'QR Code',
@@ -130,28 +143,40 @@ const renderCertificateView = (lic, isMobile, downloadPDF, languageType = 'en') 
             rejectedNotice: (rejectionDate) => <>Your application has been rejected on {formatDate(rejectionDate)}.</>,
             reasonLabel: 'Reason:',
             contactSupport: <>Please contact support for more information.</>,
+            animalDetailsTitle: `पशु का विवरण / ${getAnimalLabel(lic.animalType)} Details`,
+            animalNameLabel: `पशु का नाम / ${getAnimalLabel(lic.animalType)} Name`,
+            animalTypeLabel: 'पशु का प्रकार / Animal Type',
+            numberOfAnimalsLabel: `जानवरों की संख्या / No. of ${getAnimalLabel(lic.animalType, true)}`,
+            contactPhone: lic.owner?.phoneNumber || 'N/A', // Example, if owner details are nested
+            contactEmail: 'info@example.com', // Replace
+            contactWebsite: 'www.example.com' // Replace
         },
         hi: {
-             orgNameEn: 'Nagar Nigam Gorakhpur',
+            orgNameEn: 'Nagar Nigam Gorakhpur',
             orgNameHi: 'नगर निगम गोरखपुर',
-            certificateTitleEn: 'OFFICIAL PET LICENSE CERTIFICATE',
-            certificateTitleHi: 'कुत्तों के पंजीकरण के लिए अधिकृत पत्र',
+            certificateTitleEn: 'PET LICENSE CERTIFICATE',
+            certificateTitleHi: 'पालतू पशु पंजीकरण प्रमाण पत्र',
             dateLabel: 'दिनांक:',
-            photoPlaceholder: ' पशु की तस्वीर',
-             // Keep combined labels as they are already in the original certificate layout
-            declaration: <>मैं घोषणा करता/करती हूँ कि उपरोक्त दी गई जानकारी मेरी जानकारी के अनुसार सत्य है।  <b>/</b> I declare that the information provided above is true to the best of my knowledge.</>,
+            photoPlaceholder: `${getAnimalLabel(lic.animalType)} की तस्वीर`,
+            declaration: <>मैं घोषणा करता/करती हूँ कि उपरोक्त दी गई जानकारी मेरी जानकारी के अनुसार सत्य है। <b>/</b> I declare that the information provided above is true to the best of my knowledge.</>,
             applicantSignature: 'आवेदक के हस्ताक्षर / Applicant\'s Signature',
             issuingAuthority: 'जारीकर्ता अधिकारी / Issuing Authority',
             qrCodeLabel: 'क्यूआर कोड',
             officialStamp: 'आधिकारिक मुहर',
             downloadPdfButton: 'पीडीएफ डाउनलोड करें',
-             pendingNotice: <>आपका आवेदन समीक्षाधीन है। अनुमोदन के बाद ही आप लाइसेंस डाउनलोड कर पाएंगे।</>,
+            pendingNotice: <>आपका आवेदन समीक्षाधीन है। अनुमोदन के बाद ही आप लाइसेंस डाउनलोड कर पाएंगे।</>,
             rejectedNotice: (rejectionDate) => <>आपका आवेदन {formatDate(rejectionDate)} को अस्वीकृत कर दिया गया है।</>,
             reasonLabel: 'कारण:',
             contactSupport: <>अधिक जानकारी के लिए कृपया सहायता से संपर्क करें।</>,
+            animalDetailsTitle: `पशु का विवरण / ${getAnimalLabel(lic.animalType)} Details`,
+            animalNameLabel: `पशु का नाम / ${getAnimalLabel(lic.animalType)} Name`,
+            animalTypeLabel: 'पशु का प्रकार / Animal Type',
+            numberOfAnimalsLabel: `जानवरों की संख्या / No. of ${getAnimalLabel(lic.animalType, true)}`,
+            contactPhone: lic.owner?.phoneNumber || 'उपलब्ध नहीं है',
+            contactEmail: 'info@example.com', // Replace
+            contactWebsite: 'www.example.com' // Replace
         }
     };
-
     const currentCertText = certificateText[languageType] || certificateText.en;
 
     return (
@@ -160,24 +185,24 @@ const renderCertificateView = (lic, isMobile, downloadPDF, languageType = 'en') 
            <div className="pdf-border">
              <div className="pdf-header">
                <div className="pdf-header-left">
-                 <div className="pdf-logo-icon">
-                    <img src="./logo.webp" alt="Organization Logo"></img>
+                 <div className="pdf-logo-icon"> {/* Replace with actual logo image */}
+                    <img src="/logo.webp" alt="Organization Logo" style={{height: '50px'}}/> {/* Ensure logo.webp is in public folder or use correct path */}
                  </div>
                  <div className="pdf-org-name">
-                   <h3>{currentCertText.orgNameEn}</h3> {/* Dynamic English Name */}
-                   <h4>{currentCertText.orgNameHi}</h4> {/* Dynamic Hindi Name */}
+                   <h3>{currentCertText.orgNameEn}</h3>
+                   <h4>{currentCertText.orgNameHi}</h4>
                  </div>
                </div>
                <div className="pdf-header-right">
                  <div className="pdf-date">
-                   <span> {currentCertText.dateLabel} {currentDate}</span> {/* Dynamic Date Label */}
+                   <span> {currentCertText.dateLabel} {currentDate}</span>
                  </div>
                </div>
              </div>
 
              <div className="pdf-certificate-title">
-               <h2>{currentCertText.certificateTitleEn}</h2> {/* Dynamic English Title */}
-               <h3>{currentCertText.certificateTitleHi}</h3> {/* Dynamic Hindi Title */}
+               <h2>{currentCertText.certificateTitleEn}</h2>
+               <h3>{currentCertText.certificateTitleHi}</h3>
              </div>
 
              <div className="pdf-body">
@@ -202,20 +227,24 @@ const renderCertificateView = (lic, isMobile, downloadPDF, languageType = 'en') 
                  </div>
                  <div className="pdf-photo-box">
                    {lic.pet?.avatarUrl ? (
-                     <img src={lic.pet.avatarUrl} alt="Dog" className="pdf-photo" />
+                     <img src={lic.pet.avatarUrl} alt={`${lic.pet?.name || 'Pet'} Avatar`} className="pdf-photo" />
                    ) : (
-                     <div className="pdf-photo-placeholder">{currentCertText.photoPlaceholder}</div> 
+                     <div className="pdf-photo-placeholder">{currentCertText.photoPlaceholder}</div>
                    )}
                  </div>
                </div>
 
                <div className="pdf-details-section">
-                 <div className="pdf-section-title">पशु का विवरण / Pet Details</div>
+                 <div className="pdf-section-title"> <PetSpecificIcon size={16} style={{marginRight: '8px'}}/>{currentCertText.animalDetailsTitle}</div>
                  <div className="pdf-details-columns">
                    <div className="pdf-details-column-left">
                      <div className="pdf-details-row">
-                       <div className="pdf-details-label">पशु का नाम / Pet Name</div>
+                       <div className="pdf-details-label">{currentCertText.animalNameLabel}</div>
                        <div className="pdf-details-value">: {lic.pet?.name || "N/A"}</div>
+                     </div>
+                      <div className="pdf-details-row">
+                       <div className="pdf-details-label">{currentCertText.animalTypeLabel}</div>
+                       <div className="pdf-details-value">: {lic.animalType || "N/A"}</div>
                      </div>
                      <div className="pdf-details-row">
                        <div className="pdf-details-label">नस्ल / Breed</div>
@@ -225,17 +254,9 @@ const renderCertificateView = (lic, isMobile, downloadPDF, languageType = 'en') 
                        <div className="pdf-details-label">वर्ग / Category</div>
                        <div className="pdf-details-value">: {lic.pet?.category || "N/A"}</div>
                      </div>
-                     <div className="pdf-details-row">
-                       <div className="pdf-details-label">रंग / Color</div>
-                       <div className="pdf-details-value">: {lic.pet?.color || "N/A"}</div>
-                     </div>
-                     <div className="pdf-details-row">
+                      <div className="pdf-details-row">
                        <div className="pdf-details-label">आयु / Age</div>
                        <div className="pdf-details-value">: {lic.pet?.age || "N/A"}</div>
-                     </div>
-                     <div className="pdf-details-row">
-                       <div className="pdf-details-label">टीकाकरण की तारीख / Vaccination Date</div>
-                       <div className="pdf-details-value">: {formatDate(lic.pet?.dateOfVaccination)}</div>
                      </div>
                    </div>
                    <div className="pdf-details-column-right">
@@ -244,9 +265,13 @@ const renderCertificateView = (lic, isMobile, downloadPDF, languageType = 'en') 
                        <div className="pdf-details-value">: {lic.pet?.sex || "N/A"}</div>
                      </div>
                      <div className="pdf-details-row">
+                       <div className="pdf-details-label">रंग / Color</div>
+                       <div className="pdf-details-value">: {lic.pet?.color || "N/A"}</div>
+                     </div>
+                     <div className="pdf-details-row">
                        <div className="pdf-details-label">टीकाकरण / Vaccinated</div>
                        <div className="pdf-details-value">
-                         : {lic.pet?.dateOfVaccination ? ' हां / Yes' : ' नहीं / No'}
+                         : {lic.pet?.dateOfVaccination ? (languageType === 'hi' ? 'हां' : 'Yes') : (languageType === 'hi' ? 'नहीं' : 'No')}
                        </div>
                      </div>
                      {lic.pet?.vaccinationProofUrl && (
@@ -256,28 +281,32 @@ const renderCertificateView = (lic, isMobile, downloadPDF, languageType = 'en') 
                            <a
                              href={lic.pet.vaccinationProofUrl}
                              target="_blank"
-                             rel="noreferrer"
-                             className="pdf-vaccine-img"
-                           >View </a>
+                             rel="noopener noreferrer"
+                             className="pdf-vaccine-link"
+                           > {languageType === 'hi' ? 'देखें' : 'View'} </a>
                          </div>
                        </div>
                      )}
                      <div className="pdf-details-row">
-                       <div className="pdf-details-label">माइक्रोचip / Microchipped</div>
+                       <div className="pdf-details-label">माइक्रोचिप / Microchipped</div>
                        <div className="pdf-details-value">
-                         : No
+                         : {languageType === 'hi' ? 'नहीं' : 'No'} {/* Assuming static */}
                        </div>
-                     </div>
-                     <div className="pdf-details-row">
-                       <div className="pdf-details-label">अगला टीकाकरण / Next Vaccination</div>
-                       <div className="pdf-details-value">: {formatDate(lic.pet?.dueVaccination)}</div>
                      </div>
                    </div>
                  </div>
+                  <div className="pdf-details-row pdf-full-width-row">
+                       <div className="pdf-details-label">टीकाकरण की तारीख / Vaccination Date</div>
+                       <div className="pdf-details-value">: {formatDate(lic.pet?.dateOfVaccination)}</div>
+                  </div>
+                  <div className="pdf-details-row pdf-full-width-row">
+                       <div className="pdf-details-label">अगला टीकाकरण / Next Vaccination</div>
+                       <div className="pdf-details-value">: {formatDate(lic.pet?.dueVaccination)}</div>
+                  </div>
                </div>
 
                <div className="pdf-details-section">
-                 <div className="pdf-section-title">मालिक का विवरण / Owner Details</div>
+                 <div className="pdf-section-title"><User size={16} style={{marginRight: '8px'}}/>मालिक का विवरण / Owner Details</div>
                  <div className="pdf-details-table">
                    <div className="pdf-details-row">
                      <div className="pdf-details-label">पता / Address</div>
@@ -288,11 +317,8 @@ const renderCertificateView = (lic, isMobile, downloadPDF, languageType = 'en') 
                      <div className="pdf-details-value">: {lic.phoneNumber || "N/A"}</div>
                    </div>
                    <div className="pdf-details-row">
-                    <div className="pdf-details-label">
-  {`जानवरों की संख्या / No. of ${getAnimalLabel(lic.animalType)}s`}
-</div>
-
-                     <div className="pdf-details-value">:{lic.numberOfAnimals || "N/A"}</div>
+                    <div className="pdf-details-label">{currentCertText.numberOfAnimalsLabel}</div>
+                     <div className="pdf-details-value">: {lic.numberOfAnimals || "N/A"}</div>
                    </div>
                    <div className="pdf-details-row">
                      <div className="pdf-details-label">घर का क्षेत्रफल / House Area</div>
@@ -302,58 +328,63 @@ const renderCertificateView = (lic, isMobile, downloadPDF, languageType = 'en') 
                </div>
 
                <div className="pdf-declaration">
-                 <p>{currentCertText.declaration}</p> {/* Dynamic declaration */}
+                 <p>{currentCertText.declaration}</p>
                </div>
 
                <div className="pdf-signatures">
                  <div className="pdf-signature-block">
                    <div className="pdf-signature-line"></div>
-                   <p>{currentCertText.applicantSignature}</p> {/* Dynamic signature label */}
+                   <p>{currentCertText.applicantSignature}</p>
                  </div>
                  <div className="pdf-signature-block">
                    <div className="pdf-signature-line"></div>
-                   <p>{currentCertText.issuingAuthority}</p> {/* Dynamic signature label */}
+                   <p>{currentCertText.issuingAuthority}</p>
                  </div>
                </div>
 
                <div className="pdf-footer">
                    <div className="pdf-qr-code">
-                       <div className="pdf-qr-placeholder"></div>
-                     <p>{currentCertText.qrCodeLabel}</p> {/* Dynamic QR label */}
+                       <div className="pdf-qr-placeholder">[QR Code Here]</div> {/* Replace with actual QR image or component */}
+                     <p>{currentCertText.qrCodeLabel}</p>
                    </div>
                     <div className="pdf-stamp">
                         <div className="pdf-stamp-placeholder">
-                            <p>{currentCertText.officialStamp}</p> {/* Dynamic stamp label */}
+                            <Stamp size={50} style={{opacity: 0.7}}/>
                         </div>
+                       <p>{currentCertText.officialStamp}</p>
                    </div>
                </div>
                 <div className="pdf-contact-footer">
-                    {lic.phoneNumber || "N/A"} &nbsp;|&nbsp;
-                    info@awbi.org &nbsp;|&nbsp;
-                    www.awbi.org
+                    <Phone size={12} /> {currentCertText.contactPhone} &nbsp;|&nbsp;
+                    <Globe size={12} /> {currentCertText.contactEmail} &nbsp;|&nbsp;
+                    <MapPin size={12} /> {currentCertText.contactWebsite}
                 </div>
              </div>
            </div>
          </div>
-          {/* Download button only for approved licenses in the view */}
           {lic.status === 'approved' && (
               <button
                 className="user-dl-button user-dl-certificate-download-btn"
                 onClick={(e) => {
                   e.stopPropagation();
-                  downloadPDF(lic._id, lic.pet?.name);
+                  downloadPDFCallback(lic._id, lic.pet?.name, lic.animalType);
                 }}
               >
-                <Download size={18} />
-                <span>{currentCertText.downloadPdfButton}</span> {/* Dynamic button text */}
+                <DownloadIcon size={18} />
+                <span>{currentCertText.downloadPdfButton}</span>
               </button>
             )}
 
-            {/* Pending/Rejected notices */}
             {lic.status === 'pending' && (
               <div className="user-dl-pending-notice">
                 <AlertCircle size={18} />
-                <p>{currentCertText.pendingNotice}</p> {/* Dynamic pending text */}
+                <p>{currentCertText.pendingNotice}</p>
+              </div>
+            )}
+             {lic.status === 'renewal_pending' && ( // Notice for renewal pending
+              <div className="user-dl-pending-notice">
+                <Clock size={18} />
+                <p>{languageType === 'hi' ? 'आपके लाइसेंस के नवीनीकरण का आवेदन समीक्षाधीन है। स्वीकृत होने पर आप नया लाइसेंस डाउनलोड कर पाएंगे।' : 'Your license renewal application is under review. You will be able to download the new license once approved.'}</p>
               </div>
             )}
 
@@ -361,13 +392,13 @@ const renderCertificateView = (lic, isMobile, downloadPDF, languageType = 'en') 
             <div className="user-dl-rejected-notice">
               <XCircle size={18} />
               <div>
-                <p>{currentCertText.rejectedNotice(lic.rejectionDate)}</p> {/* Dynamic rejected text with date */}
+                <p>{currentCertText.rejectedNotice(lic.rejectionDate || lic.updatedAt)}</p> {/* Use rejectionDate or fallback */}
                 {lic.rejectionReason && (
                   <div className="user-dl-rejection-reason">
-                    <strong>{currentCertText.reasonLabel}</strong> {lic.rejectionReason} {/* Dynamic reason label */}
+                    <strong>{currentCertText.reasonLabel}</strong> {lic.rejectionReason}
                   </div>
                 )}
-                <p>{currentCertText.contactSupport}</p> {/* Dynamic contact support text */}
+                <p>{currentCertText.contactSupport}</p>
               </div>
             </div>
           )}
@@ -376,83 +407,85 @@ const renderCertificateView = (lic, isMobile, downloadPDF, languageType = 'en') 
    };
 
 
-const DogLicenseDownload = ({ languageType = 'en' }) => { // Added languageType prop
+const PetLicenseDownload = ({ languageType = 'en' }) => {
   const [licenses, setLicenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedLicenseId, setExpandedLicenseId] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [filterStatus, setFilterStatus] = useState('All'); // State holds English status string
+  const [filterStatus, setFilterStatus] = useState('All');
 
-  const backend = "https://dog-registration.onrender.com";
+  const backend = "https://dog-registration.onrender.com"; // Replace with your backend URL
   const token = localStorage.getItem('token');
 
-    // Text content for the component
     const textContent = {
         en: {
-            pageTitle: 'My Dog License Applications',
+            pageTitle: 'My Pet License Applications',
             filterLabel: 'Filter by:',
             filterButtons: {
                 all: 'All',
                 approved: 'Approved',
                 pending: 'Pending',
-                rejected: 'Rejected'
+                rejected: 'Rejected',
+                renewal_pending: 'Renewal Pending'
             },
             backToList: 'Back to List',
             loadingData: 'Loading license data…',
             tableHeaders: {
                 regNo: 'Reg. No',
                 owner: 'Owner',
-                dogName: 'Pet Name',
+                animalType: 'Animal Type',
+                petName: 'Pet Name',
                 status: 'Status',
                 appliedDate: 'Applied Date',
-                view: 'View'
+                view: 'View / Download'
             },
-            tableCellView: 'View', // Text for the View button in table cell
+            tableCellView: 'View',
             emptyState: {
-                noApplications: 'You have not applied for any licenses yet.',
-                noFiltered: (status) => `No "${status}" licenses found.`, // Use English status directly here
-                applyButton: 'Apply for a License'
-            }
+                noApplications: 'You have not applied for any pet licenses yet.',
+                noFiltered: (status) => `No "${status}" pet licenses found.`,
+                applyButton: 'Apply for a Pet License'
+            },
+            detailsTitle: (animalType) => `${getAnimalLabel(animalType)} License Details`
         },
         hi: {
-             pageTitle: 'मेरे कुत्ते लाइसेंस आवेदन',
+            pageTitle: 'मेरे पालतू पशु लाइसेंस आवेदन',
             filterLabel: 'फ़िल्टर करें:',
             filterButtons: {
                 all: 'सभी',
                 approved: 'स्वीकृत',
                 pending: 'लंबित',
-                rejected: 'अस्वीकृत'
+                rejected: 'अस्वीकृत',
+                renewal_pending: 'नवीनीकरण लंबित'
             },
             backToList: 'सूची पर वापस जाएं',
             loadingData: 'लाइसेंस डेटा लोड हो रहा है…',
-             tableHeaders: {
+            tableHeaders: {
                 regNo: 'पंजीकरण संख्या',
                 owner: 'मालिक',
-                dogName: 'कुत्ते का नाम',
+                animalType: 'पशु का प्रकार',
+                petName: 'पालतू जानवर का नाम',
                 status: 'स्थिति',
                 appliedDate: 'आवेदन की तिथि',
-                view: 'देखें'
+                view: 'देखें / डाउनलोड करें'
             },
-            tableCellView: 'देखें', // Text for the View button in table cell
-             emptyState: {
-                 noApplications: 'आपने अभी तक किसी भी लाइसेंस के लिए आवेदन नहीं किया है।',
-                noFiltered: (status) => `कोई भी "${status}" लाइसेंस नहीं मिला।`, // Use Hindi status translation here
-                applyButton: 'लाइसेंस के लिए आवेदन करें'
-             }
+            tableCellView: 'देखें',
+            emptyState: {
+                noApplications: 'आपने अभी तक किसी भी पालतू पशु लाइसेंस के लिए आवेदन नहीं किया है।',
+                noFiltered: (status) => `कोई भी "${status}" पालतू पशु लाइसेंस नहीं मिला।`,
+                applyButton: 'पालतू पशु लाइसेंस के लिए आवेदन करें'
+            },
+            detailsTitle: (animalType) => `${getAnimalLabel(animalType)} लाइसेंस विवरण`
         }
     };
 
-    const currentText = textContent[languageType] || textContent.en; // Default to English
+    const currentText = textContent[languageType] || textContent.en;
 
-    // Helper to get translated filter button text
     const getFilterButtonText = (statusKey) => {
         return currentText.filterButtons[statusKey] || statusKey;
     };
 
-    // Helper to get translated filter status for empty state message
-     const getTranslatedFilterStatus = (status) => {
-         const statusKey = Object.keys(textContent.en.filterButtons).find(key => textContent.en.filterButtons[key].toLowerCase() === status.toLowerCase());
-         return statusKey ? getFilterButtonText(statusKey) : status; // Translate the filter status name
+     const getTranslatedFilterStatus = (statusKeyForEmptyState) => { // statusKeyForEmptyState is like 'approved', 'pending'
+         return currentText.filterButtons[statusKeyForEmptyState.toLowerCase()] || statusKeyForEmptyState;
      };
 
 
@@ -467,78 +500,74 @@ const DogLicenseDownload = ({ languageType = 'en' }) => { // Added languageType 
   }, []);
 
   useEffect(() => {
-    fetch(`${backend}/api/license/user`, {
+    setLoading(true);
+    fetch(`${backend}/api/license/user`, { // Ensure this endpoint provides animalType
       headers: {
         Authorization: `Bearer ${token}`
       }
     })
       .then(res => {
           if (!res.ok) {
-              // Handle HTTP errors
                return res.json().then(err => { throw new Error(err.message || 'Failed to fetch licenses'); });
           }
           return res.json();
       })
       .then(data => {
-        // Sort licenses by creation date (most recent first)
-         const sortedLicenses = (data || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+         const processedData = (Array.isArray(data) ? data : []).map(lic => ({ // Ensure data is an array
+           ...lic,
+           animalType: lic.animalType || 'Pet' // Default animalType
+         }));
+         const sortedLicenses = processedData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
          setLicenses(sortedLicenses);
-         setLoading(false);
       })
       .catch(error => {
         console.error("Error fetching licenses:", error);
-         // Use dynamic error message or a default
-         setLicenses([]);
-         setLoading(false);
+         setLicenses([]); // Set to empty array on error
+      })
+      .finally(() => {
+        setLoading(false);
       });
-  }, [backend, token]); // Depend on backend and token
+  }, [backend, token]);
 
   const toggleExpanded = (id) => {
-    if (expandedLicenseId === id) {
-      setExpandedLicenseId(null);
-    } else {
-      setExpandedLicenseId(id);
-    }
+    setExpandedLicenseId(expandedLicenseId === id ? null : id);
   };
 
-  const downloadPDF = (id, dogName = 'dog') => {
+  const downloadPDF = (id, petName = 'pet', animalType = 'Pet') => {
     const element = document.getElementById(`pdf-${id}`);
       if (!element) {
          console.error("PDF element not found for ID:", id);
+         alert("Could not find certificate content to download.");
          return;
      }
 
     element.classList.add('force-desktop-pdf-layout');
 
     const opt = {
-      margin: 0.5,
-      filename: `Dog_License_${dogName}.pdf`,
+      margin: [0.2, 0.1, 0.2, 0.1], // top, left, bottom, right in inches
+      filename: `${getAnimalLabel(animalType)}_License_${(petName || 'Unnamed').replace(/\s+/g, '_')}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
 
-     // Use a slight delay to ensure styles are applied before rendering
      setTimeout(() => {
          html2pdf().from(element).set(opt).save().then(() => {
-           // Remove the class after PDF generation
            element.classList.remove('force-desktop-pdf-layout');
          }).catch(error => {
             console.error("PDF generation failed:", error);
-             // Ensure class is removed even on error
+            alert("PDF generation failed. Please try again.");
              element.classList.remove('force-desktop-pdf-layout');
          });
-     }, 50); // Small delay
+     }, 100);
   };
 
   const selectedLicense = licenses.find(lic => lic._id === expandedLicenseId);
 
   const filteredLicenses = licenses.filter(license => {
-    if (filterStatus === 'All') {
-      return true;
-    }
-    // Filter based on the English status string stored in state
-    return license.status.toLowerCase() === filterStatus.toLowerCase();
+    if (filterStatus === 'All') return true;
+    // Ensure filterStatus and license.status are consistently cased for comparison
+    return license.status?.toLowerCase() === filterStatus.toLowerCase();
   });
 
 
@@ -547,17 +576,16 @@ const DogLicenseDownload = ({ languageType = 'en' }) => { // Added languageType 
       <header className="user-dl-header">
         {expandedLicenseId === null ? (
             <>
-             <h1 className="user-dl-title">{currentText.pageTitle}</h1> {/* Dynamic Page Title */}
+             <h1 className="user-dl-title">{currentText.pageTitle}</h1>
              <div className="user-dl-filters">
-               <span className="user-dl-filter-label">{currentText.filterLabel}</span> {/* Dynamic Filter Label */}
-               {/* Filter Buttons */}
+               <span className="user-dl-filter-label">{currentText.filterLabel}</span>
                {Object.keys(currentText.filterButtons).map(key => (
                    <button
                         key={key}
                         className={`user-dl-filter-btn user-dl-filter-${key.toLowerCase()} ${filterStatus.toLowerCase() === key.toLowerCase() ? 'user-dl-filter-active' : ''}`}
-                        onClick={() => setFilterStatus(textContent.en.filterButtons[key])} // Set English status in state
+                        onClick={() => setFilterStatus(textContent.en.filterButtons[key])} // Store English status key
                     >
-                        {getFilterButtonText(key)} {/* Dynamic Button Text */}
+                        {getFilterButtonText(key)}
                     </button>
                ))}
              </div>
@@ -566,11 +594,12 @@ const DogLicenseDownload = ({ languageType = 'en' }) => { // Added languageType 
             <div className="user-dl-back-to-list-header">
                  <button
                        className="user-dl-back-to-list-btn"
-                       onClick={() => toggleExpanded(expandedLicenseId)}
+                       onClick={() => toggleExpanded(expandedLicenseId)} // expandedLicenseId will be valid here
                    >
                      <ChevronLeft size={24} />
-                     {currentText.backToList} {/* Dynamic Back button text */}
+                     {currentText.backToList}
                    </button>
+                  
             </div>
         )}
       </header>
@@ -578,7 +607,7 @@ const DogLicenseDownload = ({ languageType = 'en' }) => { // Added languageType 
       {loading ? (
         <div className="user-dl-loading">
           <div className="user-dl-spinner"></div>
-          <p className="user-dl-status">{currentText.loadingData}</p> {/* Dynamic loading text */}
+          <p className="user-dl-status">{currentText.loadingData}</p>
         </div>
       ) : filteredLicenses.length > 0 ? (
           expandedLicenseId === null ? (
@@ -586,41 +615,47 @@ const DogLicenseDownload = ({ languageType = 'en' }) => { // Added languageType 
                <table className="user-dl-license-table">
                  <thead>
                     <tr>
-                      <th>{currentText.tableHeaders.regNo}</th> {/* Dynamic header */}
-                      <th>{currentText.tableHeaders.owner}</th> {/* Dynamic header */}
-                      {!isMobile && <th>{currentText.tableHeaders.dogName}</th>} {/* Dynamic header & Hide on mobile */}
-                      <th>{currentText.tableHeaders.status}</th> {/* Dynamic header */}
-                      {!isMobile && <th>{currentText.tableHeaders.appliedDate}</th>} {/* Dynamic header & Hide on mobile */}
-                      <th>{currentText.tableHeaders.view}</th> {/* Dynamic header */}
+                      <th>{currentText.tableHeaders.regNo}</th>
+                      <th>{currentText.tableHeaders.owner}</th>
+                      {!isMobile && <th>{currentText.tableHeaders.animalType}</th>}
+                      {!isMobile && <th>{currentText.tableHeaders.petName}</th>}
+                      <th>{currentText.tableHeaders.status}</th>
+                      {!isMobile && <th>{currentText.tableHeaders.appliedDate}</th>}
+                      <th>{currentText.tableHeaders.view}</th>
                     </tr>
                  </thead>
                  <tbody>
-                    {filteredLicenses.map(license => (
-                       <tr key={license._id} onClick={() => toggleExpanded(license._id)}>
-                         <td><div className="user-dl-cell user-dl-reg-no-cell">{!isMobile && <User size={16} className="user-dl-cell-icon" />} {license.license_Id || "N/A"}</div></td>
+                    {filteredLicenses.map(license => {
+                      const PetListIcon = getPetIcon(license.animalType);
+                      return (
+                       <tr key={license._id} onClick={() => toggleExpanded(license._id)} className="user-dl-table-row">
+                         <td><div className="user-dl-cell user-dl-reg-no-cell">{!isMobile && <FileText size={16} className="user-dl-cell-icon" />} {license.license_Id || "N/A"}</div></td>
                          <td><div className="user-dl-cell user-dl-owner-cell">{!isMobile && <User size={16} className="user-dl-cell-icon" />} {license.fullName}</div></td>
-                         {!isMobile && <td><div className="user-dl-cell user-dl-dog-cell">{!isMobile && <Dog size={16} className="user-dl-cell-icon" />} {license.pet?.name || "N/A"}</div></td>}
-                         <td><div className="user-dl-cell user-dl-status-cell"><UserStatusBadge status={license.status} isMobile={isMobile} languageType={languageType} /></div></td> {/* Pass languageType */}
+                         {!isMobile && <td><div className="user-dl-cell user-dl-animal-type-cell"><PetListIcon size={16} className="user-dl-cell-icon" /> {license.animalType || "N/A"}</div></td>}
+                         {!isMobile && <td><div className="user-dl-cell user-dl-pet-cell"><PetListIcon size={16} className="user-dl-cell-icon" /> {license.pet?.name || "N/A"}</div></td>}
+                         <td><div className="user-dl-cell user-dl-status-cell"><UserStatusBadge status={license.status} isMobile={isMobile} languageType={languageType} /></div></td>
                          {!isMobile && <td><div className="user-dl-cell user-dl-date-cell"><Calendar size={16} className="user-dl-cell-icon" /> {formatDate(license.createdAt)}</div></td>}
                          <td>
                               <button
                                  className="user-dl-view-btn"
-                                 onClick={(e) => {
+                                 title={license.status === 'approved' ? 'View & Download Certificate' : 'View Details'}
+                                 onClick={(e) => { // Keep button distinct if row is also clickable
                                       e.stopPropagation();
                                      toggleExpanded(license._id);
                                 }}
                              >
-                                  <Eye size={16} className="user-dl-btn-icon" /> {!isMobile && currentText.tableCellView} {/* Dynamic button text */}
+                                  <Eye size={16} className="user-dl-btn-icon" /> {!isMobile && currentText.tableCellView}
+                                  {license.status === 'approved' && !isMobile && <DownloadIcon size={16} style={{marginLeft: '4px'}}/>}
                              </button>
                          </td>
                      </tr>
-                    ))}
+                    )})}
                  </tbody>
                </table>
             </div>
-          ) : (
+          ) : ( // This is the expanded view
                <div className="user-dl-details-view">
-                   {renderCertificateView(selectedLicense, isMobile, downloadPDF, languageType)} {/* Pass languageType */}
+                   {selectedLicense ? renderCertificateView(selectedLicense, isMobile, downloadPDF, languageType) : <p>Loading details...</p>}
                </div>
            )
       ) : (
@@ -630,12 +665,14 @@ const DogLicenseDownload = ({ languageType = 'en' }) => { // Added languageType 
           </div>
           <p className="user-dl-no-data">
                {filterStatus === 'All'
-                   ? currentText.emptyState.noApplications // Dynamic empty state text
-                   : currentText.emptyState.noFiltered(getTranslatedFilterStatus(filterStatus)) // Dynamic filtered empty state text
+                   ? currentText.emptyState.noApplications
+                   : currentText.emptyState.noFiltered(getTranslatedFilterStatus(filterStatus.toLowerCase())) // Ensure status key matches
                }
           </p>
             {filterStatus === 'All' && (
-                <button className="user-dl-new-application-btn" onClick={() => alert('Navigate to application form')}>{currentText.emptyState.applyButton}</button> 
+                <button className="user-dl-new-application-btn" onClick={() => { /* Implement navigation to application form */ alert('Redirecting to application form...'); }}>
+                  {currentText.emptyState.applyButton}
+                </button>
             )}
         </div>
       )}
@@ -643,4 +680,4 @@ const DogLicenseDownload = ({ languageType = 'en' }) => { // Added languageType 
   );
 };
 
-export default DogLicenseDownload;
+export default PetLicenseDownload;

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./styles/AdminPanel.css";
+import "./styles/AdminPanel.css"; // Ensure this CSS file is updated if class names were changed
 import {
-  Dog,
+  Dog, // Kept for default, but getPetIcon is preferred
   User,
   Calendar,
   Phone,
@@ -19,6 +19,7 @@ import {
   Globe,
   ChevronLeft,
   LayoutList,
+  PawPrint, // Generic Pet Icon
 } from "lucide-react";
 
 const AdminPanel = () => {
@@ -60,17 +61,23 @@ const AdminPanel = () => {
     };
   }, []);
 
-  const backend = "https://dog-registration.onrender.com";
+  const backend = "https://dog-registration.onrender.com"; // Replace with your actual backend URL
   const token = localStorage.getItem("token");
 
   const fetchLicenses = async () => {
+    setLoading(true);
     try {
-      const res = await axios.get(`${backend}/api/admin/all`, {
+      const res = await axios.get(`${backend}/api/admin/all`, { // Ensure this endpoint returns animalType
         headers: { Authorization: `Bearer ${token}` },
       });
-      setLicenses(res.data);
+      const processedLicenses = res.data.map(lic => ({
+        ...lic,
+        animalType: lic.animalType || 'Pet' // Default to 'Pet' if not present
+      }));
+      setLicenses(processedLicenses);
     } catch (err) {
-      alert("Failed to load licenses");
+      console.error("Failed to load licenses:", err);
+      alert("Failed to load licenses. Please check the console for more details.");
     } finally {
       setLoading(false);
     }
@@ -85,10 +92,14 @@ const AdminPanel = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      alert(`License ${action}d`);
-      fetchLicenses();
+      alert(`License ${action}ed successfully`);
+      fetchLicenses(); // Refresh licenses
+      if (action === 'approve' || action === 'reject') { // Close expanded view after action
+        setExpandedRowId(null);
+      }
     } catch (err) {
-      alert("Failed to update license status");
+      console.error("Failed to update license status:", err);
+      alert("Failed to update license status. Please check the console for more details.");
     }
   };
 
@@ -104,20 +115,24 @@ const AdminPanel = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      alert(`Renewal ${action}d`);
-      fetchLicenses();
+      alert(`Renewal ${action}d successfully`);
+      fetchLicenses(); // Refresh licenses
+      if (action === 'approve' || action === 'reject') { // Close expanded view after action
+        setExpandedRowId(null);
+      }
     } catch (err) {
-      alert(`Failed to ${action} renewal`);
+      console.error(`Failed to ${action} renewal:`, err);
+      alert(`Failed to ${action} renewal. Please check the console for more details.`);
     }
   };
 
   const toggleExpanded = (id) => {
     if (expandedRowId === id) {
       setExpandedRowId(null);
-      setCertificateView({});
+      setCertificateView({}); // Reset certificate view when collapsing
     } else {
       setExpandedRowId(id);
-      setCertificateView({ [id]: false });
+      setCertificateView({ [id]: false }); // Default to standard view when expanding
     }
   };
 
@@ -127,8 +142,13 @@ const AdminPanel = () => {
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB");
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return "Invalid Date";
+      return date.toLocaleDateString("en-GB");
+    } catch (e) {
+      return "Invalid Date";
+    }
   };
 
   useEffect(() => {
@@ -137,7 +157,19 @@ const AdminPanel = () => {
 
   const selectedLicense = licenses.find(lic => lic._id === expandedRowId);
 
+  const getPetIcon = (animalType) => {
+    const lowerAnimalType = animalType?.toLowerCase();
+    if (lowerAnimalType === 'dog') return Dog;
+    if (lowerAnimalType === 'cat') return PawPrint; // Or a specific Cat icon
+    if (lowerAnimalType === 'rabbit') return PawPrint; // Or a specific Rabbit icon
+    return PawPrint; // Default generic pet icon
+  };
+
+
   const renderStandardView = (lic) => {
+    if (!lic) return null;
+    const PetSpecificIcon = getPetIcon(lic.animalType);
+
     return (
       <div className="license-details standard-form-view">
         {isMobile && (lic.status === 'pending' || lic.status === 'renewal_pending') && (
@@ -162,12 +194,14 @@ const AdminPanel = () => {
                   onClick={(e) => {
                     e.stopPropagation();
                     const reason = prompt('Enter rejection reason:');
-                    if (reason) {
+                    if (reason !== null && reason.trim() !== '') { // Check if reason is not null and not empty
                       if (lic.status === 'renewal_pending') {
                         handleRenewalDecision(lic._id, "reject", reason);
                       } else {
                         updateStatus(lic._id, "reject", reason);
                       }
+                    } else if (reason !== null) {
+                        alert("Rejection reason cannot be empty.");
                     }
                   }}
                 >
@@ -210,10 +244,10 @@ const AdminPanel = () => {
                   <strong>Phone Number:</strong> {lic.phoneNumber || "N/A"}
                 </div>
                 <div className="grid-item span-two">
-                  <strong>Address:</strong> {lic.address?.streetName}, {lic.address?.city}, {lic.address?.state} - {lic.address?.pinCode || "N/A"}
+                  <strong>Address:</strong> {`${lic.address?.streetName || ""}, ${lic.address?.city || ""}, ${lic.address?.state || ""} - ${lic.address?.pinCode || "N/A"}`}
                 </div>
                 <div className="grid-item">
-                  <strong>Number of Dogs:</strong> {lic.numberOfAnimals || "N/A"}
+                  <strong>Number of Pets:</strong> {lic.numberOfAnimals || "N/A"}
                 </div>
                 <div className="grid-item">
                   <strong>House Area:</strong> {lic.totalHouseArea ? `${lic.totalHouseArea} sq meter` : "N/A"}
@@ -222,18 +256,18 @@ const AdminPanel = () => {
             </div>
           </div>
 
-          <div className="certificate-section dog-photo-section">
+          <div className="certificate-section pet-photo-section"> {/* Renamed class for clarity if CSS changes */}
             <div className="section-header">
-              <Dog size={16} className="section-icon" />
-              Dog Photo
+              <PetSpecificIcon size={16} className="section-icon" />
+              Pet Photo
             </div>
             <div className="section-content">
               {lic.pet?.avatarUrl ? (
                 <div className="avatar-preview">
                   <img
                     src={lic.pet.avatarUrl}
-                    alt="Dog Avatar"
-                    className="dog-avatar"
+                    alt={`${lic.pet?.name || lic.animalType} Avatar`}
+                    className="pet-avatar" /* Renamed class for clarity if CSS changes */
                   />
                 </div>
               ) : (
@@ -247,13 +281,16 @@ const AdminPanel = () => {
 
         <div className="certificate-section animal-details">
           <div className="section-header">
-            <Dog size={16} className="section-icon" />
-            Dog Information
+            <PetSpecificIcon size={16} className="section-icon" />
+            Pet Information
           </div>
           <div className="section-content">
             <div className="detail-grid certificate-grid">
               <div className="grid-item">
-                <strong>Dog Name:</strong> {lic.pet?.name || "N/A"}
+                <strong>Pet Name:</strong> {lic.pet?.name || "N/A"}
+              </div>
+              <div className="grid-item">
+                <strong>Animal Type:</strong> {lic.animalType || "N/A"}
               </div>
               <div className="grid-item">
                 <strong>Breed:</strong> {lic.pet?.breed || "N/A"}
@@ -274,7 +311,7 @@ const AdminPanel = () => {
                 <strong>Vaccinated:</strong> {lic.pet?.dateOfVaccination ? "Yes" : "No"}
               </div>
               <div className="grid-item">
-                <strong>Microchipped:</strong> No
+                <strong>Microchipped:</strong> No {/* Assuming static or update if dynamic */}
               </div>
               <div className="grid-item">
                 <Syringe size={16} className="detail-icon" />
@@ -298,7 +335,7 @@ const AdminPanel = () => {
               <a
                 href={lic.pet.vaccinationProofUrl}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer" // Added noopener
                 className="vaccination-link"
               >
                 <FileText size={16} className="link-icon" />
@@ -316,18 +353,20 @@ const AdminPanel = () => {
   };
 
   const renderCertificateView = (lic) => {
+    if (!lic) return null;
     const currentDate = new Date().toLocaleDateString('en-GB');
     const expiryDate = lic.pet?.dateOfVaccination ?
       new Date(new Date(lic.pet.dateOfVaccination).setFullYear(
         new Date(lic.pet.dateOfVaccination).getFullYear() + 1
       )).toLocaleDateString('en-GB') : "N/A";
+    const PetSpecificIcon = getPetIcon(lic.animalType);
 
     return (
       <div className="certificate-mode">
         {isMobile && (lic.status === 'pending' || lic.status === 'renewal_pending') && (
           <div className="mobile-details-actions">
             {(lic.status === "pending" || lic.status === "renewal_pending") && (
-              <>
+             <>
                 <button
                   className="btn-approve"
                   onClick={(e) => {
@@ -346,12 +385,14 @@ const AdminPanel = () => {
                   onClick={(e) => {
                     e.stopPropagation();
                     const reason = prompt('Enter rejection reason:');
-                    if (reason) {
+                    if (reason !== null && reason.trim() !== '') {
                       if (lic.status === 'renewal_pending') {
                         handleRenewalDecision(lic._id, "reject", reason);
                       } else {
                         updateStatus(lic._id, "reject", reason);
                       }
+                    } else if (reason !== null) {
+                        alert("Rejection reason cannot be empty.");
                     }
                   }}
                 >
@@ -378,7 +419,7 @@ const AdminPanel = () => {
 
         <div className="certificate-header">
           <div className="logo-container">
-            <div className="municipal-logo">
+            <div className="municipal-logo"> {/* Consider adding your actual logo image here */}
               <Award size={40} />
             </div>
             <div className="header-text">
@@ -393,9 +434,9 @@ const AdminPanel = () => {
         </div>
 
         <div className="certificate-title">
-          OFFICIAL DOG LICENSE CERTIFICATE
+          PET LICENSE CERTIFICATE {/* Changed */}
           <div className="certificate-subtitle">
-            कुत्तों के पंजीकरण के लिए अधिकृत पत्र
+            पालतू पशु पंजीकरण प्रमाण पत्र {/* Changed */}
           </div>
         </div>
 
@@ -405,21 +446,21 @@ const AdminPanel = () => {
               <strong>नाम / Name:</strong> {lic.fullName || "N/A"}
             </div>
             <div className="info-row">
-              <strong>पंजीकरण संख्या / Registration No.:</strong> {lic._id?.substring(0, 20) || "N/A"}
+              <strong>पंजीकरण संख्या / Registration No.:</strong> {lic.license_Id || lic._id?.substring(0, 20) || "N/A"}
             </div>
             <div className="info-row">
-              <strong>जारी दिनांक / Issue Date:</strong> {currentDate}
+              <strong>जारी दिनांक / Issue Date:</strong> {formatDate(lic.createdAt)} {/* Assuming issue date is createdAt */}
             </div>
             <div className="info-row">
-              <strong>समाप्ति तिथि / Expiry Date:</strong> {expiryDate}
+              <strong>समाप्ति तिथि / Expiry Date:</strong> {formatDate(lic.expiryDate) || expiryDate} {/* Prefer lic.expiryDate if available */}
             </div>
           </div>
           <div className="certificate-photo">
             {lic.pet?.avatarUrl ? (
               <img
                 src={lic.pet.avatarUrl}
-                alt="Dog Avatar"
-                className="certificate-dog-photo"
+                alt={`${lic.pet?.name || 'Pet'} Avatar`}
+                className="certificate-pet-photo" /* Renamed class */
               />
             ) : (
               <div className="no-data-placeholder">
@@ -431,13 +472,16 @@ const AdminPanel = () => {
 
         <div className="certificate-section animal-details">
           <div className="section-header">
-            <Dog size={16} className="section-icon" />
+            <PetSpecificIcon size={16} className="section-icon" />
             पशु का विवरण / Animal Details
           </div>
           <div className="section-content">
             <div className="detail-grid certificate-grid">
               <div className="grid-item">
-                <strong>पशु का नाम / Dog Name:</strong> {lic.pet?.name || "N/A"}
+                <strong>पशु का नाम / Pet Name:</strong> {lic.pet?.name || "N/A"}
+              </div>
+              <div className="grid-item">
+                <strong>पशु का प्रकार / Animal Type:</strong> {lic.animalType || "N/A"}
               </div>
               <div className="grid-item">
                 <strong>लिंग / Gender:</strong> {lic.pet?.sex || "N/A"}
@@ -454,14 +498,14 @@ const AdminPanel = () => {
               <div className="grid-item">
                 <strong>टीकाकरण प्रमाणपत्र / Vaccination Certificate:</strong>
                 {lic.pet?.vaccinationProofUrl ? (
-                  <a href={lic.pet.vaccinationProofUrl} target="_blank" rel="noreferrer" className="certificate-link">View</a>
+                  <a href={lic.pet.vaccinationProofUrl} target="_blank" rel="noopener noreferrer" className="certificate-link">View</a>
                 ) : "N/A"}
               </div>
               <div className="grid-item">
                 <strong>रंग / Color:</strong> {lic.pet?.color || "N/A"}
               </div>
               <div className="grid-item">
-                <strong>माइक्रोचिप्ड / Microchipped:</strong> No
+                <strong>माइक्रोचिप्ड / Microchipped:</strong> No {/* Assuming static */}
               </div>
               <div className="grid-item">
                 <strong>आयु / Age:</strong> {lic.pet?.age || "N/A"}
@@ -484,13 +528,13 @@ const AdminPanel = () => {
           <div className="section-content">
             <div className="owner-grid certificate-grid">
               <div className="grid-item span-two">
-                <strong>पता / Address:</strong> {lic.address?.streetName}, {lic.address?.city}, {lic.address?.state} - {lic.address?.pinCode || "N/A"}
+                <strong>पता / Address:</strong> {`${lic.address?.streetName || ""}, ${lic.address?.city || ""}, ${lic.address?.state || ""} - ${lic.address?.pinCode || "N/A"}`}
               </div>
               <div className="grid-item">
                 <strong>फोन नंबर / Phone Number:</strong> {lic.phoneNumber || "N/A"}
               </div>
               <div className="grid-item">
-                <strong>कुत्तों की संख्या / No. of Dogs:</strong> {lic.numberOfAnimals || "N/A"}
+                <strong>पालतू जानवरों की संख्या / No. of Pets:</strong> {lic.numberOfAnimals || "N/A"}
               </div>
               <div className="grid-item span-two">
                 <strong>घर का क्षेत्रफल / House Area:</strong> {lic.totalHouseArea ? `${lic.totalHouseArea} sq meter` : "N/A"}
@@ -518,8 +562,8 @@ const AdminPanel = () => {
         </div>
 
         <div className="certificate-footer-elements">
-          <div className="qr-code">
-            <div className="qr-box">QR Code</div>
+          <div className="qr-code"> {/* Replace with actual QR code image/component */}
+            <div className="qr-box">[QR Code]</div>
           </div>
           <div className="official-stamp">
             <Stamp size={40} className="stamp-icon" />
@@ -529,8 +573,8 @@ const AdminPanel = () => {
 
         <div className="certificate-footer">
           <Phone size={14} className="footer-icon" /> {lic.phoneNumber || "N/A"} &nbsp;|&nbsp;
-          <MapPin size={14} className="footer-icon" /> info@awbi.org &nbsp;|&nbsp;
-          <Globe size={14} className="footer-icon" /> www.awbi.org
+          <MapPin size={14} className="footer-icon" /> info@example.com &nbsp;|&nbsp; {/* Update with actual contact */}
+          <Globe size={14} className="footer-icon" /> www.example.com {/* Update with actual website */}
         </div>
       </div>
     );
@@ -538,7 +582,7 @@ const AdminPanel = () => {
 
   return (
     <div className={`admin-panel`}>
-      {expandedRowId === null && (
+      {expandedRowId === null ? (
         <div className="license-list-container">
           {!isMobile && (
             <div className="admin-tabs-desktop">
@@ -586,30 +630,30 @@ const AdminPanel = () => {
           {isMobile && (
             <div className="admin-filter-mobile">
               <select value={activeTab} onChange={(e) => setActiveTab(e.target.value)}>
-                <option value="all">All Licenses</option>
+                <option value="all">All Pet Licenses</option>
                 <option value="new">New Applications {newRegistrationsCount > 0 && `(${newRegistrationsCount})`}</option>
                 <option value="renewals">Pending Renewals {pendingRenewalsCount > 0 && `(${pendingRenewalsCount})`}</option>
                 <option value="approved">Approved Licenses</option>
                 <option value="rejected">Rejected Licenses</option>
               </select>
-              {activeTab === 'new' && newRegistrationsCount > 0 && <span className="notification-dot"></span>}
-              {activeTab === 'renewals' && pendingRenewalsCount > 0 && <span className="notification-dot"></span>}
+              {(activeTab === 'new' && newRegistrationsCount > 0) && <span className="notification-dot mobile-dot"></span>}
+              {(activeTab === 'renewals' && pendingRenewalsCount > 0) && <span className="notification-dot mobile-dot"></span>}
             </div>
           )}
 
           <h2>
             <Award className="title-icon" />
-            {activeTab === 'all' && 'All Licenses'}
-            {activeTab === 'new' && 'New Applications'}
-            {activeTab === 'renewals' && 'Pending Renewals'}
-            {activeTab === 'approved' && 'Approved Licenses'}
-            {activeTab === 'rejected' && 'Rejected Licenses'}
+            {activeTab === 'all' && 'All Pet Licenses'}
+            {activeTab === 'new' && 'New Pet Applications'}
+            {activeTab === 'renewals' && 'Pending Pet Renewals'}
+            {activeTab === 'approved' && 'Approved Pet Licenses'}
+            {activeTab === 'rejected' && 'Rejected Pet Licenses'}
           </h2>
 
           {loading ? (
             <div className="loading-container">
               <div className="loading-spinner"></div>
-              <p>Loading...</p>
+              <p>Loading Licenses...</p>
             </div>
           ) : (
             filteredLicenses.length === 0 ? (
@@ -622,7 +666,8 @@ const AdminPanel = () => {
                   <tr>
                     {(activeTab === 'renewals' || activeTab === 'approved' || activeTab === 'rejected' || activeTab === 'all') && <th>License #</th>}
                     <th>Owner</th>
-                    <th>Dog Name</th>
+                    <th>Animal Type</th>
+                    <th>Pet Name</th>
                     <th>Status</th>
                     {!isMobile && (activeTab === 'renewals' || activeTab === 'approved' || activeTab === 'all') && <th>Expiry Date</th>}
                     {!isMobile && activeTab === 'renewals' && <th>Request Date</th>}
@@ -631,29 +676,31 @@ const AdminPanel = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredLicenses.map((lic) => (
+                  {filteredLicenses.map((lic) => {
+                    const PetListIcon = getPetIcon(lic.animalType);
+                    return (
                     <tr
                       key={lic._id}
-                      className={`${lic.status === 'renewal_pending' ? 'renewal-highlight' : ''} ${lic.status}`}
-                      onClick={() => toggleExpanded(lic._id)}
+                      className={`${lic.status === 'renewal_pending' ? 'renewal-highlight' : ''} ${lic.status?.toLowerCase()}`}
+                      onClick={() => toggleExpanded(lic._id)} // Make row clickable
                     >
                       {(activeTab === 'renewals' || activeTab === 'approved' || activeTab === 'rejected' || activeTab === 'all') && <td>{lic.license_Id || lic._id?.substring(0, 8)}</td>}
                       <td><User size={16} className="cell-icon" /> {lic.fullName}</td>
-                      <td><Dog size={16} className="cell-icon" /> {lic.pet?.name || "N/A"}</td>
+                      <td><PetListIcon size={16} className="cell-icon" /> {lic.animalType}</td>
+                      <td><PetListIcon size={16} className="cell-icon" /> {lic.pet?.name || "N/A"}</td>
                       <td>
-                        <div className={`status-badge ${lic.status}`}>
+                        <div className={`status-badge status-${lic.status?.toLowerCase()}`}>
                           {lic.status === "approved" && <Check size={14} />}
                           {lic.status === "rejected" && <X size={14} />}
-                          {lic.status === "pending" && <Calendar size={14} />}
-                          {lic.status === "renewal_pending" && <Calendar size={14} />}
+                          {(lic.status === "pending" || lic.status === "renewal_pending") && <Calendar size={14} />}
                           {lic.status}
                         </div>
                       </td>
                       {!isMobile && (activeTab === 'renewals' || activeTab === 'approved' || activeTab === 'all') && (
                         <td><Calendar size={16} className="cell-icon" /> {formatDate(lic.expiryDate)}</td>
                       )}
-                      {!isMobile && activeTab === 'renewals' && (
-                        <td><Calendar size={16} className="cell-icon" /> {formatDate(lic.renewalRequestDate)}</td>
+                      {!isMobile && activeTab === 'renewals' && ( // Assuming renewalRequestDate exists in your data for renewals
+                        <td><Calendar size={16} className="cell-icon" /> {formatDate(lic.renewalRequestDate) || formatDate(lic.updatedAt)}</td>
                       )}
                       {!isMobile && (activeTab === 'new' || activeTab === 'approved' || activeTab === 'all') && (
                         <td><Calendar size={16} className="cell-icon" /> {formatDate(lic.pet?.dateOfVaccination)}</td>
@@ -662,7 +709,8 @@ const AdminPanel = () => {
                         <div className="action-buttons-container">
                           <button
                             className="btn-view"
-                            onClick={(e) => {
+                            title="View Details"
+                            onClick={(e) => { // Keep view button separate if row click is also for expand
                               e.stopPropagation();
                               toggleExpanded(lic._id);
                             }}
@@ -670,10 +718,11 @@ const AdminPanel = () => {
                             <Eye size={16} className="btn-icon" />
                             {!isMobile && 'View'}
                           </button>
-                          {(lic.status === "pending" || lic.status === "renewal_pending") && (
+                          {(lic.status === "pending" || lic.status === "renewal_pending") && !isMobile && ( // Hide approve/reject on mobile table row, show in details
                             <>
                               <button
                                 className="btn-approve"
+                                title="Approve License"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   if (lic.status === 'renewal_pending') {
@@ -688,15 +737,18 @@ const AdminPanel = () => {
                               </button>
                               <button
                                 className="btn-reject"
+                                title="Reject License"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   const reason = prompt('Enter rejection reason:');
-                                  if (reason) {
+                                   if (reason !== null && reason.trim() !== '') {
                                     if (lic.status === 'renewal_pending') {
                                       handleRenewalDecision(lic._id, "reject", reason);
                                     } else {
                                       updateStatus(lic._id, "reject", reason);
                                     }
+                                  } else if (reason !== null) {
+                                    alert("Rejection reason cannot be empty.");
                                   }
                                 }}
                               >
@@ -708,15 +760,13 @@ const AdminPanel = () => {
                         </div>
                       </td>
                     </tr>
-                  ))}
+                  )})}
                 </tbody>
               </table>
             )
           )}
         </div>
-      )}
-
-      {selectedLicense && (
+      ) : selectedLicense ? ( // Ensure selectedLicense is not null before rendering details
         <div className="license-details-container">
           <div className="mobile-details-header">
             <button
@@ -728,8 +778,8 @@ const AdminPanel = () => {
             </button>
             <h3>
               {certificateView[selectedLicense._id]
-                ? 'License Certificate'
-                : 'License Details'}
+                ? 'Pet License Certificate'
+                : 'Pet License Details'}
             </h3>
           </div>
 
@@ -744,8 +794,8 @@ const AdminPanel = () => {
             )}
           </button>
 
-          {selectedLicense.status === 'pending' || selectedLicense.status === 'renewal_pending' ? (
-            <div className="details-actions">
+          {(selectedLicense.status === 'pending' || selectedLicense.status === 'renewal_pending') && (
+            <div className="details-actions"> {/* These actions are always visible in details view for pending/renewal */}
               <button
                 className="btn-approve"
                 onClick={() => {
@@ -762,25 +812,28 @@ const AdminPanel = () => {
                 className="btn-reject"
                 onClick={() => {
                   const reason = prompt('Enter rejection reason:');
-                  if (reason) {
+                   if (reason !== null && reason.trim() !== '') {
                     if (selectedLicense.status === 'renewal_pending') {
                       handleRenewalDecision(selectedLicense._id, "reject", reason);
                     } else {
                       updateStatus(selectedLicense._id, "reject", reason);
                     }
+                  } else if (reason !== null) {
+                    alert("Rejection reason cannot be empty.");
                   }
                 }}
               >
                 <X size={16} className="btn-icon" /> Reject
               </button>
             </div>
-          ) : null}
+          )}
 
           {certificateView[selectedLicense._id]
             ? renderCertificateView(selectedLicense)
             : renderStandardView(selectedLicense)}
         </div>
-      )}
+      ) : null // If no expandedRowId or selectedLicense is not found (should not happen if logic is correct)
+      }
     </div>
   );
 };
