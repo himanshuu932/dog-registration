@@ -30,6 +30,14 @@ const PetRegistrationForm = () => {
     Rabbit: ['Domestic', 'Foreign']
   };
 
+  const VET_DETAILS = {
+  name: "Dr. John Smith",
+  clinic: "City Veterinary Hospital",
+  phone: "+1 (555) 123-4567",
+  address: "123 Main Street, Gorakhpur, UP 273001",
+  instructions: "Please visit the above veterinary clinic within 30 days to vaccinate your pet and convert your provisional license to a full license."
+};
+
   const [formData, setFormData] = useState({
     animalType: 'Dog', // New field for animal type
     fullName: '',
@@ -39,6 +47,7 @@ const PetRegistrationForm = () => {
     pinCode: '',
     city: '',
     state: '',
+     isVaccinated: '',
     totalHouseArea: '',
     numberOfDogs: '1',
     petName: '',
@@ -88,8 +97,10 @@ const PetRegistrationForm = () => {
       if (!formData.petColor.trim()) newErrors.petColor = `${formData.animalType} Colour is required`;
       if (!formData.petAge) newErrors.petAge = `${formData.animalType} Age is required`;
       if (!formData.petSex) newErrors.petSex = `${formData.animalType} Sex is required`;
-      if (!formData.dateOfVaccination) newErrors.dateOfVaccination = 'Vaccination Date is required';
-      if (!formData.dueVaccination) newErrors.dueVaccination = 'Due Date is required';
+ if (!formData.dateOfVaccination) newErrors.dateOfVaccination = 'Vaccination Date is required';
+if (!formData.dueVaccination) newErrors.dueVaccination = 'Due Date is required';
+if (!formData.isVaccinated) newErrors.isVaccinated = 'Vaccination status is required';
+
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -251,6 +262,7 @@ const submissionData = {
   sex: formData.petSex,
   dateOfVaccination: formData.dateOfVaccination,
   dueVaccination: formData.dueVaccination,
+   isVaccinated: formData.isVaccinated, 
   vaccinationProofUrl: vaccinationProof.url,
   vaccinationProofPublicId: vaccinationProof.publicId,
   avatarUrl: avatarUrl
@@ -529,6 +541,22 @@ return (
 
                   <div className="form-row">
                     <div className="form-group">
+  <label htmlFor="isVaccinated">Vaccinated?<span className="required">*</span></label>
+  <select
+    id="isVaccinated"
+    name="isVaccinated"
+    value={formData.isVaccinated}
+    onChange={handleChange}
+    required
+  >
+    <option value="">Select</option>
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+  </select>
+  {renderError('isVaccinated')}
+</div>
+
+                    <div className="form-group">
                       <label htmlFor="dateOfVaccination">Date of Vaccination<span className="required">*</span></label>
                       <input
                         type="date"
@@ -594,188 +622,228 @@ return (
           </div>
         )}
 
-        {activeTab === 3 && (
-          <div className="form-step">
-            <h2 className="section-title">Pet Owner's Details</h2>
+  {activeTab === 3 && (
+  <div className="form-step">
+    <h2 className="section-title">Pet Owner's Details</h2>
 
-            <div className="preview-section">
-              <div className="preview-row">
-                <div className="preview-item">
-                  <span className="preview-label">Owner Name :</span>
-                  <span className="preview-value">{formData.fullName || 'Not provided'}</span>
-                </div>
-                <div className="preview-item">
-                  <span className="preview-label">Phone Number :</span>
-                  <span className="preview-value">{formData.phoneNumber || 'Not provided'}</span>
-                </div>
-              </div>
-              
-              <div className="preview-row">
-                <div className="preview-item">
-                  <span className="preview-label">Gender :</span>
-                  <span className="preview-value">{formData.gender || 'Not provided'}</span>
-                </div>
-                <div className="preview-item">
-                  <span className="preview-label">Street name :</span>
-                  <span className="preview-value">{formData.streetName || 'Not provided'}</span>
-                </div>
-              </div>
-              
-              <div className="preview-row">
-                <div className="preview-item">
-                  <span className="preview-label">City :</span>
-                  <span className="preview-value">{formData.city || 'Not provided'}</span>
-                </div>
-                <div className="preview-item">
-                  <span className="preview-label">State :</span>
-                  <span className="preview-value">{formData.state || 'Not provided'}</span>
-                </div>
-                <div className="preview-item">
-                  <span className="preview-label">Pin code :</span>
-                  <span className="preview-value">{formData.pinCode || 'Not provided'}</span>
-                </div>
-              </div>
-              
-              <div className="preview-row">
-                <div className="preview-item">
-                  <span className="preview-label">Total House Area :</span>
-                  <span className="preview-value">{formData.totalHouseArea || 'Not provided'}</span>
-                </div>
-                <div className="preview-item">
-                  <span className="preview-label">Number of Animals :</span>
-                  <span className="preview-value">{formData.numberOfDogs || '1'}</span>
-                </div>
-              </div>
+    <div className="preview-section">
+      <div className="preview-row">
+        <div className="preview-item">
+          <span className="preview-label">Owner Name :</span>
+          <span className="preview-value">{formData.fullName || 'Not provided'}</span>
+        </div>
+        <div className="preview-item">
+          <span className="preview-label">Phone Number :</span>
+          <span className="preview-value">{formData.phoneNumber || 'Not provided'}</span>
+        </div>
+      </div>
+      
+      <div className="preview-row">
+        <div className="preview-item">
+          <span className="preview-label">Gender :</span>
+          <span className="preview-value">{formData.gender || 'Not provided'}</span>
+        </div>
+        <div className="preview-item">
+          <span className="preview-label">Street name :</span>
+          <span className="preview-value">{formData.streetName || 'Not provided'}</span>
+        </div>
+      </div>
+      
+      <div className="preview-row">
+        <div className="preview-item">
+          <span className="preview-label">City :</span>
+          <span className="preview-value">{formData.city || 'Not provided'}</span>
+        </div>
+        <div className="preview-item">
+          <span className="preview-label">State :</span>
+          <span className="preview-value">{formData.state || 'Not provided'}</span>
+        </div>
+        <div className="preview-item">
+          <span className="preview-label">Pin code :</span>
+          <span className="preview-value">{formData.pinCode || 'Not provided'}</span>
+        </div>
+      </div>
+      
+      <div className="preview-row">
+        <div className="preview-item">
+          <span className="preview-label">Total House Area :</span>
+          <span className="preview-value">{formData.totalHouseArea || 'Not provided'}</span>
+        </div>
+        <div className="preview-item">
+          <span className="preview-label">Number of Animals :</span>
+          <span className="preview-value">{formData.numberOfDogs || '1'}</span>
+        </div>
+      </div>
+    </div>
+    
+    <h2 className="section-title">{formData.animalType} Details 1</h2>
+    <div className="preview-section">
+      <div className="preview-row">
+        <div className="preview-item">
+          <span className="preview-label">{formData.animalType} Name:</span>
+          <span className="preview-value">{formData.petName || 'Not provided'}</span>
+        </div>
+        <div className="preview-item">
+          <span className="preview-label">{formData.animalType} Category:</span>
+          <span className="preview-value">{formData.petCategory || 'Not provided'}</span>
+        </div>
+      </div>
+      
+      <div className="preview-row">
+        <div className="preview-item">
+          <span className="preview-label">{formData.animalType} Breed:</span>
+          <span className="preview-value">{formData.petBreed || 'Not provided'}</span>
+        </div>
+        <div className="preview-item">
+          <span className="preview-label">{formData.animalType} Colour:</span>
+          <span className="preview-value">{formData.petColor || 'Not provided'}</span>
+        </div>
+      </div>
+      
+      <div className="preview-row">
+        <div className="preview-item">
+          <span className="preview-label">Age of {formData.animalType}:</span>
+          <span className="preview-value">{formData.petAge || 'Not provided'}</span>
+        </div>
+        <div className="preview-item">
+          <span className="preview-label">Sex of {formData.animalType}:</span>
+          <span className="preview-value">{formData.petSex || 'Not provided'}</span>
+        </div>
+      </div>
+      
+      <div className="preview-row">
+        <div className="preview-item">
+          <span className="preview-label">Vaccinated:</span>
+          <span className="preview-value">{formData.isVaccinated || 'Not provided'}</span>
+        </div>
+        {formData.isVaccinated === 'Yes' && (
+          <>
+            <div className="preview-item">
+              <span className="preview-label">Date of Vaccination:</span>
+              <span className="preview-value">
+                {formData.dateOfVaccination ? new Date(formData.dateOfVaccination).toLocaleDateString() : 'Not provided'}
+              </span>
             </div>
-            
-            <h2 className="section-title">{formData.animalType} Details 1</h2>
-            <div className="preview-section">
-              <div className="preview-row">
-                <div className="preview-item">
-                  <span className="preview-label">{formData.animalType} Name:</span>
-                  <span className="preview-value">{formData.petName || 'Not provided'}</span>
-                </div>
-                <div className="preview-item">
-                  <span className="preview-label">{formData.animalType} Category:</span>
-                  <span className="preview-value">{formData.petCategory || 'Not provided'}</span>
-                </div>
-              </div>
-              
-              <div className="preview-row">
-                <div className="preview-item">
-                  <span className="preview-label">{formData.animalType} Breed:</span>
-                  <span className="preview-value">{formData.petBreed || 'Not provided'}</span>
-                </div>
-                <div className="preview-item">
-                  <span className="preview-label">{formData.animalType} Colour:</span>
-                  <span className="preview-value">{formData.petColor || 'Not provided'}</span>
-                </div>
-              </div>
-              
-              <div className="preview-row">
-                <div className="preview-item">
-                  <span className="preview-label">Age of {formData.animalType}:</span>
-                  <span className="preview-value">{formData.petAge || 'Not provided'}</span>
-                </div>
-                <div className="preview-item">
-                  <span className="preview-label">Sex of {formData.animalType}:</span>
-                  <span className="preview-value">{formData.petSex || 'Not provided'}</span>
-                </div>
-              </div>
-              
-              <div className="preview-row">
-                <div className="preview-item">
-                  <span className="preview-label">Date of Vaccination:</span>
-                  <span className="preview-value">
-                    {formData.dateOfVaccination ? new Date(formData.dateOfVaccination).toLocaleDateString() : 'Not provided'}
-                  </span>
-                </div>
-                <div className="preview-item">
-                  <span className="preview-label">Vaccine Due Date:</span>
-                  <span className="preview-value">
-                    {formData.dueVaccination ? new Date(formData.dueVaccination).toLocaleDateString() : 'Not provided'}
-                  </span>
-                </div>
-              </div>
-              
-              <div className="preview-row">
-                <div className="preview-item">
-                  <span className="preview-label">Vaccination Certificate:</span>
-                  <span className="preview-value">
-                    {vaccinationProof.url ? (
-                      <a href={vaccinationProof.url} target="_blank" rel="noopener noreferrer">
-                        View Certificate
-                      </a>
-                    ) : (
-                      'No file uploaded'
-                    )}
-                  </span>
-                </div>
-              </div>
+            <div className="preview-item">
+              <span className="preview-label">Vaccine Due Date:</span>
+              <span className="preview-value">
+                {formData.dueVaccination ? new Date(formData.dueVaccination).toLocaleDateString() : 'Not provided'}
+              </span>
             </div>
-            
-            <h2 className="section-title">Declaration</h2>
-            <div className="declaration-section">
-              <div className="declaration-item">
-                <input
-                  type="checkbox"
-                  id="declaration1"
-                  name="declaration1"
-                  checked={formData.declaration1}
-                  onChange={handleChange}
-                  required
-                />
-                <label htmlFor="declaration1">
-                  I hereby declare that the entries made by me in the Application Form are complete and true to the best of my knowledge, belief and information.
-                </label>
-              </div>
-              
-              <div className="declaration-item">
-                <input
-                  type="checkbox"
-                  id="declaration2"
-                  name="declaration2"
-                  checked={formData.declaration2}
-                  onChange={handleChange}
-                  required
-                />
-                <label htmlFor="declaration2">
-                  I hereby undertake to present the original documents for verification immediately upon demand by the concerned authorities.
-                </label>
-              </div>
-              
-              <div className="declaration-item">
-                <input
-                  type="checkbox"
-                  id="declaration3"
-                  name="declaration3"
-                  checked={formData.declaration3}
-                  onChange={handleChange}
-                  required
-                />
-                <label htmlFor="declaration3">
-                  If in any case, concerned authorities encountered any fault then they would take action against me and anytime like cancellation of the license by the authorized authority.
-                </label>
-              </div>
-              
-              <div className="declaration-item">
-                <input
-                  type="checkbox"
-                  id="declaration4"
-                  name="declaration4"
-                  checked={formData.declaration4}
-                  onChange={handleChange}
-                  required
-                />
-                <label htmlFor="declaration4">
-                  I hereby assure the Municipal Corporation, Gorakhpur that, I am not using my pet for any breeding purpose and will follow all the rules and regulation (
-                  <a href="#" className="link">View PDF</a>
-                  ) issued by Municipal Corporation, Gorakhpur from time to time.
-                </label>
-              </div>
-            </div>
-          </div>
+          </>
         )}
+      </div>
+      
+      {formData.isVaccinated === 'Yes' && (
+        <div className="preview-row">
+          <div className="preview-item">
+            <span className="preview-label">Vaccination Certificate:</span>
+            <span className="preview-value">
+              {vaccinationProof.url ? (
+                <a href={vaccinationProof.url} target="_blank" rel="noopener noreferrer">
+                  View Certificate
+                </a>
+              ) : (
+                'No file uploaded'
+              )}
+            </span>
+          </div>
+        </div>
+      )}
+    </div>
+
+    {/* Add the vet details section for non-vaccinated pets */}
+    {formData.isVaccinated === 'No' && (
+      <div className="vet-info-section">
+        <h3 className="section-subtitle">Approved Veterinary Clinic Information</h3>
+        <div className="preview-row">
+          <div className="preview-item">
+            <span className="preview-label">Clinic Name:</span>
+            <span className="preview-value">{VET_DETAILS.clinic}</span>
+          </div>
+          <div className="preview-item">
+            <span className="preview-label">Veterinarian:</span>
+            <span className="preview-value">{VET_DETAILS.name}</span>
+          </div>
+        </div>
+        <div className="preview-row">
+          <div className="preview-item">
+            <span className="preview-label">Contact Number:</span>
+            <span className="preview-value">{VET_DETAILS.phone}</span>
+          </div>
+          <div className="preview-item">
+            <span className="preview-label">Address:</span>
+            <span className="preview-value">{VET_DETAILS.address}</span>
+          </div>
+        </div>
+        <div className="info-note">
+          <p><strong>Important:</strong> {VET_DETAILS.instructions}</p>
+        </div>
+      </div>
+    )}
+    
+    <h2 className="section-title">Declaration</h2>
+    <div className="declaration-section">
+      <div className="declaration-item">
+        <input
+          type="checkbox"
+          id="declaration1"
+          name="declaration1"
+          checked={formData.declaration1}
+          onChange={handleChange}
+          required
+        />
+        <label htmlFor="declaration1">
+          I hereby declare that the entries made by me in the Application Form are complete and true to the best of my knowledge, belief and information.
+        </label>
+      </div>
+      
+      <div className="declaration-item">
+        <input
+          type="checkbox"
+          id="declaration2"
+          name="declaration2"
+          checked={formData.declaration2}
+          onChange={handleChange}
+          required
+        />
+        <label htmlFor="declaration2">
+          I hereby undertake to present the original documents for verification immediately upon demand by the concerned authorities.
+        </label>
+      </div>
+      
+      <div className="declaration-item">
+        <input
+          type="checkbox"
+          id="declaration3"
+          name="declaration3"
+          checked={formData.declaration3}
+          onChange={handleChange}
+          required
+        />
+        <label htmlFor="declaration3">
+          If in any case, concerned authorities encountered any fault then they would take action against me and anytime like cancellation of the license by the authorized authority.
+        </label>
+      </div>
+      
+      <div className="declaration-item">
+        <input
+          type="checkbox"
+          id="declaration4"
+          name="declaration4"
+          checked={formData.declaration4}
+          onChange={handleChange}
+          required
+        />
+        <label htmlFor="declaration4">
+          I hereby assure the Municipal Corporation, Gorakhpur that, I am not using my pet for any breeding purpose and will follow all the rules and regulation (
+          <a href="#" className="link">View PDF</a>
+          ) issued by Municipal Corporation, Gorakhpur from time to time.
+        </label>
+      </div>
+    </div>
+  </div>
+)}
 
         <div className="form-buttons">
           {activeTab > 1 && <button type="button" className="back-btn" onClick={handleBack}>Back</button>}

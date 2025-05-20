@@ -1,4 +1,5 @@
 const DogLicense = require("../models/dogLicense.js");
+const vetDetails = require('../config/vetDetails');
 const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
 const path = require('path');
@@ -69,83 +70,75 @@ exports.uploadVaccinationProof = async (req, res) => {
 
 exports.applyLicense = async (req, res) => {
   try {
+   // console.log("🔥 applyLicense route hit");
+
     const {
-        animalType,
-      fullName, phoneNumber, gender, streetName, pinCode, city, state, 
-      totalHouseArea, numberOfAnimals, dogName, dogCategory, dogBreed, 
-      dogColor, dogAge, dogSex, dateOfVaccination, dueVaccination,
-      avatarUrl, vaccinationProofUrl, vaccinationProofPublicId,
-       pet,
+      animalType,
+      fullName, phoneNumber, gender, streetName, pinCode, city, state,
+      totalHouseArea, numberOfAnimals,
+      pet
     } = req.body;
 
-    // Generate license ID
+   // console.log("📦 Received pet:", pet);
+
+    const isVaccinatedStr = String(pet?.isVaccinated || '').toLowerCase();
+    const isProvisional = isVaccinatedStr !== 'yes';
+
     const now = new Date();
     const year = now.getFullYear().toString().slice(-2).padStart(2, '0');
     const month = (now.getMonth() + 1).toString().padStart(2, '0');
     const day = now.getDate().toString().padStart(2, '0');
-    const hours = now.getHours().toString().padStart(2, '0');
+     const hours = now.getHours().toString().padStart(2, '0');
     const minutes = now.getMinutes().toString().padStart(2, '0');
-    const seconds = now.getSeconds().toString().padStart(2, '0');
+      const seconds = now.getSeconds().toString().padStart(2, '0');
     const random = Math.floor(Math.random() * 9000 + 1000).toString();
-    const license_Id = `${year}${month}${day}${hours}${minutes}${seconds}${random}`;
+    const prefix = isProvisional ? 'PL' : 'FL';
+    const license_Id = `${prefix}${year}${month}${day}${hours}${minutes}${seconds}${random}`;
 
-    const ownerId = req.user.userId;
+    const newLicense = new DogLicense({
+      owner: req.user.userId,
+      license_Id,
+      animalType,
+      fullName,
+      phoneNumber,
+      gender,
+      address: { streetName, pinCode, city, state },
+      totalHouseArea,
+      numberOfAnimals,
+      pet, // already includes isVaccinated
+      isProvisional,
+      provisionalExpiryDate: isProvisional ? new Date(Date.now() + 30 * 86400000) : null,
+      expiryDate: isProvisional ? null : new Date(Date.now() + 365 * 86400000),
+      status: 'pending'
+    });
 
-
-
-// In the applyLicense function, update the newLicense object:
-const newLicense = new DogLicense({
-  owner: ownerId,
-  license_Id: license_Id,
-  animalType: animalType, // Make sure this is included
-  fullName,
-  phoneNumber,
-  gender,
-  address: { // Keep as object to match schema
-    streetName,
-    pinCode,
-    city,
-    state
-  },
-  totalHouseArea,
-  numberOfAnimals, // Changed to match schema
-  pet,
-  expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-  status: 'pending'
-});
-
-   
     const savedLicense = await newLicense.save();
-   
 
-    res.status(201).json({ 
+    res.status(201).json({
       message: "License application submitted",
       licenseId: savedLicense._id,
-      generatedLicenseId: savedLicense.license_Id // Return the generated ID for verification
+      licenseType: isProvisional ? 'provisional' : 'full',
+      generatedLicenseId: savedLicense.license_Id
     });
-  } catch (error) {
-    console.error("License apply error:", error);
-    
-    // More detailed error logging
-    if (error.name === 'ValidationError') {
-      console.error('Validation errors:', error.errors);
-    }
 
-    // If license creation fails but file was uploaded, clean up from Cloudinary
+  } catch (error) {
+    console.error("❌ License apply error:", error);
+
     if (req.body.vaccinationProofPublicId) {
       try {
         await cloudinary.uploader.destroy(req.body.vaccinationProofPublicId);
       } catch (cleanupError) {
-        console.error("Failed to cleanup Cloudinary file:", cleanupError);
+        console.error("🧹 Cleanup failed:", cleanupError);
       }
     }
-    
-    res.status(500).json({ 
+
+    res.status(500).json({
       message: "Server error while applying license",
-      error: error.message 
+      error: error.message
     });
   }
 };
+
 
 exports.getUserLicenses = async (req, res) => {
   try {

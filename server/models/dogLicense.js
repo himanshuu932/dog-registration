@@ -2,8 +2,11 @@ const mongoose = require("mongoose");
 
 const dogLicenseSchema = new mongoose.Schema(
   {
-     
-    
+        isProvisional: {
+      type: Boolean,
+      default: false
+    },
+      provisionalExpiryDate: Date,
     animalType: {
       type: String,
       enum: ['Dog', 'Cat', 'Rabbit'],
@@ -34,6 +37,7 @@ const dogLicenseSchema = new mongoose.Schema(
       color: String,
       age: String,
       sex: String,
+       isVaccinated: String,
       dateOfVaccination: Date,
       dueVaccination: Date,
       vaccinationProofUrl: String,

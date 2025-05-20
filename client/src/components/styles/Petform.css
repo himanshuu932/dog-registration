@@ -705,6 +705,29 @@ select:focus {
 .form-group {
   min-width: 100%;
 }
+
+
+.vet-info-section {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #ffc107;
+}
+
+.info-note {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background-color: #fff3cd;
+  border-radius: 4px;
+  color: #856404;
+}
+
+.info-note strong {
+  color: #856404;
+} 
+
+
 @media (min-width: 600px) {
   .form-group {
     min-width: calc(50% - 10px);

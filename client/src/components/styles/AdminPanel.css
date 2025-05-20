@@ -907,6 +907,25 @@ button {
     background-size: 1em;
 }
 
+.status-badge.provisional {
+   background-color: rgba(52, 152, 219, 0.15);
+  color: var(--secondary); 
+  border: none;
+}
+
+tr.provisional {
+  background-color: rgba(39, 174, 96, 0.05); 
+}
+
+tr.provisional:hover {
+  background-color: rgba(39, 174, 96, 0.1);
+}
+
+.admin-tabs-desktop .admin-tab.provisional-active {
+  border-bottom: 3px solid var(--secondary); /* blue underline */
+  color: var(--secondary); /* blue text color */
+}
+
 /* Style for the blue dot indicator */
 .notification-dot {
     display: inline-block;
@@ -916,8 +935,8 @@ button {
     border-radius: 50%;
     margin-left: 5px; /* Space between text/icon and dot */
     position: absolute;
-    top: 1px; /* Adjust position as needed */
-    right: -150px; /* Adjust position as needed */
+top: -4px;  /* Align dot above the icon */
+  right: -4px; /* Align dot to top-right of icon */
 }
 
 
