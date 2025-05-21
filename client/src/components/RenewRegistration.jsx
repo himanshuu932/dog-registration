@@ -1,100 +1,302 @@
 import React, { useState, useEffect } from 'react';
-import html2pdf from 'html2pdf.js';
-import './styles/RenewRegistration.css';
-import { CheckCircle, AlertCircle, Calendar, FileText, PawPrint, User, Eye, ChevronLeft, Download, XCircle } from 'lucide-react';
+// import html2pdf from 'html2pdf.js'; // Not used if download button is removed
+import './styles/RenewRegistration.css'; // Ensure this path is correct and CSS is updated
+import { CheckCircle, AlertCircle, Calendar, FileText, PawPrint, User, Eye, ChevronLeft, XCircle, Clock } from 'lucide-react';
 
+// Helper function to format dates
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A';
   const date = new Date(dateString);
-  return date.toLocaleDateString("en-GB");
+  return date.toLocaleDateString("en-GB"); // Format: DD/MM/YYYY
 };
 
+// Component to display status badges, similar to Download.jsx
 const StatusBadge = ({ status, isMobile, languageType = 'en' }) => {
   const statusText = {
     en: {
       approved: 'Approved',
-      renewal_pending: 'Renewal Requested', 
-      pending: 'Pending Review', 
+      renewal_pending: 'Renewal Requested',
+      pending: 'Pending Review',
       rejected: 'Rejected'
     },
     hi: {
       approved: 'स्वीकृत',
-      renewal_pending: 'नवीनीकरण अनुरोधित', 
-      pending: 'समीक्षाधीन', 
+      renewal_pending: 'नवीनीकरण अनुरोधित',
+      pending: 'समीक्षाधीन',
       rejected: 'अस्वीकृत'
     }
   };
 
   const currentStatusText = statusText[languageType] || statusText.en;
-  const lowerStatus = status.toLowerCase();
+  const lowerStatus = status ? status.toLowerCase() : 'default';
 
-  let badgeClass = "rr-status-badge";
-  let Icon = AlertCircle;
-  let iconColor = 'var(--rr-warning)';
+  let badgeClass = "user-rr-status-badge"; // Using new unique class prefix
+  let Icon = AlertCircle; // Default icon
 
   switch(lowerStatus) {
     case 'approved':
-      badgeClass += " rr-status-approved";
+      badgeClass += " user-rr-status-approved";
       Icon = CheckCircle;
-      iconColor = 'var(--rr-success)';
       break;
     case 'renewal_pending':
-      badgeClass += " rr-status-pending"; 
-      Icon = AlertCircle; 
-      iconColor = 'var(--rr-warning)';
+      badgeClass += " user-rr-status-renewal-pending"; // Specific class for this status
+      Icon = Clock; // Using Clock for pending-like statuses
       break;
-    case 'pending': 
-      badgeClass += " rr-status-pending";
-      Icon = AlertCircle;
-      iconColor = 'var(--rr-warning)';
+    case 'pending':
+      badgeClass += " user-rr-status-pending";
+      Icon = Clock;
       break;
      case 'rejected':
-      badgeClass += " rr-status-rejected";
+      badgeClass += " user-rr-status-rejected";
       Icon = XCircle;
-      iconColor = 'var(--rr-error)'; 
       break;
     default:
-      badgeClass += " rr-status-default";
-      Icon = AlertCircle;
-      iconColor = 'var(--rr-dark)'; 
+      badgeClass += " user-rr-status-default"; // Fallback style
   }
 
   const displayStatusText = currentStatusText[lowerStatus] || status;
 
   return (
     <span className={badgeClass}>
-      <Icon size={16} style={{ color: iconColor }} />
+      <Icon size={isMobile ? 14 : 16} /> {/* Icon size can be responsive */}
       {!isMobile && <span>{displayStatusText}</span>}
     </span>
   );
 };
 
-const getAnimalLabel = (animalType = 'Pet') => { 
-    if (!animalType) return 'Pet';
+// Helper to get a display label for animal type
+const getAnimalLabel = (animalType = '') => {
+    if (!animalType) return 'Pet'; // Default
     const lower = animalType.toLowerCase();
+    // Simple mapping, can be expanded
     switch (lower) {
       case 'dog': return 'Dog';
       case 'cat': return 'Cat';
       case 'rabbit': return 'Rabbit';
-      default: return animalType;
+      default: return animalType.charAt(0).toUpperCase() + animalType.slice(1); // Capitalize first letter
     }
-  };
+};
 
-// Pass currentText as an argument
-const renderCertificateView = (lic, isMobile, downloadPDF, languageType = 'en', currentTextArg) => {
-    const currentDate = new Date().toLocaleDateString('en-GB');
+// Function to render the certificate view, adapted from Download.jsx structure
+// Removed downloadPDF argument as button is removed
+const renderCertificateView = (lic, languageType = 'en', currentTextArg) => {
+    const currentDateOnCertificate = new Date().toLocaleDateString('en-GB'); // Date for the certificate header
 
-    const expiryDate = lic.expiryDate ? formatDate(lic.expiryDate) : 
-                       lic.pet?.dateOfVaccination ? new Date(new Date(lic.pet.dateOfVaccination).setFullYear(new Date(lic.pet.dateOfVaccination).getFullYear() + 1)).toLocaleDateString('en-GB') 
+    // Determine expiry date
+    const expiryDate = lic.expiryDate ? formatDate(lic.expiryDate) :
+                       lic.pet?.dateOfVaccination ? new Date(new Date(lic.pet.dateOfVaccination).setFullYear(new Date(lic.pet.dateOfVaccination).getFullYear() + 1)).toLocaleDateString('en-GB')
                        : "N/A";
 
-    // Use the passed currentTextArg
-    const currentCertText = currentTextArg || { 
-        // Default fallback if currentTextArg is not provided, though it should be
+    // Using passed currentTextArg for all text content within the certificate
+    const currentCertText = currentTextArg || {}; // Fallback to empty object if not provided
+
+    // Defaulting animalTypeLabel and animalDetailsTitle if not in currentTextArg
+    const animalTypeLabelBilingual = currentCertText.animalTypeLabelBilingual || `Animal Type / पशु का प्रकार`;
+    const animalDetailsTitleBilingual = currentCertText.animalDetailsTitleBilingual || `${getAnimalLabel(lic.animalType)} Details / ${getAnimalLabel(lic.animalType)} का विवरण`;
+
+
+    return (
+       // Main container for the certificate and related notices
+       <div className="user-rr-certificate-display-area">
+         {/* The A4-sized layout for the certificate content */}
+         <div id={`pdf-rr-${lic._id}`} className="pdf-rr-layout"> {/* Unique ID with prefix */}
+           <div className="pdf-rr-outer-border">
+             <div className="pdf-rr-border">
+               {/* PDF Header */}
+               <div className="pdf-rr-header">
+                 <div className="pdf-rr-header-left">
+                   <div className="pdf-rr-logo-icon">
+                      {/* Placeholder for logo, replace with actual or remove */}
+                      <img src="/logo.webp" alt="Organization Logo" onError={(e) => e.target.style.display='none'} />
+                   </div>
+                   <div className="pdf-rr-org-name">
+                     <h3>{currentCertText.orgNameEn || 'Nagar Nigam Gorakhpur'}</h3>
+                     <h4>{currentCertText.orgNameHi || 'नगर निगम गोरखपुर'}</h4>
+                   </div>
+                 </div>
+                 <div className="pdf-rr-header-right">
+                    {/* Optional: Another logo or element */}
+                    <div className="pdf-rr-logo-icon">
+                       <img src="/up.webp" alt="State Logo" onError={(e) => e.target.style.display='none'} />
+                    </div>
+                 </div>
+               </div>
+
+               {/* Certificate Title */}
+               <div className="pdf-rr-certificate-title">
+                 {lic.isProvisional ? (
+                   <>
+                     <h2>{currentCertText.certificateTitleEnP || 'PROVISIONAL PET LICENSE CERTIFICATE'}</h2>
+                     <h3>{currentCertText.certificateTitleHiP || 'अस्थायी पालतू पशु पंजीकरण प्रमाण पत्र'}</h3>
+                   </>
+                 ) : (
+                   <>
+                     <h2>{currentCertText.certificateTitleEn || 'PET LICENSE CERTIFICATE'}</h2>
+                     <h3>{currentCertText.certificateTitleHi || 'पालतू पशु पंजीकरण प्रमाण पत्र'}</h3>
+                   </>
+                 )}
+               </div>
+
+               {/* PDF Body */}
+               <div className="pdf-rr-body">
+                 <div className="pdf-rr-photo-section">
+                   <div className="pdf-rr-info-block">
+                     <div className="pdf-rr-info-row"><div className="pdf-rr-info-label">नाम / Name</div><div className="pdf-rr-info-value">: {lic.fullName || "N/A"}</div></div>
+                     <div className="pdf-rr-info-row"><div className="pdf-rr-info-label">पंजीकरण संख्या / Registration No.</div><div className="pdf-rr-info-value">: {lic.license_Id || "N/A"}</div></div>
+                     <div className="pdf-rr-info-row"><div className="pdf-rr-info-label">जारी दिनांक / Issue Date</div><div className="pdf-rr-info-value">: {formatDate(lic.createdAt)}</div></div>
+                     <div className="pdf-rr-info-row"><div className="pdf-rr-info-label">समाप्ति तिथि / Expiry Date</div><div className="pdf-rr-info-value">: {expiryDate}</div></div>
+                   </div>
+                   <div className="pdf-rr-photo-box">
+                     {lic.pet?.avatarUrl ? (
+                       <img src={lic.pet.avatarUrl} alt="Pet" className="pdf-rr-photo" onError={(e) => e.target.src='https://placehold.co/100x120/e0e0e0/757575?text=No+Image'} />
+                     ) : (
+                       <div className="pdf-rr-photo-placeholder">{currentCertText.photoPlaceholder || 'Pet\'s Photo'}</div>
+                     )}
+                   </div>
+                 </div>
+
+                 {/* Animal Details Section */}
+                 <div className="pdf-rr-details-section">
+                   <div className="pdf-rr-section-title">{animalDetailsTitleBilingual}</div>
+                   <div className="pdf-rr-details-columns">
+                     <div className="pdf-rr-details-column-left">
+                       <div className="pdf-rr-details-row"><div className="pdf-rr-details-label">{animalTypeLabelBilingual}</div><div className="pdf-rr-details-value">: {getAnimalLabel(lic.animalType) || "N/A"}</div></div>
+                       <div className="pdf-rr-details-row"><div className="pdf-rr-details-label">{currentCertText.petNameLabel || 'Pet Name / पालतू जानवर का नाम'}</div><div className="pdf-rr-details-value">: {lic.pet?.name || "N/A"}</div></div>
+                       <div className="pdf-rr-details-row"><div className="pdf-rr-details-label">{currentCertText.breedLabel || 'Breed / नस्ल'}</div><div className="pdf-rr-details-value">: {lic.pet?.breed || "N/A"}</div></div>
+                       <div className="pdf-rr-details-row"><div className="pdf-rr-details-label">{currentCertText.categoryLabel || 'Category / वर्ग'}</div><div className="pdf-rr-details-value">: {lic.pet?.category || "N/A"}</div></div>
+                       <div className="pdf-rr-details-row"><div className="pdf-rr-details-label">{currentCertText.colorLabel || 'Color / रंग'}</div><div className="pdf-rr-details-value">: {lic.pet?.color || "N/A"}</div></div>
+                       <div className="pdf-rr-details-row"><div className="pdf-rr-details-label">{currentCertText.ageLabel || 'Age / आयु'}</div><div className="pdf-rr-details-value">: {lic.pet?.age || "N/A"}</div></div>
+                     </div>
+                     <div className="pdf-rr-details-column-right">
+                       <div className="pdf-rr-details-row"><div className="pdf-rr-details-label">{currentCertText.genderLabel || 'Gender / लिंग'}</div><div className="pdf-rr-details-value">: {lic.pet?.sex || "N/A"}</div></div>
+                       <div className="pdf-rr-details-row"><div className="pdf-rr-details-label">{currentCertText.vaccinationDateLabel || 'Vaccination Date / टीकाकरण की तारीख'}</div><div className="pdf-rr-details-value">: {formatDate(lic.pet?.dateOfVaccination)}</div></div>
+                       <div className="pdf-rr-details-row"><div className="pdf-rr-details-label">{currentCertText.vaccinatedLabel || 'Vaccinated / टीकाकरण'}</div><div className="pdf-rr-details-value">: {lic.pet?.dateOfVaccination ? (languageType === 'hi' ? ' हाँ' : ' Yes') : (languageType === 'hi' ? ' नहीं' : ' No')}</div></div>
+                       {lic.pet?.vaccinationProofUrl && (<div className="pdf-rr-details-row"><div className="pdf-rr-details-label">{currentCertText.vaccinationCertificateLabel || 'Vaccination Certificate / टीकाकरण प्रमाणपत्र'}</div><div className="pdf-rr-details-value"><a href={lic.pet.vaccinationProofUrl} target="_blank" rel="noreferrer noopener" className="pdf-rr-vaccine-img-link">View</a></div></div>)}
+                       <div className="pdf-rr-details-row"><div className="pdf-rr-details-label">{currentCertText.microchippedLabel || 'Microchipped / माइक्रोचिप'}</div><div className="pdf-rr-details-value">: {languageType === 'hi' ? 'नहीं' : 'No'}</div></div> {/* Assuming No for now */}
+                       <div className="pdf-rr-details-row"><div className="pdf-rr-details-label">{currentCertText.nextVaccinationLabel || 'Next Vaccination / अगला टीकाकरण'}</div><div className="pdf-rr-details-value">: {formatDate(lic.pet?.dueVaccination)}</div></div>
+                     </div>
+                   </div>
+                 </div>
+
+                 {/* Owner Details Section */}
+                 <div className="pdf-rr-details-section">
+                   <div className="pdf-rr-section-title">{currentCertText.ownerDetailsTitle || 'Owner Details / मालिक का विवरण'}</div>
+                   <div className="pdf-rr-details-table"> {/* Using table-like structure for owner details */}
+                     <div className="pdf-rr-details-row"><div className="pdf-rr-details-label">{currentCertText.addressLabel || 'Address / पता'}</div><div className="pdf-rr-details-value">: {`${lic.address?.streetName || ""}, ${lic.address?.city || ""}, ${lic.address?.state || ""} - ${lic.address?.pinCode || "N/A"}`}</div></div>
+                     <div className="pdf-rr-details-row"><div className="pdf-rr-details-label">{currentCertText.phoneNumberLabel || 'Phone Number / फोन नंबर'}</div><div className="pdf-rr-details-value">: {lic.phoneNumber || "N/A"}</div></div>
+                     <div className="pdf-rr-details-row"><div className="pdf-rr-details-label">{currentCertText.numberOfAnimalsLabel || `No. of ${getAnimalLabel(lic.animalType)}s / ${getAnimalLabel(lic.animalType)} की संख्या`}</div><div className="pdf-rr-details-value">: {lic.numberOfAnimals || "N/A"}</div></div>
+                     <div className="pdf-rr-details-row"><div className="pdf-rr-details-label">{currentCertText.houseAreaLabel || 'House Area / घर का क्षेत्रफल'}</div><div className="pdf-rr-details-value">: {lic.totalHouseArea ? `${lic.totalHouseArea} sq meter` : "N/A"}</div></div>
+                   </div>
+                 </div>
+
+                 {/* Declaration */}
+                 <div className="pdf-rr-declaration">
+                   <p>{currentCertText.declaration || <>I declare that the information provided above is true to the best of my knowledge. <b>/</b> मैं घोषणा करता/करती हूँ कि उपरोक्त दी गई जानकारी मेरी जानकारी के अनुसार सत्य है।</>}</p>
+                 </div>
+               </div> {/* END PDF Body */}
+
+               {/* PDF Signatures and Footer are outside pdf-body to be at the bottom of pdf-border */}
+               <div className="pdf-rr-signatures">
+                 <div className="pdf-rr-signature-block"><div className="pdf-rr-signature-line"></div><p>{currentCertText.applicantSignature || 'Applicant\'s Signature / आवेदक के हस्ताक्षर'}</p></div>
+                 <div className="pdf-rr-signature-block"><div className="pdf-rr-signature-line"></div><p>{currentCertText.issuingAuthority || 'Issuing Authority / जारीकर्ता अधिकारी'}</p></div>
+               </div>
+
+               <div className="pdf-rr-footer-bottom">
+                 <div className="pdf-rr-qr-code-area">
+                   <div className="pdf-rr-qr-placeholder"></div> {/* Placeholder for QR */}
+                   <p>{currentCertText.qrCodeLabel || 'QR Code'}</p>
+                 </div>
+                 <div className="pdf-rr-stamp-area">
+                   <div className="pdf-rr-stamp-placeholder"><p>{currentCertText.stampLabel || 'STAMP'}</p></div> {/* Placeholder for Stamp */}
+                 </div>
+               </div>
+               <div className="pdf-rr-contact-footer">
+                 {/* Example contact info, make dynamic or remove if not needed */}
+                 <span>{lic.phoneNumber || currentCertText.contactPhone || "N/A"}</span> |
+                 <span>{currentCertText.contactEmail || "info@example.org"}</span> |
+                 <span>{currentCertText.contactWebsite || "www.example.org"}</span> |
+                 <span>{currentCertText.dateLabel || "Date:"} {currentDateOnCertificate}</span>
+               </div>
+
+             </div> {/* End pdf-rr-border */}
+           </div> {/* End pdf-rr-outer-border */}
+         </div> {/* End pdf-rr-layout */}
+
+         {/* Notices - Rendered outside the .pdf-layout element, but within the display area */}
+         {/* No download button as per request */}
+
+         {lic.status === 'renewal_pending' && (
+           <div className="user-rr-pending-notice"> {/* Using unique class */}
+             <AlertCircle size={18} />
+             <p>{currentTextArg.renewalPendingNotice || 'Your renewal request is being processed.'}</p>
+           </div>
+         )}
+
+         {lic.status === 'rejected' && (
+           <div className="user-rr-rejected-notice"> {/* Using unique class */}
+             <XCircle size={18} />
+             <div>
+               <p>{currentTextArg.rejectedNoticeText ? currentTextArg.rejectedNoticeText(lic.rejectionDate) : `Your application was rejected on ${formatDate(lic.rejectionDate)}.`}</p>
+               {lic.rejectionReason && (
+                 <div className="user-rr-rejection-reason-box"> {/* Using unique class */}
+                   <strong>{currentTextArg.reasonLabel || 'Reason:'}</strong> {lic.rejectionReason}
+                 </div>
+               )}
+               <p>{currentTextArg.contactSupport || 'Please contact support for more information.'}</p>
+             </div>
+           </div>
+         )}
+       </div> // End user-rr-certificate-display-area
+    );
+};
+
+
+// Main RenewRegistration Component
+const RenewRegistration = ({ languageType = 'en' }) => {
+  const [licenses, setLicenses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [renewalStates, setRenewalStates] = useState({});
+  const [error, setError] = useState('');
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [viewingLicenseId, setViewingLicenseId] = useState(null); // To show expanded certificate view
+  const [isProvisional,setIsProvisional]=useState(0);
+  // Configuration for backend API
+  const backendUrl = "https://dog-registration.onrender.com"; // Replace if different
+  const authToken = localStorage.getItem('token'); // Assuming token is stored in localStorage
+
+  // Text content for internationalization (i18n)
+  const textContent = {
+    en: {
+        pageTitle: 'Renew Pet License',
+        backToList: 'Back to Licenses',
+        renewalSuccessMessage: 'Your renewal request has been submitted for admin approval. You will be notified once it\'s processed.',
+        renewalRequestButton: 'Back to Licenses',
+        loadingLicenses: 'Loading your licenses…',
+        fetchError: 'Error fetching your licenses. Please try again later.',
+        noLicenses: 'You have no licenses eligible for renewal or viewing.',
+        tableHeaders: {
+            regNo: 'Reg. No',
+            animalType: 'Animal Type',
+            petName: 'Pet Name',
+            lastUpdate: 'Last Update',
+            status: 'Status',
+            action: 'Action',
+            view: 'View'
+        },
+        tableActions: {
+            renew: 'Renew',
+            submitting: 'Submitting...',
+            view: 'View',
+            renewalRequested: 'Requested'
+        },
+        renewalConfirm: (licenseNum) => `Are you sure you want to request renewal for license ${licenseNum}?`,
+        // Certificate specific texts (ensure these match what renderCertificateView expects)
         orgNameEn: 'Nagar Nigam Gorakhpur',
         orgNameHi: 'नगर निगम गोरखपुर',
         certificateTitleEn: 'PET LICENSE CERTIFICATE',
         certificateTitleHi: 'पालतू पशु पंजीकरण प्रमाण पत्र',
+        certificateTitleEnP: 'PROVISIONAL PET LICENSE CERTIFICATE',
+        certificateTitleHiP: 'अस्थायी पालतू पशु पंजीकरण प्रमाण पत्र',
         dateLabel: 'Date:',
         photoPlaceholder: 'Pet\'s Photo',
         declaration: <>I declare that the information provided above is true to the best of my knowledge. <b>/</b> मैं घोषणा करता/करती हूँ कि उपरोक्त दी गई जानकारी मेरी जानकारी के अनुसार सत्य है।</>,
@@ -102,12 +304,12 @@ const renderCertificateView = (lic, isMobile, downloadPDF, languageType = 'en', 
         issuingAuthority: 'Issuing Authority / जारीकर्ता अधिकारी',
         qrCodeLabel: 'QR Code',
         stampLabel: 'STAMP',
-        downloadPdfButton: 'Download PDF',
-        pendingNotice: <>Your application is under review. You will be able to download the license once approved.</>,
-        rejectedNotice: (rejectionDate) => <>Your application has been rejected on {formatDate(rejectionDate)}.</>,
+        // downloadPdfButton: 'Download PDF', // Removed as per request
+        renewalPendingNotice: 'Your renewal request has been submitted and is pending approval.',
+        rejectedNoticeText: (rejectionDate) => `Your application has been rejected on ${formatDate(rejectionDate)}.`,
         reasonLabel: 'Reason:',
-        contactSupport: <>Please contact support for more information.</>,
-        animalTypeLabel: 'Animal Type / पशु का प्रकार',
+        contactSupport: 'Please contact support for more information.',
+        animalTypeLabelBilingual: 'Animal Type / पशु का प्रकार',
         petNameLabel: 'Pet Name / पालतू जानवर का नाम',
         breedLabel: 'Breed / नस्ल',
         categoryLabel: 'Category / वर्ग',
@@ -122,601 +324,280 @@ const renderCertificateView = (lic, isMobile, downloadPDF, languageType = 'en', 
         ownerDetailsTitle: 'Owner Details / मालिक का विवरण',
         addressLabel: 'Address / पता',
         phoneNumberLabel: 'Phone Number / फोन नंबर',
-        numberOfAnimalsLabel: `No. of ${getAnimalLabel(lic.animalType)}s / ${getAnimalLabel(lic.animalType)} की संख्या`,
+        numberOfAnimalsLabel: `No. of Animals / जानवरों की संख्या`, // Generic, will be updated if animalType specific needed
         houseAreaLabel: 'House Area / घर का क्षेत्रफल',
-        animalDetailsTitle: `${getAnimalLabel(lic.animalType)} Details / ${getAnimalLabel(lic.animalType)} का विवरण`,
-    };
-
-
-    return (
-       <div className="rr-certificate-view">
-         <div id={`pdf-${lic._id}`} className="pdf-layout">
-           <div className="pdf-border">
-             <div className="pdf-header">
-               <div className="pdf-header-left">
-                 <div className="pdf-logo-icon">
-                    <img src="/logo.webp" alt="Organization Logo"/> 
-                 </div>
-                 <div className="pdf-org-name">
-                   <h3>{currentCertText.orgNameEn}</h3>
-                   <h4>{currentCertText.orgNameHi}</h4>
-                 </div>
-               </div>
-               <div className="pdf-header-right">
-                 <div className="pdf-date">
-                   <span> {currentCertText.dateLabel} {currentDate}</span>
-                 </div>
-               </div>
-             </div>
-
-             <div className="pdf-certificate-title">
-               <h2>{currentCertText.certificateTitleEn}</h2>
-               <h3>{currentCertText.certificateTitleHi}</h3>
-             </div>
-
-             <div className="pdf-body">
-               <div className="pdf-photo-section">
-                 <div className="pdf-info-block">
-                   <div className="pdf-info-row">
-                     <div className="pdf-info-label">नाम / Name</div>
-                     <div className="pdf-info-value">: {lic.fullName || "N/A"}</div>
-                   </div>
-                   <div className="pdf-info-row">
-                     <div className="pdf-info-label">पंजीकरण संख्या / Registration No.</div>
-                     <div className="pdf-info-value">: {lic.license_Id || "N/A"}</div>
-                   </div>
-                   <div className="pdf-info-row"> 
-                        <div className="pdf-info-label">{currentCertText.animalTypeLabel}</div>
-                        <div className="pdf-info-value">: {getAnimalLabel(lic.animalType) || "N/A"}</div>
-                    </div>
-                   <div className="pdf-info-row">
-                     <div className="pdf-info-label">जारी दिनांक / Issue Date</div>
-                     <div className="pdf-info-value">: {formatDate(lic.createdAt)}</div>
-                   </div>
-                   <div className="pdf-info-row">
-                     <div className="pdf-info-label">समाप्ति तिथि / Expiry Date</div>
-                     <div className="pdf-info-value">: {expiryDate}</div>
-                   </div>
-                 </div>
-                 <div className="pdf-photo-box">
-                   {lic.pet?.avatarUrl ? (
-                     <img src={lic.pet.avatarUrl} alt="Pet" className="pdf-photo" />
-                   ) : (
-                     <div className="pdf-photo-placeholder">{currentCertText.photoPlaceholder}</div>
-                   )}
-                 </div>
-               </div>
-
-               <div className="pdf-details-section">
-                 <div className="pdf-section-title">{currentCertText.animalDetailsTitle}</div>
-                 <div className="pdf-details-columns">
-                   <div className="pdf-details-column-left">
-                     <div className="pdf-details-row">
-                       <div className="pdf-details-label">{currentCertText.petNameLabel}</div>
-                       <div className="pdf-details-value">: {lic.pet?.name || "N/A"}</div>
-                     </div>
-                     <div className="pdf-details-row">
-                       <div className="pdf-details-label">{currentCertText.breedLabel}</div>
-                       <div className="pdf-details-value">: {lic.pet?.breed || "N/A"}</div>
-                     </div>
-                     <div className="pdf-details-row">
-                       <div className="pdf-details-label">{currentCertText.categoryLabel}</div>
-                       <div className="pdf-details-value">: {lic.pet?.category || "N/A"}</div>
-                     </div>
-                     <div className="pdf-details-row">
-                       <div className="pdf-details-label">{currentCertText.colorLabel}</div>
-                       <div className="pdf-details-value">: {lic.pet?.color || "N/A"}</div>
-                     </div>
-                     <div className="pdf-details-row">
-                       <div className="pdf-details-label">{currentCertText.ageLabel}</div>
-                       <div className="pdf-details-value">: {lic.pet?.age || "N/A"}</div>
-                     </div>
-                     <div className="pdf-details-row">
-                       <div className="pdf-details-label">{currentCertText.vaccinationDateLabel}</div>
-                       <div className="pdf-details-value">: {formatDate(lic.pet?.dateOfVaccination)}</div>
-                     </div>
-                   </div>
-                   <div className="pdf-details-column-right">
-                     <div className="pdf-details-row">
-                       <div className="pdf-details-label">{currentCertText.genderLabel}</div>
-                       <div className="pdf-details-value">: {lic.pet?.sex || "N/A"}</div>
-                     </div>
-                     <div className="pdf-details-row">
-                       <div className="pdf-details-label">{currentCertText.vaccinatedLabel}</div>
-                       <div className="pdf-details-value">
-                         : {lic.pet?.dateOfVaccination ? (languageType === 'hi' ? ' हाँ' : ' Yes') : (languageType === 'hi' ? ' नहीं' : ' No')}
-                       </div>
-                     </div>
-                     {lic.pet?.vaccinationProofUrl && (
-                       <div className="pdf-details-row">
-                         <div className="pdf-details-label">{currentCertText.vaccinationCertificateLabel}</div>
-                         <div className="pdf-details-value">
-                           <a
-                             href={lic.pet.vaccinationProofUrl}
-                             target="_blank"
-                             rel="noreferrer"
-                             className="pdf-vaccine-img"
-                           >View </a>
-                         </div>
-                       </div>
-                     )}
-                     <div className="pdf-details-row">
-                       <div className="pdf-details-label">{currentCertText.microchippedLabel}</div>
-                       <div className="pdf-details-value">
-                         : {languageType === 'hi' ? 'नहीं' : 'No'}
-                       </div>
-                     </div>
-                     <div className="pdf-details-row">
-                       <div className="pdf-details-label">{currentCertText.nextVaccinationLabel}</div>
-                       <div className="pdf-details-value">: {formatDate(lic.pet?.dueVaccination)}</div>
-                     </div>
-                   </div>
-                 </div>
-               </div>
-
-               <div className="pdf-details-section">
-                 <div className="pdf-section-title">{currentCertText.ownerDetailsTitle}</div>
-                 <div className="pdf-details-table">
-                   <div className="pdf-details-row">
-                     <div className="pdf-details-label">{currentCertText.addressLabel}</div>
-                     <div className="pdf-details-value">: {`${lic.address?.streetName || ""}, ${lic.address?.city || ""}, ${lic.address?.state || ""} - ${lic.address?.pinCode || "N/A"}`}</div>
-                   </div>
-                   <div className="pdf-details-row">
-                     <div className="pdf-details-label">{currentCertText.phoneNumberLabel}</div>
-                     <div className="pdf-details-value">: {lic.phoneNumber || "N/A"}</div>
-                   </div>
-                   <div className="pdf-details-row">
-                     <div className="pdf-details-label">{currentCertText.numberOfAnimalsLabel}</div>
-                     <div className="pdf-details-value">: {lic.numberOfAnimals || "N/A"}</div>
-                   </div>
-                   <div className="pdf-details-row">
-                     <div className="pdf-details-label">{currentCertText.houseAreaLabel}</div>
-                     <div className="pdf-details-value">: {lic.totalHouseArea ? `${lic.totalHouseArea} sq meter` : "N/A"}</div>
-                   </div>
-                 </div>
-               </div>
-
-               <div className="pdf-declaration">
-                 <p>{currentCertText.declaration}</p>
-               </div>
-
-               <div className="pdf-signatures">
-                 <div className="pdf-signature-block">
-                   <div className="pdf-signature-line"></div>
-                   <p>{currentCertText.applicantSignature}</p>
-                 </div>
-                 <div className="pdf-signature-block">
-                   <div className="pdf-signature-line"></div>
-                   <p>{currentCertText.issuingAuthority}</p>
-                 </div>
-               </div>
-
-               <div className="pdf-footer">
-                   <div className="pdf-qr-code">
-                       <div className="pdf-qr-placeholder"></div>
-                     <p>{currentCertText.qrCodeLabel}</p>
-                   </div>
-                    <div className="pdf-stamp">
-                        <div className="pdf-stamp-placeholder">
-                            <p>{currentCertText.stampLabel}</p>
-                        </div>
-                   </div>
-               </div>
-                <div className="pdf-contact-footer">
-                    {lic.phoneNumber || "N/A"}  | 
-                    info@example.org  |  
-                    www.example.org 
-                </div>
-             </div>
-           </div>
-         </div>
-          {lic.status === 'approved' && (
-              <button
-                className="rr-button rr-certificate-download-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  downloadPDF(lic._id, lic.pet?.name || getAnimalLabel(lic.animalType));
-                }}
-              >
-                <Download size={18} />
-                <span>{currentCertText.downloadPdfButton}</span>
-              </button>
-            )}
-
-            {lic.status === 'renewal_pending' && ( 
-              <div className="rr-pending-notice">
-                <AlertCircle size={18} />
-                <p>{currentTextArg.successMessage1}</p> 
-              </div>
-            )}
-
-            {lic.status === 'rejected' && (
-            <div className="rr-rejected-notice">
-              <XCircle size={18} />
-              <div>
-                <p>{currentCertText.rejectedNotice(lic.rejectionDate)}</p>
-                {lic.rejectionReason && (
-                  <div className="rr-rejection-reason">
-                    <strong>{currentCertText.reasonLabel}</strong> {lic.rejectionReason}
-                  </div>
-                )}
-                <p>{currentCertText.contactSupport}</p>
-              </div>
-            </div>
-          )}
-       </div>
-    );
-   };
-
-
-const RenewRegistration = ({ languageType = 'en' }) => {
-  const [successfulLicenses, setSuccessfulLicenses] = useState([]);
-  const [loadingLicenses, setLoadingLicenses] = useState(true);
-  const [renewalStates, setRenewalStates] = useState({}); 
-  const [listError, setListError] = useState('');
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [viewingLicenseId, setViewingLicenseId] = useState(null);
-
-  const backend = "https://dog-registration.onrender.com";
-  const token = localStorage.getItem('token');
-
-    const textContent = {
-        en: {
-            pageTitle: 'Renew Registration',
-            backToList: 'Back to List',
-            successMessage1: 'Your renewal request has been submitted for admin approval.',
-            successMessage2: 'You will be notified once it\'s processed.',
-            requestAnotherButton: 'Back to Licenses', 
-            loadingLicenses: 'Loading your licenses…',
-            listError: 'Error fetching your licenses. Please try again.',
-            approvedLicensesTitle: 'Your Licenses',
-            tableHeaders: {
-                regNo: 'Reg. No',
-                animalType: 'Animal Type',
-                petName: 'Pet Name',
-                appliedDate: 'Last Update', 
-                status: 'Status',
-                action: 'Action',
-                view: 'View'
-            },
-            tableActions: {
-                renew: 'Renew',
-                submitting: 'Submitting...',
-                view: 'View',
-                renewalRequested: 'Renewal Requested'
-            },
-            emptyStateText: 'You have no licenses yet.',
-            renewalConfirm: (licenseNumber) => `Are you sure you want to request renewal for license number ${licenseNumber}?`,
-            // Certificate specific texts, ensure they match the structure used in renderCertificateView
-            orgNameEn: 'Nagar Nigam Gorakhpur',
-            orgNameHi: 'नगर निगम गोरखपुर',
-            certificateTitleEn: 'PET LICENSE CERTIFICATE',
-            certificateTitleHi: 'पालतू पशु पंजीकरण प्रमाण पत्र',
-            dateLabel: 'Date:',
-            photoPlaceholder: 'Pet\'s Photo',
-            declaration: <>I declare that the information provided above is true to the best of my knowledge. <b>/</b> मैं घोषणा करता/करती हूँ कि उपरोक्त दी गई जानकारी मेरी जानकारी के अनुसार सत्य है।</>,
-            applicantSignature: 'Applicant\'s Signature / आवेदक के हस्ताक्षर',
-            issuingAuthority: 'Issuing Authority / जारीकर्ता अधिकारी',
-            qrCodeLabel: 'QR Code',
-            stampLabel: 'STAMP',
-            downloadPdfButton: 'Download PDF',
-            pendingNotice: <>Your application is under review. You will be able to download the license once approved.</>, // This is a general pending, might need context
-            rejectedNotice: (rejectionDate) => <>Your application has been rejected on {formatDate(rejectionDate)}.</>,
-            reasonLabel: 'Reason:',
-            contactSupport: <>Please contact support for more information.</>,
-            animalTypeLabel: 'Animal Type / पशु का प्रकार',
-            petNameLabel: 'Pet Name / पालतू जानवर का नाम',
-            breedLabel: 'Breed / नस्ल',
-            categoryLabel: 'Category / वर्ग',
-            colorLabel: 'Color / रंग',
-            ageLabel: 'Age / आयु',
-            vaccinationDateLabel: 'Vaccination Date / टीकाकरण की तारीख',
-            genderLabel: 'Gender / लिंग',
-            vaccinatedLabel: 'Vaccinated / टीकाकरण',
-            vaccinationCertificateLabel: 'Vaccination Certificate / टीकाकरण प्रमाणपत्र',
-            microchippedLabel: 'Microchipped / माइक्रोचिप',
-            nextVaccinationLabel: 'Next Vaccination / अगला टीकाकरण',
-            ownerDetailsTitle: 'Owner Details / मालिक का विवरण',
-            addressLabel: 'Address / पता',
-            phoneNumberLabel: 'Phone Number / फोन नंबर',
-            // numberOfAnimalsLabel will be dynamic based on lic.animalType in renderCertificateView
-            houseAreaLabel: 'House Area / घर का क्षेत्रफल',
-            // animalDetailsTitle will be dynamic in renderCertificateView
+        animalDetailsTitleBilingual: `Animal Details / पशु का विवरण`, // Generic
+        contactPhone: 'N/A',
+        contactEmail: 'info@example.org',
+        contactWebsite: 'www.example.org',
+    },
+    hi: {
+        pageTitle: 'पालतू पशु लाइसेंस नवीनीकृत करें',
+        backToList: 'लाइसेंस पर वापस जाएं',
+        renewalSuccessMessage: 'आपका नवीनीकरण अनुरोध व्यवस्थापक की मंजूरी के लिए जमा कर दिया गया है। प्रसंस्करण पूरा होने पर आपको सूचित किया जाएगा।',
+        renewalRequestButton: 'लाइसेंस पर वापस जाएं',
+        loadingLicenses: 'आपके लाइसेंस लोड हो रहे हैं…',
+        fetchError: 'आपके लाइसेंस प्राप्त करने में त्रुटि। कृपया बाद में पुनः प्रयास करें।',
+        noLicenses: 'आपके पास नवीनीकरण या देखने के लिए कोई लाइसेंस योग्य नहीं है।',
+        tableHeaders: {
+            regNo: 'पंजी. संख्या',
+            animalType: 'पशु का प्रकार',
+            petName: 'पालतू जानवर का नाम',
+            lastUpdate: 'अंतिम अद्यतन',
+            status: 'स्थिति',
+            action: 'कार्यवाही',
+            view: 'देखें'
         },
-        hi: {
-            pageTitle: 'पंजीकरण नवीनीकृत करें',
-            backToList: 'सूची पर वापस जाएं',
-            successMessage1: 'आपका नवीनीकरण अनुरोध व्यवस्थापक की मंजूरी के लिए जमा कर दिया गया है।',
-            successMessage2: 'प्रसंस्करण पूरा होने पर आपको सूचित किया जाएगा।',
-            requestAnotherButton: 'लाइसेंस पर वापस जाएं', 
-            loadingLicenses: 'आपके लाइसेंस लोड हो रहे हैं…',
-            listError: 'आपके लाइसेंस प्राप्त करने में त्रुटि। कृपया पुनः प्रयास करें।',
-            approvedLicensesTitle: 'आपके लाइसेंस',
-            tableHeaders: {
-                regNo: 'पंजीकरण संख्या',
-                animalType: 'पशु का प्रकार',
-                petName: 'पालतू जानवर का नाम',
-                appliedDate: 'अंतिम अद्यतन', 
-                status: 'स्थिति',
-                action: 'कार्यवाही',
-                view: 'देखें'
-            },
-            tableActions: {
-                renew: 'नवीनीकृत करें',
-                submitting: 'जमा हो रहा है...',
-                view: 'देखें',
-                renewalRequested: 'नवीनीकरण अनुरोधित'
-            },
-            emptyStateText: 'आपके पास अभी तक कोई लाइसेंस नहीं है।',
-            renewalConfirm: (licenseNumber) => `क्या आप लाइसेंस संख्या ${licenseNumber} के लिए नवीनीकरण का अनुरोध करना चाहते हैं?`,
-            // Certificate specific texts in Hindi
-            orgNameEn: 'Nagar Nigam Gorakhpur',
-            orgNameHi: 'नगर निगम गोरखपुर',
-            certificateTitleEn: 'PET LICENSE CERTIFICATE',
-            certificateTitleHi: 'पालतू पशु पंजीकरण प्रमाण पत्र',
-            dateLabel: 'दिनांक:',
-            photoPlaceholder: 'पालतू जानवर की तस्वीर',
-            declaration: <>मैं घोषणा करता/करती हूँ कि उपरोक्त दी गई जानकारी मेरी जानकारी के अनुसार सत्य है। <b>/</b> I declare that the information provided above is true to the best of my knowledge.</>,
-            applicantSignature: 'आवेदक के हस्ताक्षर / Applicant\'s Signature',
-            issuingAuthority: 'जारीकर्ता अधिकारी / Issuing Authority',
-            qrCodeLabel: 'क्यूआर कोड',
-            stampLabel: 'मुहर',
-            downloadPdfButton: 'पीडीएफ डाउनलोड करें',
-            pendingNotice: <>आपका आवेदन समीक्षाधीन है। अनुमोदन के बाद ही आप लाइसेंस डाउनलोड कर पाएंगे।</>,
-            rejectedNotice: (rejectionDate) => <>आपका आवेदन {formatDate(rejectionDate)} को अस्वीकृत कर दिया गया है।</>,
-            reasonLabel: 'कारण:',
-            contactSupport: <>अधिक जानकारी के लिए कृपया सहायता से संपर्क करें।</>,
-            animalTypeLabel: 'पशु का प्रकार / Animal Type',
-            petNameLabel: 'पालतू जानवर का नाम / Pet Name',
-            breedLabel: 'नस्ल / Breed',
-            categoryLabel: 'वर्ग / Category',
-            colorLabel: 'रंग / Color',
-            ageLabel: 'आयु / Age',
-            vaccinationDateLabel: 'टीकाकरण की तारीख / Vaccination Date',
-            genderLabel: 'लिंग / Gender',
-            vaccinatedLabel: 'टीकाकरण / Vaccinated',
-            vaccinationCertificateLabel: 'टीकाकरण प्रमाणपत्र / Vaccination Certificate',
-            microchippedLabel: 'माइक्रोचिप / Microchipped',
-            nextVaccinationLabel: 'अगला टीकाकरण / Next Vaccination',
-            ownerDetailsTitle: 'मालिक का विवरण / Owner Details',
-            addressLabel: 'पता / Address',
-            phoneNumberLabel: 'फोन नंबर / Phone Number',
-            houseAreaLabel: 'घर का क्षेत्रफल / House Area',
-        }
-    };
+        tableActions: {
+            renew: 'नवीनीकृत करें',
+            submitting: 'जमा हो रहा है...',
+            view: 'देखें',
+            renewalRequested: 'अनुरोधित'
+        },
+        renewalConfirm: (licenseNum) => `क्या आप वाकई लाइसेंस ${licenseNum} के नवीनीकरण का अनुरोध करना चाहते हैं?`,
+        // Hindi certificate texts
+        orgNameEn: 'Nagar Nigam Gorakhpur', // Kept for consistency if needed
+        orgNameHi: 'नगर निगम गोरखपुर',
+        certificateTitleEn: 'PET LICENSE CERTIFICATE', // Kept for consistency
+        certificateTitleHi: 'पालतू पशु पंजीकरण प्रमाण पत्र',
+        certificateTitleEnP: 'PROVISIONAL PET LICENSE CERTIFICATE',
+        certificateTitleHiP: 'अस्थायी पालतू पशु पंजीकरण प्रमाण पत्र',
+        dateLabel: 'दिनांक:',
+        photoPlaceholder: 'पालतू जानवर की तस्वीर',
+        declaration: <>मैं घोषणा करता/करती हूँ कि उपरोक्त दी गई जानकारी मेरी जानकारी के अनुसार सत्य है। <b>/</b> I declare that the information provided above is true to the best of my knowledge.</>,
+        applicantSignature: 'आवेदक के हस्ताक्षर / Applicant\'s Signature',
+        issuingAuthority: 'जारीकर्ता अधिकारी / Issuing Authority',
+        qrCodeLabel: 'क्यूआर कोड',
+        stampLabel: 'मुहर',
+        renewalPendingNotice: 'आपका नवीनीकरण अनुरोध जमा कर दिया गया है और अनुमोदन के लिए लंबित है।',
+        rejectedNoticeText: (rejectionDate) => `आपका आवेदन {formatDate(rejectionDate)} को अस्वीकृत कर दिया गया है।`,
+        reasonLabel: 'कारण:',
+        contactSupport: 'अधिक जानकारी के लिए कृपया सहायता से संपर्क करें।',
+        animalTypeLabelBilingual: 'पशु का प्रकार / Animal Type',
+        petNameLabel: 'पालतू जानवर का नाम / Pet Name',
+        breedLabel: 'नस्ल / Breed',
+        categoryLabel: 'वर्ग / Category',
+        colorLabel: 'रंग / Color',
+        ageLabel: 'आयु / Age',
+        vaccinationDateLabel: 'टीकाकरण की तारीख / Vaccination Date',
+        genderLabel: 'लिंग / Gender',
+        vaccinatedLabel: 'टीकाकरण / Vaccinated',
+        vaccinationCertificateLabel: 'टीकाकरण प्रमाणपत्र / Vaccination Certificate',
+        microchippedLabel: 'माइक्रोचिप / Microchipped',
+        nextVaccinationLabel: 'अगला टीकाकरण / Next Vaccination',
+        ownerDetailsTitle: 'मालिक का विवरण / Owner Details',
+        addressLabel: 'पता / Address',
+        phoneNumberLabel: 'फोन नंबर / Phone Number',
+        numberOfAnimalsLabel: `जानवरों की संख्या / No. of Animals`,
+        houseAreaLabel: 'घर का क्षेत्रफल / House Area',
+        animalDetailsTitleBilingual: `पशु का विवरण / Animal Details`,
+        contactPhone: 'N/A',
+        contactEmail: 'info@example.org', // Translate if needed
+        contactWebsite: 'www.example.org', // Translate if needed
+    }
+  };
+  const currentText = textContent[languageType] || textContent.en;
 
-    const currentText = textContent[languageType] || textContent.en;
-
-
+  // Effect for handling window resize to set isMobile state
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
+    handleResize(); // Initial check
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-
+  // Function to fetch user licenses
   const fetchUserLicenses = async () => {
-    setLoadingLicenses(true);
-    setListError('');
+    setLoading(true);
+    setError('');
+    if (!authToken) {
+        setError("User not authenticated. Please log in.");
+        setLoading(false);
+        setLicenses([]);
+        return;
+    }
     try {
-      const response = await fetch(`${backend}/api/license/user`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+      const response = await fetch(`${backendUrl}/api/license/user`, {
+        headers: { Authorization: `Bearer ${authToken}` }
       });
-      const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to fetch licenses');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to fetch licenses');
       }
-      const sortedLicenses = (data || []).sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt));
-      setSuccessfulLicenses(sortedLicenses);
+      const data = await response.json();
+      // Sort licenses by last update or creation date, newest first
+      const sortedLicenses = (data || []).sort((a, b) =>
+        new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt)
+      );
+      setLicenses(sortedLicenses);
     } catch (err) {
-      setListError(err.message || currentText.listError);
-      setSuccessfulLicenses([]);
+      setError(err.message || currentText.fetchError);
+      setLicenses([]); // Clear licenses on error
     } finally {
-      setLoadingLicenses(false);
+      setLoading(false);
     }
   };
 
-
+  // Effect to fetch licenses when component mounts or dependencies change
   useEffect(() => {
-    if (token) {
-        fetchUserLicenses();
-    } else {
-        setListError("User not authenticated.");
-        setLoadingLicenses(false);
+    fetchUserLicenses();
+  }, [backendUrl, authToken, languageType]); // Rerun if language changes to update text
+
+  // Handle renewal request
+  const handleRenewRequest = async (licenseIdToRenew, licenseNumber) => {
+    // Confirmation dialog
+    if (!window.confirm(currentText.renewalConfirm(licenseNumber))) {
+        return;
     }
-  }, [backend, token, languageType, currentText.listError]); 
 
-  const handleRenewRequest = async (licenseIdToRenew, licenseNumber) => { 
-      const isConfirmed = window.confirm(currentText.renewalConfirm(licenseNumber));
-      if (!isConfirmed) {
-          return;
-      }
-
-    setListError('');
+    setError(''); // Clear previous errors
     setRenewalStates(prev => ({ ...prev, [licenseIdToRenew]: 'loading' }));
 
-
     try {
-      const response = await fetch(`${backend}/api/license/renew-registration/request`, {
+      const response = await fetch(`${backendUrl}/api/license/renew-registration/request`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${authToken}`
         },
-        body: JSON.stringify({ licenseId: licenseIdToRenew }) 
+        body: JSON.stringify({ licenseId: licenseIdToRenew })
       });
-
       const data = await response.json();
-
       if (!response.ok) {
         throw new Error(data.message || 'Renewal request failed');
       }
-      
       setRenewalStates(prev => ({ ...prev, [licenseIdToRenew]: 'success' }));
-      alert(currentText.successMessage1); 
-      fetchUserLicenses(); 
+      alert(currentText.renewalSuccessMessage.split('.')[0]); // Show first part of success message
+      fetchUserLicenses(); // Refresh the list of licenses
     } catch (err) {
-       setListError(err.message || 'Renewal request failed. Please try again.');
-       setRenewalStates(prev => ({ ...prev, [licenseIdToRenew]: 'error' }));
+       setError(err.message || 'Renewal request failed. Please try again.');
+       setRenewalStates(prev => ({ ...prev, [licenseIdToRenew]: 'error' })); // Mark as error
     }
   };
 
-  const downloadPDF = (id, petName = 'pet') => {
-    const element = document.getElementById(`pdf-${id}`);
-      if (!element) {
-         console.error("PDF element not found for ID:", id);
-         return;
-     }
-    element.classList.add('force-desktop-pdf-layout');
-
-    const opt = {
-      margin: 0.35, 
-      filename: `${getAnimalLabel(successfulLicenses.find(l => l._id === id)?.animalType || 'Pet')}_License_${petName.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-    };
-
-     setTimeout(() => {
-         html2pdf().from(element).set(opt).save().then(() => {
-           element.classList.remove('force-desktop-pdf-layout');
-         }).catch(error => {
-            console.error("PDF generation failed:", error);
-             element.classList.remove('force-desktop-pdf-layout');
-         });
-     }, 100);
-  };
-
-  const licenseToView = successfulLicenses.find(lic => lic._id === viewingLicenseId);
+  // Find the license to view if an ID is set
+  const licenseToView = licenses.find(lic => lic._id === viewingLicenseId);
+  // Check if any renewal request was successful to show the main success message
   const isAnyRenewalSuccess = Object.values(renewalStates).includes('success');
 
 
+  // Main render logic
   return (
-    <main className="rr-container">
-        <header className="rr-header">
-             {viewingLicenseId === null ? (
-                <h1 className="rr-title">{currentText.pageTitle}</h1>
-             ) : (
-                 <div className="rr-back-to-list-header">
-                     <button
-                           className="rr-back-to-list-btn"
-                           onClick={() => setViewingLicenseId(null)}
-                       >
-                         <ChevronLeft size={24} />
-                         {currentText.backToList}
-                       </button>
-                 </div>
-             )}
-        </header>
+    <main className={`user-rr-container ${viewingLicenseId ? 'user-rr-certificate-focused-container' : ''}`}>
+      <header className={`user-rr-header ${viewingLicenseId ? 'user-rr-certificate-header' : ''}`}>
+        {viewingLicenseId === null ? (
+          <h1 className="user-rr-title">{currentText.pageTitle}</h1>
+        ) : (
+          <div className="user-rr-back-to-list-header">
+            <button
+              className="user-rr-back-to-list-btn"
+              onClick={() => setViewingLicenseId(null)}
+            >
+              <ChevronLeft size={isMobile ? 20 : 24} />
+              {currentText.backToList}
+            </button>
+          </div>
+        )}
+      </header>
 
-      {isAnyRenewalSuccess && viewingLicenseId === null ? ( 
-        <div className="rr-success-container">
-          <CheckCircle size={48} className="rr-success-icon" />
-          <p className="rr-success">
-            {currentText.successMessage1}
-          </p>
-          <p>{currentText.successMessage2}</p>
+      {/* Display general error message if any */}
+      {error && !loading && viewingLicenseId === null && <p className="user-rr-error-message">{error}</p>}
+
+      {/* Conditional rendering based on state */}
+      {isAnyRenewalSuccess && viewingLicenseId === null && !loading && (
+        // Shows a general success message if a renewal was just made
+        <div className="user-rr-success-message-container">
+          <CheckCircle size={48} className="user-rr-success-icon" />
+          <strong className="user-rr-message-strong">{currentText.renewalSuccessMessage.split('.')[0]}.</strong>
+          <p className="user-rr-message-detail">{currentText.renewalSuccessMessage.split('.').slice(1).join('.').trim()}</p>
           <button
-            className="rr-button"
+            className="user-rr-back-to-licenses-btn" // Re-styled button
             onClick={() => {
-              setRenewalStates({}); 
-              fetchUserLicenses(); 
+              setRenewalStates({}); // Reset renewal states
+              fetchUserLicenses(); // Refresh list
             }}
           >
-            {currentText.requestAnotherButton}
+            {currentText.renewalRequestButton}
           </button>
         </div>
-      ) : (
-        <>
-          {viewingLicenseId === null && (
-              <section className="rr-section rr-successful-licenses-section">
-                <h2 className="rr-subtitle">{currentText.approvedLicensesTitle}</h2>
+      ) }
 
-                {loadingLicenses ? (
-                  <div className="rr-loading">
-                    <div className="rr-spinner"></div>
-                    <p className="rr-status">{currentText.loadingLicenses}</p>
-                  </div>
-                ) : listError && !isAnyRenewalSuccess ? ( 
-                  <p className="rr-error">{listError}</p>
-                ) : successfulLicenses.length > 0 ? (
-                  <div className="rr-table-container">
-                   <table className="rr-license-table">
-                      <thead>
-                          <tr>
-                            <th>{currentText.tableHeaders.regNo}</th>
-                            {!isMobile && <th>{currentText.tableHeaders.animalType}</th>}
-                            {!isMobile && <th>{currentText.tableHeaders.petName}</th>}
-                            {!isMobile && <th>{currentText.tableHeaders.appliedDate}</th>}
-                            <th>{currentText.tableHeaders.status}</th>
-                            <th>{currentText.tableHeaders.action}</th>
-                            <th>{currentText.tableHeaders.view}</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                          {successfulLicenses.map(license => (
-                            <tr key={license._id}>
-                                <td><div className="rr-cell rr-reg-no-cell">{license.license_Id || "N/A"}</div></td>
-                                {!isMobile && <td><div className="rr-cell rr-animal-type-cell">{getAnimalLabel(license.animalType) || "N/A"}</div></td>}
-                                {!isMobile && <td><div className="rr-cell rr-pet-cell"><PawPrint size={16} className="rr-cell-icon" /> {license.pet?.name || "N/A"}</div></td>}
-                                {!isMobile && <td><div className="rr-cell rr-date-cell"><Calendar size={16} className="rr-cell-icon" /> {formatDate(license.updatedAt || license.createdAt)}</div></td>}
-                                <td><div className="rr-cell rr-status-cell"><StatusBadge status={license.status} isMobile={isMobile} languageType={languageType} /></div></td>
-                               <td>
-                                    <div className="rr-cell rr-action-cell">
-                                         {license.status === 'approved' ? (
-                                             <button
-                                                 onClick={() => handleRenewRequest(license._id, license.license_Id)} 
-                                                 className="rr-button rr-button--renew rr-button--small"
-                                                 disabled={renewalStates[license._id] === 'loading'}
-                                             >
-                                                 {renewalStates[license._id] === 'loading' ? currentText.tableActions.submitting : currentText.tableActions.renew}
-                                             </button>
-                                         ) : license.status === 'renewal_pending' ? (
-                                             <span className="rr-renewal-requested-text">{currentText.tableActions.renewalRequested}</span>
-                                         ) : null}
-                                    </div>
-                                </td>
-                               <td>
-                                     <div className="rr-cell rr-view-cell">
-                                          <button
-                                              className="rr-view-btn"
-                                              onClick={(e) => {
-                                                  e.stopPropagation();
-                                                  setViewingLicenseId(license._id);
-                                              }}
-                                           >
-                                                 <Eye size={16} className="rr-btn-icon" /> {!isMobile && currentText.tableActions.view}
-                                          </button>
-                                     </div>
-                                </td>
-                            </tr>
-                          ))}
-                      </tbody>
-                   </table>
-                 </div>
-                 ) : (
-                   <div className="rr-empty-state">
-                     <div className="rr-empty-icon">
-                      <FileText size={48} />
-                     </div>
-                     <p className="rr-no-data">{currentText.emptyStateText}</p>
-                   </div>
-                 )}
-              </section>
-          )}
+      {/* Main content: either list of licenses or certificate view */}
+      {!isAnyRenewalSuccess && viewingLicenseId === null && ( // Show list if no recent success message and no specific cert is viewed
+          <>
+            {loading ? (
+              <div className="user-rr-loading">
+                <div className="user-rr-spinner"></div>
+                <p className="user-rr-status-message">{currentText.loadingLicenses}</p>
+              </div>
+            ) : licenses.length > 0 ? (
+              <div className="user-rr-table-container">
+                <table className="user-rr-license-table">
+                  <thead>
+                    <tr>
+                      <th>{currentText.tableHeaders.regNo}</th>
+                      {!isMobile && <th>{currentText.tableHeaders.animalType}</th>}
+                      {!isMobile && <th>{currentText.tableHeaders.petName}</th>}
+                      {!isMobile && <th>{currentText.tableHeaders.lastUpdate}</th>}
+                      <th>{currentText.tableHeaders.status}</th>
+                      <th>{currentText.tableHeaders.action}</th>
+                      <th>{currentText.tableHeaders.view}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {licenses.map(license => (
+                      <tr key={license._id}>
+                        <td><div className="user-rr-cell-content">{license.license_Id || "N/A"}</div></td>
+                        {!isMobile && <td><div className="user-rr-cell-content">{getAnimalLabel(license.animalType) || "N/A"}</div></td>}
+                        {!isMobile && <td><div className="user-rr-cell-content"><PawPrint size={16} className="user-rr-cell-icon" /> {license.pet?.name || "N/A"}</div></td>}
+                        {!isMobile && <td><div className="user-rr-cell-content"><Calendar size={16} className="user-rr-cell-icon" /> {formatDate(license.updatedAt || license.createdAt)}</div></td>}
+                        <td><div className="user-rr-cell-content"><StatusBadge status={license.status} isMobile={isMobile} languageType={languageType} /></div></td>
+                        <td>
+                          <div className="user-rr-cell-content">
+                            {license.status === 'approved' ? (
+                              <button
+                                onClick={() => handleRenewRequest(license._id, license.license_Id)}
+                                className="user-rr-action-btn user-rr-renew-btn" // Using specific classes for styling
+                                disabled={renewalStates[license._id] === 'loading'}
+                              >
+                                {renewalStates[license._id] === 'loading' ? currentText.tableActions.submitting : currentText.tableActions.renew}
+                              </button>
+                            ) : license.status === 'renewal_pending' ? (
+                              <span className="user-rr-renewal-requested-text">{currentText.tableActions.renewalRequested}</span>
+                            ) : (
+                              <span>-</span> // Placeholder for other statuses
+                            )}
+                          </div>
+                        </td>
+                        <td>
+                          <div className="user-rr-cell-content">
+                            <button
+                              className="user-rr-view-btn"
+                              onClick={() => setViewingLicenseId(license._id)}
+                            >
+                              <Eye size={16} className="user-rr-btn-icon" />
+                              {!isMobile && <span>{currentText.tableActions.view}</span>}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : !error && ( // Show empty state only if no error and no licenses
+              <div className="user-rr-empty-state">
+                <div className="user-rr-empty-icon"><FileText size={48} /></div>
+                <p className="user-rr-no-data-message">{currentText.noLicenses}</p>
+              </div>
+            )}
+          </>
+      )}
 
-          {viewingLicenseId !== null && licenseToView && (
-              <section className="rr-section rr-certificate-section">
-                  {renderCertificateView(licenseToView, isMobile, downloadPDF, languageType, currentText)}
-              </section>
-          )}
-        </>
+      {/* Expanded Certificate View */}
+      {viewingLicenseId !== null && licenseToView && (
+          // The renderCertificateView is already wrapped in user-rr-certificate-display-area
+          renderCertificateView(licenseToView, languageType, currentText)
       )}
     </main>
   );
