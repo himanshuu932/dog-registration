@@ -38,7 +38,7 @@ const PetRegistrationForm = () => {
   instructions: "Please visit the above veterinary clinic within 30 days to vaccinate your pet and convert your provisional license to a full license."
 };
 
-  const [formData, setFormData] = useState({
+  const initialFormData = {
     animalType: 'Dog', // New field for animal type
     fullName: '',
     phoneNumber: '',
@@ -47,7 +47,7 @@ const PetRegistrationForm = () => {
     pinCode: '',
     city: '',
     state: '',
-     isVaccinated: '',
+    isVaccinated: '',
     totalHouseArea: '',
     numberOfDogs: '1',
     petName: '',
@@ -62,7 +62,9 @@ const PetRegistrationForm = () => {
     declaration2: false,
     declaration3: false,
     declaration4: false
-  });
+  };
+
+  const [formData, setFormData] = useState(initialFormData);
 
   const backend = "https://dog-registration.onrender.com";
 
@@ -76,6 +78,25 @@ const PetRegistrationForm = () => {
       ...prev,
       [name]: ''
     }));
+
+    // Reset petBreed if animalType or petCategory changes to Indian/Desi for Dog
+    if (name === 'animalType' || (name === 'petCategory' && value === 'Indian/Desi' && formData.animalType === 'Dog')) {
+        setFormData(prev => ({
+            ...prev,
+            petBreed: '' // Reset petBreed when animalType changes or petCategory is Indian/Desi for Dog
+        }));
+    }
+    // Clear vaccination details if pet is not vaccinated
+    if (name === 'isVaccinated' && value === 'No') {
+      setFormData(prev => ({
+        ...prev,
+        dateOfVaccination: '',
+        dueVaccination: '',
+      }));
+      setFile(null); // Clear the file selection
+      setFileName('No file chosen');
+      setVaccinationProof({ url: '', publicId: '' }); // Clear uploaded vaccination proof
+    }
   };
 
   const validateStep = () => {
@@ -93,14 +114,21 @@ const PetRegistrationForm = () => {
     } else if (activeTab === 2) {
       if (!formData.petName.trim()) newErrors.petName = `${formData.animalType} Name is required`;
       if (!formData.petCategory) newErrors.petCategory = `${formData.animalType} Category is required`;
-      if (!formData.petBreed) newErrors.petBreed = `${formData.animalType} Breed is required`;
+      // Only require petBreed if not "Indian/Desi" for Dog
+      if (!(formData.animalType === 'Dog' && formData.petCategory === 'Indian/Desi') && !formData.petBreed) {
+          newErrors.petBreed = `${formData.animalType} Breed is required`;
+      }
       if (!formData.petColor.trim()) newErrors.petColor = `${formData.animalType} Colour is required`;
       if (!formData.petAge) newErrors.petAge = `${formData.animalType} Age is required`;
       if (!formData.petSex) newErrors.petSex = `${formData.animalType} Sex is required`;
- if (!formData.dateOfVaccination) newErrors.dateOfVaccination = 'Vaccination Date is required';
-if (!formData.dueVaccination) newErrors.dueVaccination = 'Due Date is required';
-if (!formData.isVaccinated) newErrors.isVaccinated = 'Vaccination status is required';
+      if (!formData.isVaccinated) newErrors.isVaccinated = 'Vaccination status is required';
 
+      // Only require vaccination details if pet is vaccinated
+      if (formData.isVaccinated === 'Yes') {
+          if (!formData.dateOfVaccination) newErrors.dateOfVaccination = 'Vaccination Date is required';
+          if (!formData.dueVaccination) newErrors.dueVaccination = 'Due Date is required';
+          if (!file) newErrors.vaccinationCertificate = 'Vaccination Certificate is required';
+      }
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -185,7 +213,8 @@ if (!formData.isVaccinated) newErrors.isVaccinated = 'Vaccination status is requ
 
   const handleAvatarUpload = async () => {
     if (!avatarFile) {
-      alert('Please select a file first');
+      // Avatar is not compulsory, so no alert here
+      console.log('No avatar file selected.');
       return;
     }
 
@@ -220,6 +249,21 @@ if (!formData.isVaccinated) newErrors.isVaccinated = 'Vaccination status is requ
     }
   };
 
+  const resetForm = () => {
+    setFormData(initialFormData);
+    setActiveTab(1);
+    setErrors({});
+    setFile(null);
+    setFileName('No file chosen');
+    setUploadProgress(0);
+    setIsUploading(false);
+    setAvatarFile(null);
+    setAvatarFileName('');
+    setAvatarUrl('');
+    setVaccinationProof({ url: '', publicId: '' });
+  };
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -228,8 +272,8 @@ if (!formData.isVaccinated) newErrors.isVaccinated = 'Vaccination status is requ
       return;
     }
 
-    // Upload file first if selected
-    if (file && !vaccinationProof.url) {
+    // Upload file first if selected AND pet is vaccinated
+    if (formData.isVaccinated === 'Yes' && file && !vaccinationProof.url) {
       const uploadSuccess = await uploadFile();
       if (!uploadSuccess) return;
     }
@@ -241,33 +285,36 @@ if (!formData.isVaccinated) newErrors.isVaccinated = 'Vaccination status is requ
         return;
       }
 
-// In the handleSubmit function, update the submissionData object:
-const submissionData = {
-  animalType: formData.animalType,
-  fullName: formData.fullName,
-  phoneNumber: formData.phoneNumber,
-  gender: formData.gender,
-  streetName: formData.streetName,
-  pinCode: formData.pinCode,
-  city: formData.city,
-  state: formData.state,
-  totalHouseArea: formData.totalHouseArea,
-  numberOfAnimals: formData.numberOfDogs, // Changed to match backend
- pet: {
-  name: formData.petName,
-  category: formData.petCategory,
-  breed: formData.petBreed,
-  color: formData.petColor,
-  age: formData.petAge,
-  sex: formData.petSex,
-  dateOfVaccination: formData.dateOfVaccination,
-  dueVaccination: formData.dueVaccination,
-   isVaccinated: formData.isVaccinated, 
-  vaccinationProofUrl: vaccinationProof.url,
-  vaccinationProofPublicId: vaccinationProof.publicId,
-  avatarUrl: avatarUrl
-}
-};
+      // In the handleSubmit function, update the submissionData object:
+      const submissionData = {
+        animalType: formData.animalType,
+        fullName: formData.fullName,
+        phoneNumber: formData.phoneNumber,
+        gender: formData.gender,
+        streetName: formData.streetName,
+        pinCode: formData.pinCode,
+        city: formData.city,
+        state: formData.state,
+        totalHouseArea: formData.totalHouseArea,
+        numberOfAnimals: formData.numberOfDogs, // Changed to match backend
+        pet: {
+            name: formData.petName,
+            category: formData.petCategory,
+            breed: formData.petBreed,
+            color: formData.petColor,
+            age: formData.petAge,
+            sex: formData.petSex,
+            isVaccinated: formData.isVaccinated,
+            // Conditionally include vaccination details
+            ...(formData.isVaccinated === 'Yes' && {
+                dateOfVaccination: formData.dateOfVaccination,
+                dueVaccination: formData.dueVaccination,
+                vaccinationProofUrl: vaccinationProof.url,
+                vaccinationProofPublicId: vaccinationProof.publicId,
+            }),
+            avatarUrl: avatarUrl
+        }
+      };
 
       const res = await axios.post(`${backend}/api/license/apply`, submissionData, {
         headers: {
@@ -277,6 +324,7 @@ const submissionData = {
 
       alert('Form submitted successfully!');
       console.log('Server response:', res.data);
+      resetForm(); // Clear all fields after successful submission
     } catch (err) {
       console.error('Error submitting form:', err);
       alert(err.response?.data?.message || 'Something went wrong. Please try again.');
@@ -319,10 +367,10 @@ return (
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="animalType">Animal Type<span className="required">*</span></label>
-                <select 
-                  id="animalType" 
-                  name="animalType" 
-                  value={formData.animalType} 
+                <select
+                  id="animalType"
+                  name="animalType"
+                  value={formData.animalType}
                   onChange={handleChange}
                   required
                 >
@@ -411,10 +459,10 @@ return (
                     {avatarUrl ? (
                       <img src={avatarUrl} alt={`${formData.animalType} Avatar`} className="avatar-preview" />
                     ) : (
-                      <img 
-                        src={formData.animalType === 'Dog' ? '/dog-icon.png' : 
-                             formData.animalType === 'Cat' ? '/cat-icon.png' : '/rabbit-icon.png'} 
-                        alt={`${formData.animalType} Icon`} 
+                      <img
+                        src={formData.animalType === 'Dog' ? '/dog-icon.png' :
+                             formData.animalType === 'Cat' ? '/cat-icon.png' : '/rabbit-icon.png'}
+                        alt={`${formData.animalType} Icon`}
                       />
                     )}
                   </div>
@@ -426,8 +474,8 @@ return (
                     style={{ display: 'none' }}
                   />
                   <label htmlFor="avatarUpload" className="upload-btn">Choose Image</label>
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     className="upload-btn"
                     onClick={handleAvatarUpload}
                   >
@@ -479,11 +527,14 @@ return (
                         name="petBreed"
                         value={formData.petBreed}
                         onChange={handleChange}
-                        required
+                        required={!(formData.animalType === 'Dog' && formData.petCategory === 'Indian/Desi')}
+                        disabled={formData.animalType === 'Dog' && formData.petCategory === 'Indian/Desi'}
                       >
                         <option value="">Select Breed</option>
-                        {animalBreeds[formData.animalType].map(breed => (
-                          <option key={breed} value={breed}>{breed}</option>
+                        {animalBreeds[formData.animalType]
+                            .filter(breed => !(formData.animalType === 'Dog' && formData.petCategory === 'Indian/Desi' && breed !== 'Any'))
+                            .map(breed => (
+                            <option key={breed} value={breed}>{breed}</option>
                         ))}
                       </select>
                       {renderError('petBreed')}
@@ -541,81 +592,88 @@ return (
 
                   <div className="form-row">
                     <div className="form-group">
-  <label htmlFor="isVaccinated">Vaccinated?<span className="required">*</span></label>
-  <select
-    id="isVaccinated"
-    name="isVaccinated"
-    value={formData.isVaccinated}
-    onChange={handleChange}
-    required
-  >
-    <option value="">Select</option>
-    <option value="Yes">Yes</option>
-    <option value="No">No</option>
-  </select>
-  {renderError('isVaccinated')}
-</div>
-
-                    <div className="form-group">
-                      <label htmlFor="dateOfVaccination">Date of Vaccination<span className="required">*</span></label>
-                      <input
-                        type="date"
-                        id="dateOfVaccination"
-                        name="dateOfVaccination"
-                        value={formData.dateOfVaccination}
+                      <label htmlFor="isVaccinated">Vaccinated?<span className="required">*</span></label>
+                      <select
+                        id="isVaccinated"
+                        name="isVaccinated"
+                        value={formData.isVaccinated}
                         onChange={handleChange}
                         required
-                      />
-                      {renderError('dateOfVaccination')}
-                    </div>
-                    <div className="form-group">
-                      <label htmlFor="dueVaccination">Due date of Vaccination<span className="required">*</span></label>
-                      <input
-                        type="date"
-                        id="dueVaccination"
-                        name="dueVaccination"
-                        value={formData.dueVaccination}
-                        onChange={handleChange}
-                        required
-                      />
-                      {renderError('dueVaccination')}
-                    </div>
-                  </div>
-
-                  <div className="form-group full-width">
-                    <label htmlFor="vaccinationCertificate">
-                      Upload {formData.animalType === 'Dog' ? 'Rabies' : 'Vaccination'} Certificate<span className="required">*</span>
-                    </label>
-                    <div className="file-input-container">
-                      <input
-                        type="file"
-                        id="vaccinationCertificate"
-                        name="vaccinationCertificate"
-                        accept=".jpg,.jpeg,.png,.pdf"
-                        onChange={handleFileChange}
-                        style={{ display: 'none' }}
-                      />
-                      <label htmlFor="vaccinationCertificate" className="file-choose-btn">
-                        Choose File
-                      </label>
-                      <button 
-                        type="button" 
-                        className="upload-btn" 
-                        onClick={uploadFile}
                       >
-                        Upload Certificate
-                      </button>
-                      <span className="file-chosen">{fileName}</span>
+                        <option value="">Select</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                      </select>
+                      {renderError('isVaccinated')}
                     </div>
-                    {renderError('vaccinationCertificate')}
-                    {isUploading && (
-                      <div className="upload-progress">
-                        <progress value={uploadProgress} max="100"></progress>
-                        <span>{uploadProgress}%</span>
-                      </div>
+
+                    {formData.isVaccinated === 'Yes' && (
+                        <>
+                          <div className="form-group">
+                            <label htmlFor="dateOfVaccination">Date of Vaccination<span className="required">*</span></label>
+                            <input
+                              type="date"
+                              id="dateOfVaccination"
+                              name="dateOfVaccination"
+                              value={formData.dateOfVaccination}
+                              onChange={handleChange}
+                              required
+                            />
+                            {renderError('dateOfVaccination')}
+                          </div>
+                          <div className="form-group">
+                            <label htmlFor="dueVaccination">Due date of Vaccination<span className="required">*</span></label>
+                            <input
+                              type="date"
+                              id="dueVaccination"
+                              name="dueVaccination"
+                              value={formData.dueVaccination}
+                              onChange={handleChange}
+                              required
+                            />
+                            {renderError('dueVaccination')}
+                          </div>
+                        </>
                     )}
-                    <p className="file-format">JPG, PNG and PDF Allowed, Maximum Size 5MB</p>
                   </div>
+
+                  {formData.isVaccinated === 'Yes' && (
+                      <div className="form-group full-width">
+                        <label htmlFor="vaccinationCertificate">
+                          Upload {formData.animalType === 'Dog' ? 'Rabies' : 'Vaccination'} Certificate<span className="required">*</span>
+                        </label>
+                        <div className="file-input-container">
+                          <input
+                            type="file"
+                            id="vaccinationCertificate"
+                            name="vaccinationCertificate"
+                            accept=".jpg,.jpeg,.png,.pdf"
+                            onChange={handleFileChange}
+                            style={{ display: 'none' }}
+                            required={formData.isVaccinated === 'Yes'}
+                          />
+                          <label htmlFor="vaccinationCertificate" className="file-choose-btn">
+                            Choose File
+                          </label>
+                          <button
+                            type="button"
+                            className="upload-btn"
+                            onClick={uploadFile}
+                          >
+                            Upload Certificate
+                          </button>
+                          <span className="file-chosen">{fileName}</span>
+                        </div>
+                        {renderError('vaccinationCertificate')}
+                        {isUploading && (
+                          <div className="upload-progress">
+                            <progress value={uploadProgress} max="100"></progress>
+                            <span>{uploadProgress}%</span>
+                          </div>
+                        )}
+                        <p className="file-format">JPG, PNG and PDF Allowed, Maximum Size 5MB</p>
+                      </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -637,7 +695,7 @@ return (
           <span className="preview-value">{formData.phoneNumber || 'Not provided'}</span>
         </div>
       </div>
-      
+
       <div className="preview-row">
         <div className="preview-item">
           <span className="preview-label">Gender :</span>
@@ -648,7 +706,7 @@ return (
           <span className="preview-value">{formData.streetName || 'Not provided'}</span>
         </div>
       </div>
-      
+
       <div className="preview-row">
         <div className="preview-item">
           <span className="preview-label">City :</span>
@@ -663,7 +721,7 @@ return (
           <span className="preview-value">{formData.pinCode || 'Not provided'}</span>
         </div>
       </div>
-      
+
       <div className="preview-row">
         <div className="preview-item">
           <span className="preview-label">Total House Area :</span>
@@ -675,7 +733,7 @@ return (
         </div>
       </div>
     </div>
-    
+
     <h2 className="section-title">{formData.animalType} Details 1</h2>
     <div className="preview-section">
       <div className="preview-row">
@@ -688,7 +746,7 @@ return (
           <span className="preview-value">{formData.petCategory || 'Not provided'}</span>
         </div>
       </div>
-      
+
       <div className="preview-row">
         <div className="preview-item">
           <span className="preview-label">{formData.animalType} Breed:</span>
@@ -699,7 +757,7 @@ return (
           <span className="preview-value">{formData.petColor || 'Not provided'}</span>
         </div>
       </div>
-      
+
       <div className="preview-row">
         <div className="preview-item">
           <span className="preview-label">Age of {formData.animalType}:</span>
@@ -710,7 +768,7 @@ return (
           <span className="preview-value">{formData.petSex || 'Not provided'}</span>
         </div>
       </div>
-      
+
       <div className="preview-row">
         <div className="preview-item">
           <span className="preview-label">Vaccinated:</span>
@@ -733,7 +791,7 @@ return (
           </>
         )}
       </div>
-      
+
       {formData.isVaccinated === 'Yes' && (
         <div className="preview-row">
           <div className="preview-item">
@@ -781,7 +839,7 @@ return (
         </div>
       </div>
     )}
-    
+
     <h2 className="section-title">Declaration</h2>
     <div className="declaration-section">
       <div className="declaration-item">
@@ -797,7 +855,7 @@ return (
           I hereby declare that the entries made by me in the Application Form are complete and true to the best of my knowledge, belief and information.
         </label>
       </div>
-      
+
       <div className="declaration-item">
         <input
           type="checkbox"
@@ -811,7 +869,7 @@ return (
           I hereby undertake to present the original documents for verification immediately upon demand by the concerned authorities.
         </label>
       </div>
-      
+
       <div className="declaration-item">
         <input
           type="checkbox"
@@ -825,7 +883,7 @@ return (
           If in any case, concerned authorities encountered any fault then they would take action against me and anytime like cancellation of the license by the authorized authority.
         </label>
       </div>
-      
+
       <div className="declaration-item">
         <input
           type="checkbox"
@@ -837,7 +895,7 @@ return (
         />
         <label htmlFor="declaration4">
           I hereby assure the Municipal Corporation, Gorakhpur that, I am not using my pet for any breeding purpose and will follow all the rules and regulation (
-          <a href="#" className="link">View PDF</a>
+          <a href="./Rules.pdf" target='_blank' className="link">View PDF</a>
           ) issued by Municipal Corporation, Gorakhpur from time to time.
         </label>
       </div>
@@ -850,15 +908,15 @@ return (
           {activeTab < 3 ? (
             <button type="button" className="next-btn" onClick={handleNext}>Next</button>
           ) : (
-            <button 
-              type="submit" 
-              className="submit-btn" 
+            <button
+              type="submit"
+              className="submit-btn"
               disabled={
-                !formData.declaration1 || 
-                !formData.declaration2 || 
-                !formData.declaration3 || 
+                !formData.declaration1 ||
+                !formData.declaration2 ||
+                !formData.declaration3 ||
                 !formData.declaration4 ||
-                (file && !vaccinationProof.url && isUploading)
+                (formData.isVaccinated === 'Yes' && file && !vaccinationProof.url && isUploading)
               }
             >
               {isUploading ? 'Uploading...' : 'Submit'}
