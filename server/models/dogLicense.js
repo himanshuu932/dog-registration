@@ -6,7 +6,7 @@ const dogLicenseSchema = new mongoose.Schema(
       type: Boolean,
       default: false
     },
-      provisionalExpiryDate: Date,
+    provisionalExpiryDate: Date,
     animalType: {
       type: String,
       enum: ['Dog', 'Cat', 'Rabbit'],
