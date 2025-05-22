@@ -210,7 +210,7 @@ const Verify = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const backend = "http://localhost:5000";
+  const backend = "https://dog-registration.onrender.com";
   const token = localStorage.getItem("token"); // Assuming token is stored in localStorage
 
   const handleInputChange = (e) => {
