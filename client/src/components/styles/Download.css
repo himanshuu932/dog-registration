@@ -1,197 +1,156 @@
 /* Root Variables */
 :root {
-  --admin-primary: #2c3e50;
-  --admin-primary-light: #34495e;
-  --admin-secondary: #3498db;
-  --admin-secondary-light: #5dade2;
-  --admin-accent: #1abc9c;
-  --admin-success: #23814a; /* Darker Green for success */
-  --admin-danger: #c0392b; /* Darker Red for danger */
-  --admin-warning: #f39c12; /* Orange for warning */
-  --admin-pending: #f1c40f; /* Yellow for pending */
-  --admin-gray-light: #ecf0f1;
-  --admin-gray: #bdc3c7;
-  --admin-gray-dark: #7f8c8d;
-  --admin-white: #ffffff;
-  --admin-black: #2c3e50; /* Using primary as black for consistency */
-  --admin-shadow: rgba(0, 0, 0, 0.1);
-  --admin-border-radius: 4px;
-  --admin-font-main: 'Roboto', sans-serif;
+  --user-dl-primary: #2c3e50;
+  --user-dl-primary-light: #34495e;
+  --user-dl-secondary: #3498db;
+  --user-dl-accent: #1abc9c;
+  --user-dl-success: #23814a;
+  --user-dl-danger: #c0392b;
+  --user-dl-warning: #f39c12;
+  --user-dl-pending: #f1c40f; /* Maintained for consistency with badge logic */
+  --user-dl-provisional-bg: #fff8e1; /* Light yellow for provisional items */
+  --user-dl-provisional-text: #b48b0b; /* Darker yellow text for provisional */
 
-  /* User Download License Specific Variables (can inherit or override) */
-  --user-dl-primary: var(--admin-primary);
-  --user-dl-primary-light: var(--admin-primary-light);
-  --user-dl-secondary: var(--admin-secondary);
-  --user-dl-accent: var(--admin-accent);
-  --user-dl-success: var(--admin-success);
-  --user-dl-danger: var(--admin-danger);
-  --user-dl-warning: var(--admin-warning);
-  --user-dl-pending: var(--admin-pending);
-  --user-dl-gray-light: var(--admin-gray-light);
-  --user-dl-gray: var(--admin-gray);
-  --user-dl-gray-dark: var(--admin-gray-dark);
-  --user-dl-white: var(--admin-white);
-  --user-dl-black: var(--admin-black);
-  --user-dl-shadow: var(--admin-shadow);
-  --user-dl-border-radius: var(--admin-border-radius);
-  --user-dl-font-main: var(--admin-font-main);
+  --user-dl-gray-lightest: #f8f9fa;
+  --user-dl-gray-light: #ecf0f1;
+  --user-dl-gray: #bdc3c7;
+  --user-dl-gray-dark: #7f8c8d;
+  --user-dl-white: #ffffff;
+  --user-dl-black: #2c3e50;
+  --user-dl-shadow: rgba(0, 0, 0, 0.1);
+  --user-dl-border-radius: 6px;
+  --user-dl-font-main: 'Roboto', 'Arial', sans-serif;
 
-  /* Design Language Colors (dl-) - more generic, can be used by user/admin */
-  --dl-primary: #0052cc;
-  --dl-success: #00875a;
-  --dl-warning: #ffab00; /* Brighter yellow for warning */
-  --dl-danger: #de350b;
-  --dl-light: #f4f5f7;
-  --dl-medium: #dfe1e6;
-  --dl-dark: #505f79;
-  --dl-white: #ffffff;
-  --dl-black: #172b4d;
-  --dl-card-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-  --dl-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
-
-  /* Government Theming (Example) */
-  --gov-blue: #005ea5;
-  --gov-light: #f3f2f1;
-  --gov-dark-gray: #1f1f1f;
-  --gov-green: #00703c;
-  --gov-maroon: #8b0000; /* Dark red for official titles etc. */
-  --gov-gold: #b8860b;
-
-  --text-color: #212b36;
-  --border-color: #0a0a0a; /* Default border color */
+  --user-dl-pdf-border-color: #0a0a0a;
+  --user-dl-pdf-gov-maroon: #8b0000;
+  --user-dl-pdf-gov-blue: #005ea5;
 }
 
-/* Main Container for the Download Page */
-.user-dl-container {
-  max-width: 1200px;
+/* Main Page Container */
+.user-dl-page-container {
+  max-width: 100vw;
   min-height: 70vh;
   margin: 2rem auto;
   padding: 2rem;
   font-family: var(--user-dl-font-main);
   color: var(--user-dl-black);
   background-color: var(--user-dl-white);
-  border-radius: 8px;
-  box-shadow: 0 2px 10px var(--user-dl-shadow);
+  border-radius: var(--user-dl-border-radius);
+  box-shadow: 0 4px 12px var(--user-dl-shadow);
   box-sizing: border-box;
 }
 
-.user-dl-certificate-focused-container {
-  /* When a certificate is focused, we might want less padding or different max-width */
-  padding: 1rem; /* Reduce padding to give more space to A4 */
-  overflow-x: auto; /* Allow horizontal scrolling for the A4 preview */
+.user-dl-certificate-focused-view {
+  padding: 1rem;
+  background-color: var(--user-dl-gray-lightest);
+  overflow-x: auto; 
 }
 
-
-/* Header Section */
-.user-dl-header {
+/* Page Header */
+.user-dl-page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--user-dl-gray-light);
-  flex-wrap: wrap; /* Allow filters to wrap on smaller screens */
+  flex-wrap: wrap;
 }
 
-.user-dl-title {
-  font-size: 1.8rem;
+.user-dl-main-title {
+  font-size: 2rem;
   font-weight: 500;
   color: var(--user-dl-primary);
   margin: 0;
 }
 
-/* Filters */
-.user-dl-filters {
+/* Filter Controls */
+.user-dl-filter-controls {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-top: 0; /* Reset margin if wrapped */
+  gap: 0.75rem;
+  margin-top: 0;
 }
 
-.user-dl-filter-label {
-  font-size: 0.9rem;
-  color: var(--user-dl-gray-dark); /* Darker gray for better contrast */
+.user-dl-filter-label-text {
+  font-size: 0.95rem;
+  color: var(--user-dl-gray-dark);
   margin-right: 0.5rem;
   white-space: nowrap;
 }
 
-.user-dl-filter-btn {
-  padding: 0.4rem 0.8rem;
+.user-dl-filter-button {
+  padding: 0.5rem 1rem;
   background: transparent;
   border: 1px solid var(--user-dl-gray);
-  border-radius: 20px; /* Pill shape */
+  border-radius: 25px;
   font-size: 0.9rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease-in-out;
   color: var(--user-dl-black);
   white-space: nowrap;
 }
 
-.user-dl-filter-btn:hover {
+.user-dl-filter-button:hover {
   background-color: var(--user-dl-gray-light);
   border-color: var(--user-dl-primary-light);
+  transform: translateY(-1px);
 }
 
-.user-dl-filter-btn.user-dl-filter-active {
+.user-dl-filter-button.user-dl-filter-active {
   background-color: var(--user-dl-primary);
   color: var(--user-dl-white);
   border-color: var(--user-dl-primary);
 }
 
-/* Specific filter button state colors (using more distinct colors) */
-.user-dl-filter-btn.user-dl-filter-approved.user-dl-filter-active {
+.user-dl-filter-button.user-dl-filter-style-approved.user-dl-filter-active {
   background-color: var(--user-dl-success);
   border-color: var(--user-dl-success);
-  color: var(--user-dl-white);
 }
-.user-dl-filter-btn.user-dl-filter-pending.user-dl-filter-active {
-  background-color: var(--user-dl-pending);
-  border-color: var(--user-dl-pending);
-  color: var(--user-dl-black); /* Pending bg is light, so black text */
+.user-dl-filter-button.user-dl-filter-style-pending.user-dl-filter-active,
+.user-dl-filter-button.user-dl-filter-style-provisional.user-dl-filter-active {
+  background-color: var(--user-dl-warning); /* Consistent warning color */
+  border-color: var(--user-dl-warning);
+  color: var(--user-dl-black);
 }
-.user-dl-filter-btn.user-dl-filter-rejected.user-dl-filter-active {
+.user-dl-filter-button.user-dl-filter-style-rejected.user-dl-filter-active {
   background-color: var(--user-dl-danger);
   border-color: var(--user-dl-danger);
-  color: var(--user-dl-white);
 }
 
 
-/* Back to List Button (for expanded view header) */
-.user-dl-back-to-list-header {
+/* Certificate View Header & Back Button */
+.user-dl-certificate-view-header {
+  border-bottom: none;
+  margin-bottom: 1rem;
+}
+.user-dl-back-navigation {
   display: flex;
   align-items: center;
   width: 100%;
 }
-.user-dl-certificate-header { /* Special header for certificate view */
-    border-bottom: none; /* No border when showing certificate */
-    margin-bottom: 1rem;
-}
-
-
-.user-dl-back-to-list-btn {
+.user-dl-back-button {
   background: none;
   border: none;
-  padding: 0.5rem 0; /* Added some padding */
+  padding: 0.5rem 0;
   color: var(--user-dl-primary);
   font-size: 1rem;
   font-weight: 500;
   display: flex;
   align-items: center;
   cursor: pointer;
-  margin-right: 1rem; /* No margin needed if it's the only item */
 }
-
-.user-dl-back-to-list-btn svg {
+.user-dl-back-button svg {
   margin-right: 0.5rem;
   transition: transform 0.2s ease;
 }
-.user-dl-back-to-list-btn:hover svg{
-    transform: translateX(-3px);
+.user-dl-back-button:hover svg {
+  transform: translateX(-3px);
 }
 
-
 /* Loading State */
-.user-dl-loading {
+.user-dl-loading-state {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -199,156 +158,150 @@
   padding: 3rem 0;
   text-align: center;
 }
-
-.user-dl-spinner {
-  width: 40px;
-  height: 40px;
+.user-dl-spinner-animation {
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
-  border: 4px solid var(--user-dl-gray-light); /* Lighter base */
-  border-top-color: var(--user-dl-primary); /* Primary color for spinner */
-  animation: spin 1s linear infinite;
+  border: 5px solid var(--user-dl-gray-light);
+  border-top-color: var(--user-dl-primary);
+  animation: user-dl-spin-animation 1s linear infinite;
   margin-bottom: 1rem;
 }
-
-@keyframes spin {
+@keyframes user-dl-spin-animation {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
-
-.user-dl-status { /* For loading text or other status messages */
-  font-size: 1.125rem;
+.user-dl-loading-text {
+  font-size: 1.15rem;
   color: var(--user-dl-gray-dark);
 }
 
-/* Empty State for Table */
-.user-dl-empty-state {
+/* Empty Data State */
+.user-dl-empty-data-state {
   text-align: center;
-  padding: 3rem 1rem; /* More padding */
-  background-color: var(--user-dl-white); /* Consistent background */
+  padding: 3.5rem 1rem;
+  background-color: var(--user-dl-white);
   border-radius: var(--user-dl-border-radius);
   border: 1px dashed var(--user-dl-gray);
   margin: 2rem 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Softer shadow */
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
-
-.user-dl-empty-icon {
-  color: var(--user-dl-gray); /* Lighter gray for icon */
-  margin-bottom: 1rem; /* Reduced margin */
+.user-dl-empty-state-icon svg {
+  width: 50px;
+  height: 50px;
+  color: var(--user-dl-gray);
+  margin-bottom: 1rem;
 }
-.user-dl-empty-icon svg {
-    width: 48px;
-    height: 48px;
-}
-
-.user-dl-no-data {
-  font-size: 1.125rem; /* Consistent with .user-dl-status */
+.user-dl-no-data-text {
+  font-size: 1.15rem;
   color: var(--user-dl-gray-dark);
   margin-bottom: 1.5rem;
 }
-
-.user-dl-new-application-btn {
-  padding: 0.75rem 1.5rem;
-  background-color: var(--user-dl-accent); /* Use accent color */
+.user-dl-apply-new-button {
+  padding: 0.8rem 1.6rem;
+  background-color: var(--user-dl-accent);
   color: var(--user-dl-white);
   border: none;
   border-radius: var(--user-dl-border-radius);
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-  text-decoration: none; /* In case it's an anchor */
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  text-decoration: none;
 }
-
-.user-dl-new-application-btn:hover {
-  background-color: #16a085; /* Darken accent */
+.user-dl-apply-new-button:hover {
+  background-color: #17a78a; /* Darken accent */
+  transform: translateY(-1px);
 }
 
 /* Table Styling */
 .user-dl-table-container {
   width: 100%;
   overflow-x: auto; /* Ensures table is scrollable on small screens */
-  box-shadow: 0 1px 3px var(--user-dl-shadow);
+  box-shadow: 0 2px 6px var(--user-dl-shadow);
   border-radius: var(--user-dl-border-radius);
-  overflow: hidden; /* For border-radius to apply to table */
+  overflow-y: hidden; /* Avoid double scrollbars if content is short */
   margin-bottom: 2rem;
+  background-color: var(--user-dl-white);
 }
 
-.user-dl-license-table {
+.user-dl-data-table {
   width: 100%;
+  min-width: 700px; /* Minimum width before scroll kicks in */
   border-collapse: collapse;
 }
 
-.user-dl-license-table thead {
+.user-dl-data-table thead {
   background-color: var(--user-dl-primary);
   color: var(--user-dl-white);
 }
 
-.user-dl-license-table th {
-  padding: 1rem;
+.user-dl-data-table th {
+  padding: 1rem 1.25rem;
   text-align: left;
-  font-weight: 500; /* Slightly bolder */
+  font-weight: 500;
   white-space: nowrap;
   font-size: 0.9rem;
-  text-transform: uppercase; /* Uppercase headers */
+  text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-.user-dl-license-table tbody tr {
+.user-dl-data-table tbody tr {
   border-bottom: 1px solid var(--user-dl-gray-light);
-  transition: background-color 0.15s ease;
+  transition: background-color 0.2s ease;
 }
-
-.user-dl-license-table tbody tr:last-child {
+.user-dl-data-table tbody tr.user-dl-table-row-clickable {
+  cursor: pointer;
+}
+.user-dl-data-table tbody tr:last-child {
   border-bottom: none;
 }
-
-.user-dl-license-table tbody tr:hover {
-  background-color: var(--user-dl-gray-light); /* More subtle hover */
+.user-dl-data-table tbody tr:hover {
+  background-color: var(--user-dl-gray-lightest);
 }
 
-.user-dl-license-table td {
-  padding: 1rem;
+.user-dl-data-table td {
+  padding: 1rem 1.25rem;
   vertical-align: middle;
   white-space: nowrap;
   font-size: 0.95rem;
   color: var(--user-dl-black);
 }
 
-/* Table Cell Content Alignment */
-.user-dl-cell {
+/* Table Cell Content */
+.user-dl-table-cell-content {
   display: flex;
   align-items: center;
-  gap: 0.5rem; /* Gap between icon and text */
+  gap: 0.6rem;
+}
+.user-dl-cell-icon-style {
+  color: var(--user-dl-secondary);
+  flex-shrink: 0;
 }
 
-.user-dl-cell-icon {
-  color: var(--user-dl-secondary); /* Use secondary color for icons */
-  flex-shrink: 0; /* Prevent icon from shrinking */
-}
-
-/* Status Badge in Table */
+/* Status Badge */
 .user-dl-status-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem; /* Slightly more gap */
-  padding: 0.3rem 0.75rem; /* Adjusted padding */
-  border-radius: 50px; /* Pill shape */
-  font-size: 0.8rem; /* Smaller font */
+  gap: 0.4rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 50px;
+  font-size: 0.8rem;
   font-weight: 500;
   text-transform: capitalize;
-  /* Background and color will be set by specific status classes */
 }
 .user-dl-status-badge svg {
   flex-shrink: 0;
 }
 .user-dl-status-approved { background-color: rgba(39, 174, 96, 0.15); color: var(--user-dl-success); }
-.user-dl-status-pending { background-color: rgba(241, 196, 15, 0.15); color: #b48b0b; } /* Darker yellow text */
+.user-dl-status-pending { background-color: rgba(243, 156, 18, 0.15); color: var(--user-dl-warning); } /* Using warning for pending */
+.user-dl-status-provisional { background-color: var(--user-dl-provisional-bg); color: var(--user-dl-provisional-text); }
 .user-dl-status-rejected { background-color: rgba(192, 57, 43, 0.15); color: var(--user-dl-danger); }
 .user-dl-status-default { background-color: rgba(127, 140, 141, 0.15); color: var(--user-dl-gray-dark); }
 
 
-/* View Button in Table */
-.user-dl-view-btn {
-  padding: 0.5rem 0.85rem;
+/* Table View Button */
+.user-dl-table-view-button {
+  padding: 0.5rem 0.9rem;
   border-radius: var(--user-dl-border-radius);
   font-size: 0.85rem;
   background-color: var(--user-dl-primary-light);
@@ -358,352 +311,230 @@
   transition: background-color 0.2s ease;
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.4rem;
   white-space: nowrap;
   text-decoration: none;
 }
-
-.user-dl-view-btn:hover {
-  background-color: var(--user-dl-primary); /* Darken on hover */
+.user-dl-table-view-button:hover {
+  background-color: var(--user-dl-primary);
 }
-.user-dl-view-btn .user-dl-btn-icon {
+.user-dl-button-icon-style {
   flex-shrink: 0;
 }
 
-
-/* CERTIFICATE DISPLAY AREA (when a license is expanded) */
-.certificate-display-area {
+/* Certificate Display Area */
+.user-dl-certificate-display-area {
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Centers the A4 layout and button */
-  padding: 1rem 0; /* Padding for the area containing certificate and actions */
+  align-items: center;
+  padding: 1.5rem 0;
   box-sizing: border-box;
-  background-color: var(--user-dl-gray-light); /* Light background for this focused view */
+  background-color: var(--user-dl-gray-lightest);
   border-radius: var(--user-dl-border-radius);
   margin-top: 1rem;
 }
 
-
 /* PDF Layout (A4 Sized Element) */
-.pdf-layout {
-  width: 210mm; /* A4 width: approx 793.7px */
-  height: 297mm; /* A4 height: approx 1122.5px */
-  background-color: var(--admin-white);
-  box-shadow: var(--dl-card-shadow); /* Shadow for on-screen preview */
-  overflow: hidden; /* CRITICAL: Content overflowing A4 will be clipped */
+.user-dl-pdf-layout {
+  width: 210mm;
+  min-height: 297mm; /* Use min-height if content might slightly vary */
+  background-color: var(--user-dl-white);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  overflow: hidden;
   box-sizing: border-box;
-  position: relative; /* For absolute positioning of elements inside if needed */
-  margin: 0 auto 20px auto; /* Centered, with bottom margin before download button */
-  /* On smaller screens, the parent (.user-dl-certificate-focused-container) will handle scrolling */
+  position: relative;
+  margin: 0 auto 20px auto;
 }
-
-/* Outer border container */
-.outer-pdf-border {
-  border: 2px solid var(--border-color); /* The first border */
-  padding: 4px; /* Space between the two borders */
+.user-dl-outer-pdf-border {
+  border: 2px solid var(--user-dl-pdf-border-color);
+  padding: 4mm; /* Approx 4px */
   width: 100%;
   height: 100%;
   box-sizing: border-box;
 }
-
-.pdf-border {
-  border: 1px solid var(--border-color); /* The inner border */
-  /* Using padding that's proportional to A4, e.g., 10mm or 15mm.
-     10mm is approx 37.8px. Let's use a pixel value that's visually good.
-     20px padding on all sides.
-  */
-  padding: 20px;
+.user-dl-pdf-border {
+  border: 1px solid var(--user-dl-pdf-border-color);
+  padding: 15mm 10mm; /* Approx 20px, adjust as needed */
   width: 100%;
   height: 100%;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  font-family: 'Arial', sans-serif; /* Common font for PDFs */
+  font-family: 'Times New Roman', Times, serif; /* More traditional for certificates */
 }
 
 /* PDF Header */
-.pdf-header {
+.user-dl-pdf-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
- border-bottom: 2px solid #333;
+  border-bottom: 2px solid var(--user-dl-pdf-border-color);
   padding-bottom: 8px;
   margin-bottom: 10px;
 }
-
-.pdf-header-left {
-  display: flex;
-  align-items: center;
-}
-
-.pdf-logo-icon {
-  height: 50px;
-  width: 50px;
-  margin-right: 10px;
-}
-
-.pdf-logo-icon img {
- max-width: 100%;
- max-height: 100%;
-}
-.pdf-org-name h3 { font-size: 14px; color: var(--user-dl-primary); margin: 0 0 2px 0; font-weight: 600;}
-.pdf-org-name h4 { font-size: 12px; font-weight: 400; margin: 0; }
-.pdf-header-right { text-align: right; }
-.pdf-date { font-size: 12px; }
+.user-dl-pdf-header-left { display: flex; align-items: center; }
+.user-dl-pdf-logo-icon { height: 45px; width: 45px; margin-right: 10px; }
+.user-dl-pdf-logo-icon img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.user-dl-pdf-org-name h3 { font-size: 14px; color: var(--user-dl-pdf-gov-blue); margin: 0 0 2px 0; font-weight: bold;}
+.user-dl-pdf-org-name h4 { font-size: 12px; font-weight: 500; margin: 0; }
+.user-dl-pdf-header-right { text-align: right; }
 
 /* PDF Certificate Title */
-.pdf-certificate-title { text-align: center; margin-bottom: 10px; }
-.pdf-certificate-title h2 { font-size: 17px;
-  font-weight: bold;
-  margin: 0 0 6px 0; }
-.pdf-certificate-title h3 {  font-size: 17px;
-  font-weight: bold;
-  margin-bottom: 8px;
-  text-decoration: underline;
-  color: var(--gov-maroon, #8b0000); /* Added fallback */
-  letter-spacing: 1px; }
+.user-dl-pdf-certificate-title { text-align: center; margin-bottom: 10px; }
+.user-dl-pdf-certificate-title h2 { font-size: 18px; font-weight: bold; margin: 0 0 4px 0; color: var(--user-dl-black); }
+.user-dl-pdf-certificate-title h3 { font-size: 16px; font-weight: bold; margin-bottom: 8px; text-decoration: underline; color: var(--user-dl-pdf-gov-maroon); letter-spacing: 0.5px; }
 
-/* Provisional Notice Banner (inside PDF) */
-.pdf-provisional-notice-banner {
-  background-color: #fff8e1; /* Light yellow */
-  border: 1px solid #ffecb3; /* Matching border */
+/* PDF Provisional Notice Banner (inside PDF) */
+.user-dl-pdf-provisional-notice-banner {
+  background-color: var(--user-dl-provisional-bg);
+  border: 1px solid #ffe0b2; /* Lighter orange border */
   border-radius: var(--user-dl-border-radius);
-  padding: 8px 12px;
+  padding: 6px 10px;
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 5px auto 15px auto; /* Centered with margin */
-  color: #856404; /* Darker yellow text for readability */
-  font-size: 10px; /* Small and unobtrusive */
+  margin: 5px auto 10px auto; /* Positioned within footer bottom */
+  color: var(--user-dl-provisional-text);
+  font-size: 9px;
   font-weight: 500;
   text-align: center;
-  max-width: 90%;
+  max-width: 70%; /* Takes up reasonable width in footer */
 }
-.pdf-provisional-notice-banner svg { flex-shrink: 0; color: #856404; }
+.user-dl-pdf-provisional-notice-banner svg { flex-shrink: 0; }
 
 
-/* PDF Body - takes remaining space */
-.pdf-body {
-  font-size: 11px; /* Base font for PDF content */
+/* PDF Body */
+.user-dl-pdf-body {
+  font-size: 11px;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* Start content from top, signatures/footer push down */
-  line-height: 1.4;
+  justify-content: flex-start;
+  line-height: 1.5;
 }
 
 /* PDF Photo Section */
-
-.pdf-photo-section {
- display: flex;
- justify-content: space-between;
- margin-bottom: 5px;
- margin-right: 20px;
- align-items: flex-start;
-}
-
-.pdf-info-block {
- flex: 1;
- margin-right: 10px;
- margin-left: 10px;
-}
-
-.pdf-info-row {
- display: flex;
- margin-bottom: 4px;
- font-size: 12px;
- line-height: 1.4;
+.user-dl-pdf-photo-section {
+  display: flex;
   justify-content: space-between;
+  margin-bottom: 10px;
+  align-items: flex-start;
 }
-
-.pdf-info-label {
- font-weight: bold;
- min-width: 180px;
-}
-
-.pdf-info-value {
- flex: 1;
- padding-left: 4px;
-}
-
-.pdf-photo-box {
- width: 100px;
- height: 120px;
- border: 2px solid var(--border-color, #0a0a0a); /* Added fallback */
- display: flex;
- justify-content: center;
- align-items: center;
- overflow: hidden;
- flex-shrink: 0;
-}
-
-.pdf-photo {
- width: 100%;
- height: 100%;
- object-fit: cover;
-}
-
-.pdf-photo-placeholder {
- width: 100%;
- height: 100%;
- display: flex;
-  flex-direction: column;
- justify-content: center;
- align-items: center;
- text-align: center;
- font-size: 10px;
- padding: 3px;
- box-sizing: border-box;
- margin-right: 30px;
-}
-/* PDF Section Title (for Pet Details, Owner Details) */
-
-.pdf-details-section {
- margin-bottom: 5px;
- margin-left: 10px;
-}
-
-.pdf-section-title {
- font-weight: bold;
- font-size: 14px;
- border-bottom: 1px solid var(--border-color, #0a0a0a); /* Added fallback */
- margin-bottom: 8px;
- padding-bottom: 3px;
- color: var(--gov-blue, #005ea5); /* Added fallback */
- background-color: #f9f9f9;
- padding: 3px;
- border-left: 4px solid var(--gov-maroon, #8b0000); /* Added fallback */
-}
-
-.pdf-details-columns {
- display: flex;
- gap: 15px;
-}
-
-.pdf-details-column-left,
-.pdf-details-column-right {
- flex: 1;
-}
-
-.pdf-details-table .pdf-details-row {
- display: flex;
- margin-bottom: 4px;
- justify-content: space-between;
- font-size: 12px;
- line-height: 1.4;
-}
-
-.pdf-details-table .pdf-details-label {
- font-weight: bold;
- min-width: 280px;
+.user-dl-pdf-info-block { flex: 2; margin-right: 15px; }
+.user-dl-pdf-info-row { display: flex; margin-bottom: 5px; font-size: 11px; }
+.user-dl-pdf-info-label { font-weight: bold; min-width: 170px; color: var(--user-dl-gray-dark); }
+.user-dl-pdf-info-value { flex: 1; padding-left: 5px; color: var(--user-dl-black); }
+.user-dl-pdf-photo-box {
+  width: 90mm; /* More proportional for an A4 */
+  max-width: 100px; /* Max pixel width */
+  height: 110mm;
+  max-height: 120px;
+  border: 1.5px solid var(--user-dl-pdf-border-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
   flex-shrink: 0;
+  background-color: var(--user-dl-gray-lightest);
 }
+.user-dl-pdf-photo { width: 100%; height: 100%; object-fit: cover; }
+.user-dl-pdf-photo-placeholder { text-align: center; font-size: 10px; color: var(--user-dl-gray); padding: 5px; }
 
-.pdf-details-table .pdf-details-value {
- flex: 1;
- padding-left: 4px;
-    word-break: break-word;
+/* PDF Details Sections */
+.user-dl-pdf-details-section { margin-bottom: 8px; }
+.user-dl-pdf-section-title {
+  font-weight: bold;
+  font-size: 13px;
+  border-bottom: 1px solid var(--user-dl-pdf-border-color);
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  color: var(--user-dl-pdf-gov-blue);
+  background-color: var(--user-dl-gray-lightest);
+  padding: 4px 8px;
+  border-left: 3px solid var(--user-dl-pdf-gov-maroon);
 }
+.user-dl-pdf-details-columns { display: flex; gap: 20px; }
+.user-dl-pdf-details-column-left, .user-dl-pdf-details-column-right { flex: 1; }
 
-.pdf-details-columns .pdf-details-row {
- display: flex;
- justify-content: space-between;
- margin-bottom: 5px;
- font-size: 12px;
- line-height: 1.4;
-}
+.user-dl-pdf-details-row { display: flex; margin-bottom: 4px; font-size: 11px; }
+.user-dl-pdf-details-label { font-weight: bold; width: 170px; flex-shrink: 0; color: var(--user-dl-gray-dark); }
+.user-dl-pdf-details-value { flex: 1; padding-left: 5px; word-break: break-word; color: var(--user-dl-black); }
+.user-dl-pdf-vaccine-link { color: var(--user-dl-secondary); text-decoration: underline; }
 
-.pdf-details-columns .pdf-details-label {
- font-weight: bold;
- width: 180px;
- flex-shrink: 0;
-}
+.user-dl-pdf-owner-details-table .user-dl-pdf-details-label { width: 250px; }
 
-.pdf-details-columns .pdf-details-value {
- flex: 1;
- padding-left: 4px;
-  word-break: break-word;
-}
 
-.pdf-vaccine-img {
- max-width: 80px;
- height: auto;
-}
-
-.pdf-declaration {
-  margin: 15px 0;
- font-size: 12px;
- text-align: left;
-padding-left: 10px;
- border: 1px solid #e0e0e0;
- background-color: #f9f9f9;
- border-radius: 5px;
-  padding: 8px;
-}
-
-.pdf-declaration p {
- margin: 4px 0;
- line-height: 1.5;
-}
-
-.pdf-provisional-instructions {
-  background-color: #fef9e7; /* Very light yellow */
-  border: 1px solid #fdebd0;
-  padding: 8px;
+.user-dl-pdf-provisional-instructions {
+  background-color: var(--user-dl-provisional-bg);
+  border: 1px solid #ffe0b2;
+  padding: 8px 10px;
   font-size: 10px;
   margin-top: 10px;
   border-radius: var(--user-dl-border-radius);
-  line-height: 1.3;
+  line-height: 1.4;
+  color: var(--user-dl-provisional-text);
 }
-.pdf-provisional-instructions p { margin: 0; }
+.user-dl-pdf-provisional-instructions p { margin: 0; }
 
-
-/* PDF Signatures - Sits outside pdf-body, directly in pdf-border */
-.pdf-signatures {
- display: flex;
- justify-content: space-between;
- margin: 20px 0 10px 0;
+/* PDF Declaration */
+.user-dl-pdf-declaration {
+  margin: 15px 0 10px 0;
+  font-size: 10px;
+  text-align: left;
+  border: 1px solid var(--user-dl-gray-light);
+  background-color: var(--user-dl-gray-lightest);
+  border-radius: var(--user-dl-border-radius);
+  padding: 8px 10px;
+  line-height: 1.4;
 }
+.user-dl-pdf-declaration p { margin: 0; }
 
-.pdf-signature-block {
- text-align: center;
- width: 48%;
-}
-
-.pdf-signature-line {
- width: 100%;
- border-bottom: 1px solid var(--border-color, #0a0a0a); /* Added fallback */
- margin-bottom: 6px;
- margin-top:8px ;
-   height: 1.5rem;
-}
-
-.pdf-signature-block p {
- font-size: 10px;
- margin: 4px 0;
-}
-
-/* PDF Footer Bottom (QR, Stamp) - Sits outside pdf-body */
-.pdf-footer-bottom {
+/* PDF Signatures */
+.user-dl-pdf-signatures {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end; /* Align items to bottom */
-  
+  margin-top: auto; /* Pushes to bottom */
+  padding-top: 15px; 
+  margin-bottom: 10px;
+}
+.user-dl-pdf-signature-block { text-align: center; width: 45%; }
+.user-dl-pdf-signature-line { border-bottom: 1px solid var(--user-dl-pdf-border-color); height: 30px; margin-bottom: 5px; }
+.user-dl-pdf-signature-block p { font-size: 10px; margin: 0; font-style: italic; }
+
+/* PDF Footer Bottom (QR, Stamp) */
+.user-dl-pdf-footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
   padding-top: 10px;
   border-top: 1px solid var(--user-dl-gray-light);
-}
-.pdf-qr-code { width: 80px; text-align: center; }
-.pdf-qr-placeholder { width: 60px; height: 60px; border: 1px solid var(--border-color); margin: 0 auto 5px; }
-.pdf-qr-code p { font-size: 9px; margin:0; }
-.pdf-stamp { text-align: center; }
-.pdf-stamp-placeholder { width: 70px; height: 70px; border: 1px dashed var(--gov-maroon); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: var(--gov-maroon); font-weight: 600; font-size: 10px; transform: rotate(-10deg); }
-.pdf-stamp-placeholder p { margin:0; }
-
-
-/* PDF Contact Footer - Sits outside pdf-body */
-.pdf-contact-footer {
   margin-top: 10px;
+}
+.user-dl-pdf-qr-code-area { width: 70px; text-align: center; }
+.user-dl-pdf-qr-placeholder { width: 50px; height: 50px; border: 1px solid var(--user-dl-pdf-border-color); margin: 0 auto 5px; background-color: var(--user-dl-gray-lightest); }
+.user-dl-pdf-qr-code-area p { font-size: 9px; margin:0; }
+
+.user-dl-pdf-stamp-area { text-align: center; }
+.user-dl-pdf-stamp-placeholder {
+  width: 65px; height: 65px;
+  border: 1.5px dashed var(--user-dl-pdf-gov-maroon);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  color: var(--user-dl-pdf-gov-maroon);
+  font-weight: bold;
+  font-size: 9px;
+  transform: rotate(-12deg);
+  text-transform: uppercase;
+}
+.user-dl-pdf-stamp-placeholder p { margin:0; }
+
+/* PDF Contact Footer */
+.user-dl-pdf-contact-footer {
+  margin-top: 8px;
   padding-top: 5px;
   text-align: center;
   font-size: 9px;
@@ -711,9 +542,8 @@ padding-left: 10px;
   border-top: 1px solid var(--user-dl-gray-light);
 }
 
-
-/* Download Button and Notices (UI elements, not part of printed PDF ) */
-.user-dl-button.user-dl-certificate-download-btn {
+/* Action Button & Notices (UI elements) */
+.user-dl-action-button.user-dl-certificate-download-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -725,119 +555,203 @@ padding-left: 10px;
   font-weight: 500;
   cursor: pointer;
   gap: 8px;
-  margin: 20px auto 0; /* Margin from .pdf-layout */
-  transition: background-color 0.2s ease;
+  margin: 20px auto 0;
+  transition: background-color 0.2s ease, transform 0.2s ease;
   text-decoration: none;
 }
-.user-dl-button.user-dl-certificate-download-btn:hover { background-color: #2980b9; /* Darken secondary */}
+.user-dl-action-button.user-dl-certificate-download-btn:hover {
+  background-color: #287ab8; /* Darken secondary */
+  transform: translateY(-1px);
+}
 
-.user-dl-pending-notice,
-.user-dl-rejected-notice {
+.user-dl-notice {
   display: flex;
-  align-items: flex-start; /* Align icon with first line of text */
+  align-items: flex-start;
   gap: 12px;
-  padding: 1rem; /* More padding */
+  padding: 1rem;
   border-radius: var(--user-dl-border-radius);
-  margin: 15px auto 0; /* Margin from .pdf-layout or button */
-  max-width: 600px; /* Constrain width */
-  width: calc(100% - 2rem); /* Responsive width within its container */
+  margin: 15px auto 0;
+  max-width: calc(210mm - 40px); /* Align with PDF visual width */
+  width: calc(100% - 2rem);
   box-sizing: border-box;
+  font-size: 0.95rem;
 }
 .user-dl-pending-notice { background-color: rgba(243, 156, 18, 0.1); color: var(--user-dl-warning); border: 1px solid rgba(243, 156, 18, 0.3); }
-.user-dl-rejected-notice { background-color: rgba(216, 78, 63, 0.1); color: var(--user-dl-danger); border: 1px solid rgba(216, 78, 63, 0.3); }
-.user-dl-pending-notice p, .user-dl-rejected-notice p { margin: 0 0 0.5rem 0; }
-.user-dl-pending-notice p:last-child, .user-dl-rejected-notice p:last-child { margin-bottom: 0; }
-.user-dl-rejection-reason { margin-top: 8px; padding: 8px; background-color: rgba(255, 255, 255, 0.5); border-radius: var(--user-dl-border-radius); font-size: 0.9em; }
-.user-dl-rejection-reason strong { color: var(--user-dl-danger); }
+.user-dl-rejected-notice { background-color: rgba(192, 57, 43, 0.08); color: var(--user-dl-danger); border: 1px solid rgba(192, 57, 43, 0.25); }
+.user-dl-notice p { margin: 0 0 0.5rem 0; }
+.user-dl-notice p:last-child { margin-bottom: 0; }
+.user-dl-rejection-reason-box {
+  margin-top: 8px;
+  padding: 8px 10px;
+  background-color: rgba(255, 255, 255, 0.6);
+  border-radius: var(--user-dl-border-radius);
+  font-size: 0.9em;
+  border-left: 3px solid var(--user-dl-danger);
+}
+.user-dl-rejection-reason-box strong { color: var(--user-dl-danger); }
 
 
 /* Responsive Styles */
-@media screen and (max-width: 992px) { /* For tablets, A4 might still be too wide */
-  .pdf-layout {
-    /* To make A4 preview manageable on tablets, we can scale it down.
-       This transform is for VIEWING ONLY. html2pdf should capture original size.
-       This requires careful testing with html2pdf.
-       If html2pdf captures the transformed size, this approach needs html2pdf options
-       to override capture size or this scaling should only apply very selectively.
-       For now, assuming user wants to scroll the full-size A4 on tablets too.
-    */
-    /* transform: scale(0.8); transform-origin: top center; margin-bottom: calc(20px * 0.8); */
-  }
-}
-
 @media screen and (max-width: 768px) {
-  .user-dl-container { padding: 1rem; }
-  .user-dl-certificate-focused-container {
-    padding: 0.5rem; /* Less padding on mobile for A4 focused view */
-  }
+  .user-dl-page-container { padding: 1rem; }
+  .user-dl-certificate-focused-view { padding: 0.5rem; }
 
-  .user-dl-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
-  .user-dl-title { font-size: 1.5rem; }
-  .user-dl-filters { width: 100%; overflow-x: auto; padding-bottom: 0.5rem; justify-content: flex-start; }
-  .user-dl-filter-label { margin-bottom: 0.5rem; }
-  .user-dl-back-to-list-btn { font-size: 0.9rem; }
+  .user-dl-page-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .user-dl-main-title { font-size: 1.6rem; }
+  .user-dl-filter-controls { width: 100%; overflow-x: auto; padding-bottom: 0.5rem; justify-content: flex-start; }
+  .user-dl-filter-label-text { margin-bottom: 0.5rem; } /* If it wraps */
+  .user-dl-back-button { font-size: 0.9rem; }
 
-  /* Table responsive adjustments */
-  .user-dl-license-table th, .user-dl-license-table td { font-size: 0.85rem; padding: 0.75rem 0.5rem; }
-  .user-dl-license-table th:nth-child(3), /* Pet Name */
-  .user-dl-license-table td:nth-child(3),
-  .user-dl-license-table th:nth-child(4), /* Animal Type */
-  .user-dl-license-table td:nth-child(4),
-  .user-dl-license-table th:nth-child(6)  /* Applied Date */
-  /* .user-dl-license-table td:nth-child(6) */  {
-      /* These are already handled by !isMobile in JSX for data cells.
-         This CSS would hide headers if needed. Given JSX handles it, CSS might be redundant here.
-      */
-  }
-
-  .user-dl-status-badge { padding: 0.2rem 0.5rem; font-size: 0.75rem; gap: 0.25rem; }
-  .user-dl-status-badge svg { width: 12px; height: 12px; }
-  /* For mobile, badge text might be hidden by JSX isMobile prop */
+  .user-dl-data-table th, .user-dl-data-table td { font-size: 0.85rem; padding: 0.75rem 0.5rem; }
+  .user-dl-status-badge { padding: 0.25rem 0.6rem; font-size: 0.75rem; gap: 0.25rem; }
+  .user-dl-status-badge svg { width: 13px; height: 13px; }
   
-  .user-dl-view-btn { padding: 0.4rem; background-color: transparent; color: var(--user-dl-secondary); box-shadow: none; }
-  .user-dl-view-btn:hover { background-color: var(--user-dl-gray-light); }
-  /* .user-dl-view-btn span { display: none; } /* Text is hidden by JSX via !isMobile */
-  /* .user-dl-view-btn .user-dl-btn-icon { margin-right: 0; } */
+  .user-dl-pdf-border { padding: 8mm 5mm; }
+  .user-dl-pdf-header { flex-direction: column; align-items: flex-start; gap: 6px; margin-bottom:8px; padding-bottom: 6px;}
+  .user-dl-pdf-logo-icon { width: 40px; height: 40px; margin-right: 8px; }
+  .user-dl-pdf-org-name h3 { font-size: 12px; }
+  .user-dl-pdf-org-name h4 { font-size: 10px; }
+  .user-dl-pdf-header-right { align-self: flex-end; margin-top: 5px;}
+  .user-dl-pdf-header-right .user-dl-pdf-logo-icon { width: 40px; height: 40px;}
 
 
+  .user-dl-pdf-certificate-title h2 { font-size: 15px; }
+  .user-dl-pdf-certificate-title h3 { font-size: 14px; }
+  .user-dl-pdf-provisional-notice-banner { font-size: 8px; padding: 5px 7px; gap: 4px; margin-bottom:8px; max-width: 85%;}
+  .user-dl-pdf-provisional-notice-banner svg { width: 11px; height: 11px; }
 
+  .user-dl-pdf-body { font-size: 10px; line-height: 1.4; }
+  .user-dl-pdf-photo-section { flex-direction: column; align-items: center; gap: 10px; margin-bottom: 10px;}
+  .user-dl-pdf-info-block { width: 100%; }
+  .user-dl-pdf-info-row { margin-bottom: 3px; font-size: 10px; }
+  .user-dl-pdf-info-label { min-width: 120px; }
+  .user-dl-pdf-photo-box { max-width: 90px; max-height: 110px; }
 
-  .pdf-border { padding: 10px; /* Reduced padding for PDF content on mobile if it were scaled */ }
-  .pdf-header { flex-direction: column; align-items: flex-start; gap: 5px; margin-bottom:8px; padding-bottom: 5px;}
-  .pdf-logo-icon { width: 50px; height: 30px; margin-right: 8px; }
-  .pdf-org-name h3 { font-size: 12px; }
-  .pdf-org-name h4 { font-size: 10px; }
-  .pdf-header-right { font-size: 10px; align-self: flex-end; margin-top: 5px;}
+  .user-dl-pdf-section-title { font-size: 11px; padding: 4px 6px; margin-bottom: 6px; }
+  .user-dl-pdf-details-columns { flex-direction: column; gap: 0; }
+  .user-dl-pdf-details-row { font-size: 10px; margin-bottom: 3px; padding-bottom: 2px; }
+  .user-dl-pdf-details-label { width: 130px; }
+  .user-dl-pdf-owner-details-table .user-dl-pdf-details-label { width: 180px;}
+  .user-dl-pdf-provisional-instructions { font-size: 9px; padding: 6px; margin-top: 8px;}
 
-  .pdf-certificate-title h2 { font-size: 15px; }
-  .pdf-certificate-title h3 { font-size: 13px; }
-  .pdf-provisional-notice-banner { font-size: 9px; padding: 6px 8px; gap: 4px; margin-bottom:10px;}
-  .pdf-provisional-notice-banner svg { width: 12px; height: 12px; }
+  .user-dl-pdf-declaration { font-size: 9px; padding: 6px; }
+  .user-dl-pdf-signatures { flex-direction: column; gap: 10px; margin-top:12px; margin-bottom: 8px; }
+  .user-dl-pdf-signature-block { width: 100%; }
+  .user-dl-pdf-signature-line { height: 25px; margin-bottom: 4px; }
+  .user-dl-pdf-signature-block p { font-size: 9px; }
 
-  .pdf-body { font-size: 9px; line-height: 1.3; }
-  .pdf-photo-section { flex-direction: column; align-items: center; gap: 10px; margin-bottom: 10px;}
-  .pdf-info-block { width: 100%; }
-  .pdf-info-row { margin-bottom: 4px; font-size: 9px; }
-  .pdf-info-label { min-width: 100px; /* Smaller label width */ }
-  .pdf-photo-box { width: 80px; height: 100px; margin-left: 0; }
-  .pdf-photo-placeholder { font-size: 10px; }
+  .user-dl-pdf-footer-bottom { flex-direction: column; align-items: center; gap: 10px; margin-top: 8px; }
+  .user-dl-pdf-qr-placeholder { width: 45px; height: 45px; }
+  .user-dl-pdf-stamp-placeholder { width: 55px; height: 55px; font-size: 8px; }
+  .user-dl-pdf-contact-footer { font-size: 8px; margin-top: 8px; }
 
-  .pdf-section-title { font-size: 11px; padding: 5px 8px; margin-bottom: 6px; }
-  .pdf-details-columns { flex-direction: column; gap: 0; }
-  .pdf-details-row { font-size: 9px; margin-bottom: 3px; padding-bottom: 2px; }
-  .pdf-details-label { width: 100px; }
-  .pdf-provisional-instructions { font-size: 9px; padding: 6px; margin-top: 8px;}
-
-  .pdf-declaration { font-size: 8px; padding: 6px; }
-  .pdf-signatures { flex-direction: column; gap: 10px; margin-top:10px; margin-bottom: 8px; }
-  .pdf-signature-block { width: 100%; }
-  .pdf-signature-line { height: 20px; margin-bottom: 3px; }
-  .pdf-signature-block p { font-size: 9px; }
-
-  .pdf-footer-bottom { flex-direction: column; align-items: center; gap: 10px; margin-top: 8px; }
-  .pdf-qr-placeholder { width: 50px; height: 50px; }
-  .pdf-stamp-placeholder { width: 60px; height: 60px; font-size: 9px; }
-  .pdf-contact-footer { font-size: 8px; margin-top: 8px; }
-
-  .user-dl-pending-notice, .user-dl-rejected-notice { padding: 0.75rem; font-size: 0.9rem; }
+  .user-dl-notice { padding: 0.75rem; font-size: 0.9rem; }
 }
+/* ... (existing styles) ... */
+
+/* Filter Controls - Desktop */
+.user-dl-filter-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0; /* Reset margin if wrapped */
+}
+
+/* Filter Dropdown - Mobile */
+.user-dl-filter-dropdown-container {
+  position: relative;
+  width: 100%; /* Full width on mobile */
+  margin-top: 1rem; /* Space from title if header wraps */
+}
+
+.user-dl-filter-dropdown-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Pushes chevron to the end */
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: var(--user-dl-white);
+  border: 1px solid var(--user-dl-gray);
+  border-radius: var(--user-dl-border-radius);
+  font-size: 1rem;
+  color: var(--user-dl-black);
+  text-align: left;
+  cursor: pointer;
+}
+.user-dl-filter-dropdown-button svg:first-child { /* Icon like Filter */
+    margin-right: 0.5rem;
+    color: var(--user-dl-primary);
+}
+.user-dl-filter-dropdown-button span {
+  flex-grow: 1; /* Allows text to take available space */
+}
+
+.user-dl-dropdown-chevron {
+  transition: transform 0.2s ease-in-out;
+  color: var(--user-dl-gray-dark);
+}
+.user-dl-dropdown-chevron-open {
+  transform: rotate(180deg);
+}
+
+.user-dl-filter-dropdown-list {
+  position: absolute;
+  top: calc(100% + 5px); /* Position below the button */
+  left: 0;
+  right: 0;
+  background-color: var(--user-dl-white);
+  border: 1px solid var(--user-dl-gray);
+  border-radius: var(--user-dl-border-radius);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  list-style: none;
+  padding: 0.5rem 0;
+  margin: 0;
+  z-index: 100; /* Ensure it's above other content */
+  max-height: 200px; /* Prevent very long dropdowns */
+  overflow-y: auto;
+}
+
+.user-dl-filter-dropdown-list li {
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  color: var(--user-dl-black);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.user-dl-filter-dropdown-list li:hover {
+  background-color: var(--user-dl-gray-lightest);
+}
+
+.user-dl-filter-dropdown-list li.user-dl-dropdown-item-active {
+  background-color: var(--user-dl-primary-light);
+  color: var(--user-dl-white);
+  font-weight: 500;
+}
+
+
+/* Responsive Styles */
+@media screen and (max-width: 768px) {
+  /* ... (existing mobile styles) ... */
+
+  .user-dl-page-header {
+    /* Adjust if title and dropdown should stack differently */
+    align-items: flex-start; /* Ensure title and dropdown stack cleanly */
+  }
+  
+  .user-dl-filter-controls { 
+    /* This will be hidden on mobile by JSX logic, 
+       but good to ensure it doesn't interfere if logic changes */
+    display: none; 
+  }
+  .user-dl-main-title {
+    margin-bottom: 0.5rem; /* Add some space if dropdown is directly below */
+  }
+}
+
+/* Ensure icon colors in UserStatusBadge are set via CSS for better control */
+.user-dl-status-badge.user-dl-status-approved svg { color: var(--user-dl-success); }
+.user-dl-status-badge.user-dl-status-pending svg,
+.user-dl-status-badge.user-dl-status-provisional svg { color: var(--user-dl-warning); }
+.user-dl-status-badge.user-dl-status-rejected svg { color: var(--user-dl-danger); }
+.user-dl-status-badge.user-dl-status-default svg { color: var(--user-dl-gray-dark); }

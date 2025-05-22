@@ -1,81 +1,102 @@
-/* Root Variables - PDF specific variables remain, others are hardcoded directly in rules */
+/* Root Variables */
 :root {
-  /* PDF specific border color, can be themed if needed */
-  --pdf-rr-border-color: #0a0a0a;
-  --pdf-rr-gov-maroon: #8b0000; /* For specific PDF elements like titles */
+  --user-rr-primary: #2c3e50;
+  --user-rr-primary-light: #34495e;
+  --user-rr-secondary: #3498db;
+  --user-rr-accent: #1abc9c;
+
+  --user-rr-success-bg: rgba(39, 174, 96, 0.15);
+  --user-rr-success-text: #23814a;
+  --user-rr-danger-bg: rgba(192, 57, 43, 0.15);
+  --user-rr-danger-text: #c0392b;
+  --user-rr-warning-bg: rgba(243, 156, 18, 0.15); /* For pending, renewal_pending */
+  --user-rr-warning-text: #b48b0b; /* Darker yellow for text on light warning bg */
+  --user-rr-default-bg: rgba(127, 140, 141, 0.15);
+  
+  --user-rr-gray-lightest: #f8f9fa;
+  --user-rr-gray-light: #ecf0f1;
+  --user-rr-gray: #bdc3c7;
+  --user-rr-gray-dark: #7f8c8d;
+  --user-rr-white: #ffffff;
+  --user-rr-black: #2c3e50;
+  --user-rr-shadow: rgba(0, 0, 0, 0.1);
+  --user-rr-border-radius: 6px;
+  --user-rr-font-main: 'Roboto', 'Arial', sans-serif;
+
+  --user-rr-pdf-border-color: #0a0a0a;
+  --user-rr-pdf-gov-maroon: #8b0000;
+  --user-rr-pdf-gov-blue: #005ea5;
 }
 
-/* Main Container for the Renew Registration Page */
-.user-rr-container {
-  max-width: 1200px;
+/* Main Page Container */
+.user-rr-page-container {
+  max-width: 100vw;
   min-height: 70vh;
   margin: 2rem auto;
   padding: 2rem;
-  font-family: 'Roboto', sans-serif;
-  color: #2c3e50; /* --user-rr-black */
-  background-color: #ffffff; /* --user-rr-white */
-  border-radius: 4px; /* --user-rr-border-radius */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* --user-rr-shadow */
+  font-family: var(--user-rr-font-main);
+  color: var(--user-rr-black);
+  background-color: var(--user-rr-white);
+  border-radius: var(--user-rr-border-radius);
+  box-shadow: 0 4px 12px var(--user-rr-shadow);
   box-sizing: border-box;
 }
 
-.user-rr-certificate-focused-container {
+.user-rr-certificate-focused-view {
   padding: 1rem;
-  overflow-x: auto; /* Allow horizontal scrolling for the A4 preview */
+  background-color: var(--user-rr-gray-lightest);
+  overflow-x: auto; 
 }
 
-/* Header Section */
-.user-rr-header {
+/* Page Header */
+.user-rr-page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #ecf0f1; /* --user-rr-gray-light */
+  border-bottom: 1px solid var(--user-rr-gray-light);
   flex-wrap: wrap;
 }
 
-.user-rr-title {
-  font-size: 1.8rem;
+.user-rr-main-title {
+  font-size: 2rem;
   font-weight: 500;
-  color: #2c3e50; /* --user-rr-primary */
+  color: var(--user-rr-primary);
   margin: 0;
 }
 
-/* Back to List Button (for expanded view header) */
-.user-rr-back-to-list-header {
+/* Certificate View Header & Back Button */
+.user-rr-certificate-view-header {
+  border-bottom: none;
+  margin-bottom: 1rem;
+}
+.user-rr-back-navigation {
   display: flex;
   align-items: center;
   width: 100%;
 }
-.user-rr-certificate-header { /* Special header for certificate view */
-    border-bottom: none;
-    margin-bottom: 1rem;
-}
-
-.user-rr-back-to-list-btn {
+.user-rr-back-button {
   background: none;
   border: none;
   padding: 0.5rem 0;
-  color: #2c3e50; /* --user-rr-primary */
+  color: var(--user-rr-primary);
   font-size: 1rem;
   font-weight: 500;
   display: flex;
   align-items: center;
   cursor: pointer;
-  margin-right: 1rem;
 }
-
-.user-rr-back-to-list-btn svg {
+.user-rr-back-button svg {
   margin-right: 0.5rem;
   transition: transform 0.2s ease;
 }
-.user-rr-back-to-list-btn:hover svg{
-    transform: translateX(-3px);
+.user-rr-back-button:hover svg {
+  transform: translateX(-3px);
 }
 
 /* Loading State */
-.user-rr-loading {
+.user-rr-loading-state {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -83,87 +104,83 @@
   padding: 3rem 0;
   text-align: center;
 }
-
-.user-rr-spinner {
-  width: 40px;
-  height: 40px;
+.user-rr-spinner-animation {
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
-  border: 4px solid #ecf0f1; /* --user-rr-gray-light */
-  border-top-color: #2c3e50; /* --user-rr-primary */
-  animation: user-rr-spin 1s linear infinite;
+  border: 5px solid var(--user-rr-gray-light);
+  border-top-color: var(--user-rr-primary);
+  animation: user-rr-spin-animation 1s linear infinite;
   margin-bottom: 1rem;
 }
-
-@keyframes user-rr-spin {
+@keyframes user-rr-spin-animation {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
-
-.user-rr-status-message { /* For loading text or other status messages */
-  font-size: 1.125rem;
-  color: #7f8c8d; /* --user-rr-gray-dark */
+.user-rr-loading-text {
+  font-size: 1.15rem;
+  color: var(--user-rr-gray-dark);
 }
-.user-rr-error-message {
-  font-size: 1.125rem;
-  color: #c0392b; /* --user-rr-danger */
+
+/* Error Message */
+.user-rr-error-message-box {
+  font-size: 1.1rem;
+  color: var(--user-rr-danger-text);
   font-weight: 500;
   text-align: center;
-  padding: 1rem;
-  background-color: rgba(192, 57, 43, 0.05);
-  border: 1px solid rgba(192, 57, 43, 0.1);
-  border-radius: 4px; /* --user-rr-border-radius */
-  margin: 1rem 0;
+  padding: 1rem 1.5rem;
+  background-color: var(--user-rr-danger-bg);
+  border: 1px solid var(--user-rr-danger-text);
+  border-radius: var(--user-rr-border-radius);
+  margin: 1.5rem 0;
 }
 
-
-/* Empty State for Table */
-.user-rr-empty-state {
+/* Empty Data State */
+.user-rr-empty-data-state {
   text-align: center;
-  padding: 3rem 1rem;
-  background-color: #ffffff; /* --user-rr-white */
-  border-radius: 4px; /* --user-rr-border-radius */
-  border: 1px dashed #bdc3c7; /* --user-rr-gray */
+  padding: 3.5rem 1rem;
+  background-color: var(--user-rr-white);
+  border-radius: var(--user-rr-border-radius);
+  border: 1px dashed var(--user-rr-gray);
   margin: 2rem 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
-
-.user-rr-empty-icon {
-  color: #bdc3c7; /* --user-rr-gray */
+.user-rr-empty-state-icon svg {
+  width: 50px;
+  height: 50px;
+  color: var(--user-rr-gray);
   margin-bottom: 1rem;
 }
-.user-rr-empty-icon svg {
-    width: 48px;
-    height: 48px;
-}
-
-.user-rr-no-data-message {
-  font-size: 1.125rem;
-  color: #7f8c8d; /* --user-rr-gray-dark */
+.user-rr-no-data-text {
+  font-size: 1.15rem;
+  color: var(--user-rr-gray-dark);
   margin-bottom: 1.5rem;
 }
 
 /* Table Styling */
 .user-rr-table-container {
   width: 100%;
-  overflow-x: auto;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* --user-rr-shadow */
-  border-radius: 4px; /* --user-rr-border-radius */
-  overflow: hidden;
+  overflow-x: auto; /* Ensures table is scrollable on small screens */
+  box-shadow: 0 2px 6px var(--user-rr-shadow);
+  border-radius: var(--user-rr-border-radius);
+  overflow-y: hidden;
   margin-bottom: 2rem;
+  background-color: var(--user-rr-white);
 }
 
-.user-rr-license-table {
+.user-rr-data-table {
   width: 100%;
+  min-width: 800px; /* Minimum width before scroll kicks in */
   border-collapse: collapse;
 }
 
-.user-rr-license-table thead {
-  background-color: #2c3e50; /* --user-rr-primary */
-  color: #ffffff; /* --user-rr-white */
+.user-rr-data-table thead {
+  background-color: var(--user-rr-primary);
+  color: var(--user-rr-white);
 }
 
-.user-rr-license-table th {
-  padding: 1rem;
+.user-rr-data-table th {
+  padding: 1rem 1.25rem;
   text-align: left;
   font-weight: 500;
   white-space: nowrap;
@@ -172,36 +189,36 @@
   letter-spacing: 0.5px;
 }
 
-.user-rr-license-table tbody tr {
-  border-bottom: 1px solid #ecf0f1; /* --user-rr-gray-light */
-  transition: background-color 0.15s ease;
+.user-rr-data-table tbody tr.user-rr-table-row {
+  border-bottom: 1px solid var(--user-rr-gray-light);
+  transition: background-color 0.2s ease;
 }
-
-.user-rr-license-table tbody tr:last-child {
+.user-rr-data-table tbody tr.user-rr-table-row-clickable {
+  cursor: pointer;
+}
+.user-rr-data-table tbody tr:last-child {
   border-bottom: none;
 }
-
-.user-rr-license-table tbody tr:hover {
-  background-color: #ecf0f1; /* --user-rr-gray-light */
+.user-rr-data-table tbody tr:hover {
+  background-color: var(--user-rr-gray-lightest);
 }
 
-.user-rr-license-table td {
-  padding: 1rem;
+.user-rr-data-table td {
+  padding: 1rem 1.25rem;
   vertical-align: middle;
   white-space: nowrap;
   font-size: 0.95rem;
-  color: #2c3e50; /* --user-rr-black */
+  color: var(--user-rr-black);
 }
 
-/* Table Cell Content Alignment */
-.user-rr-cell-content {
+/* Table Cell Content */
+.user-rr-table-cell-content {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
 }
-
-.user-rr-cell-icon {
-  color: #3498db; /* --user-rr-secondary */
+.user-rr-cell-icon-style {
+  color: var(--user-rr-secondary);
   flex-shrink: 0;
 }
 
@@ -209,8 +226,8 @@
 .user-rr-status-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.3rem 0.75rem;
+  gap: 0.4rem;
+  padding: 0.35rem 0.8rem;
   border-radius: 50px;
   font-size: 0.8rem;
   font-weight: 500;
@@ -219,354 +236,358 @@
 .user-rr-status-badge svg {
   flex-shrink: 0;
 }
-.user-rr-status-approved { background-color: rgba(39, 174, 96, 0.15); color: #23814a; /* --user-rr-success */ }
-.user-rr-status-renewal-pending { background-color: rgba(241, 196, 15, 0.15); color: #b48b0b; } /* Darker yellow text for pending, specific color not from variable */
-.user-rr-status-pending { background-color: rgba(241, 196, 15, 0.15); color: #b48b0b; } /* Using --user-rr-pending for bg color, text color specific */
-.user-rr-status-rejected { background-color: rgba(192, 57, 43, 0.15); color: #c0392b; /* --user-rr-danger */ }
-.user-rr-status-default { background-color: rgba(127, 140, 141, 0.15); color: #7f8c8d; /* --user-rr-gray-dark */ }
+.user-rr-status-approved { background-color: var(--user-rr-success-bg); color: var(--user-rr-success-text); }
+.user-rr-status-renewal-pending, .user-rr-status-pending { background-color: var(--user-rr-warning-bg); color: var(--user-rr-warning-text); }
+.user-rr-status-rejected { background-color: var(--user-rr-danger-bg); color: var(--user-rr-danger-text); }
+.user-rr-status-default { background-color: var(--user-rr-default-bg); color: var(--user-rr-gray-dark); }
 
 
-/* Action Button (Renew) in Table */
-.user-rr-action-btn {
-  padding: 0.5rem 0.85rem;
-  border-radius: 4px; /* --user-rr-border-radius */
+/* Action Buttons (Renew, View) */
+.user-rr-action-button {
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--user-rr-border-radius);
   font-size: 0.85rem;
-  color: #ffffff; /* --user-rr-white */
+  color: var(--user-rr-white);
   border: none;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, transform 0.2s ease;
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.4rem;
   white-space: nowrap;
   text-decoration: none;
 }
-.user-rr-action-btn.user-rr-renew-btn {
-  background-color: #23814a; /* --user-rr-success */
+.user-rr-action-button:hover {
+  transform: translateY(-1px);
 }
-.user-rr-action-btn.user-rr-renew-btn:hover {
-  background-color: #1e8449; /* Darker green */
+.user-rr-action-button.user-rr-renew-action-btn {
+  background-color: var(--user-rr-success-text); /* Using text color as bg */
 }
-.user-rr-action-btn:disabled {
-  background-color: #bdc3c7; /* --user-rr-gray */
+.user-rr-action-button.user-rr-renew-action-btn:hover {
+  background-color: #207343; /* Darker green */
+}
+.user-rr-action-button.user-rr-view-action-btn {
+  background-color: var(--user-rr-primary-light);
+}
+.user-rr-action-button.user-rr-view-action-btn:hover {
+  background-color: var(--user-rr-primary);
+}
+.user-rr-action-button:disabled {
+  background-color: var(--user-rr-gray);
   cursor: not-allowed;
+  transform: none;
 }
-.user-rr-renewal-requested-text {
+.user-rr-renewal-status-text {
   font-style: italic;
-  color: #7f8c8d; /* --user-rr-gray-dark */
-  font-size: 0.85rem;
+  color: var(--user-rr-warning-text);
+  font-size: 0.9rem;
 }
-
-
-/* View Button in Table */
-.user-rr-view-btn {
-  padding: 0.5rem 0.85rem;
-  border-radius: 4px; /* --user-rr-border-radius */
-  font-size: 0.85rem;
-  background-color: #34495e; /* --user-rr-primary-light */
-  color: #ffffff; /* --user-rr-white */
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  white-space: nowrap;
-  text-decoration: none;
-}
-
-.user-rr-view-btn:hover {
-  background-color: #2c3e50; /* --user-rr-primary */
-}
-.user-rr-view-btn .user-rr-btn-icon { /* Explicit class for icon inside button */
+.user-rr-button-icon-style {
   flex-shrink: 0;
 }
 
-/* Success Message Container (after renewal request) */
-.user-rr-success-message-container {
+/* Success Message Display (after renewal request) */
+.user-rr-success-message-display {
   text-align: center;
-  padding: 2rem;
-  background-color: #ffffff; /* --user-rr-white */
-  border: 1px solid #ecf0f1; /* --user-rr-gray-light */
-  border-radius: 4px; /* --user-rr-border-radius */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* --user-rr-shadow */
+  padding: 2.5rem;
+  background-color: var(--user-rr-white);
+  border: 1px solid var(--user-rr-gray-light);
+  border-left: 5px solid var(--user-rr-success-text);
+  border-radius: var(--user-rr-border-radius);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
   margin: 2rem auto;
   max-width: 600px;
 }
-.user-rr-success-message-container .user-rr-success-icon {
-  color: #23814a; /* --user-rr-success */
+.user-rr-success-icon-style {
+  color: var(--user-rr-success-text);
   margin-bottom: 1rem;
+  width: 50px;
+  height: 50px;
 }
-.user-rr-success-message-container .user-rr-message-strong {
-  font-size: 1.2rem;
-  color: #23814a; /* --user-rr-success */
+.user-rr-success-strong-text {
+  font-size: 1.3rem;
+  color: var(--user-rr-success-text);
   font-weight: 600;
   margin-bottom: 0.5rem;
   display: block;
 }
-.user-rr-success-message-container .user-rr-message-detail {
+.user-rr-success-detail-text {
     margin-bottom: 1.5rem;
-    color: #7f8c8d; /* --user-rr-gray-dark */
+    color: var(--user-rr-gray-dark);
+    font-size: 1rem;
 }
-.user-rr-back-to-licenses-btn {
-  padding: 0.75rem 1.5rem;
-  background-color: #1abc9c; /* --user-rr-accent */
-  color: #ffffff; /* --user-rr-white */
-  border: none;
-  border-radius: 4px; /* --user-rr-border-radius */
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  text-decoration: none;
+.user-rr-action-button.user-rr-back-to-list-action-btn {
+  padding: 0.8rem 1.6rem;
+  background-color: var(--user-rr-accent);
 }
-.user-rr-back-to-licenses-btn:hover {
-  background-color: #16a085; /* Darken accent */
+.user-rr-action-button.user-rr-back-to-list-action-btn:hover {
+  background-color: #17a78a; /* Darken accent */
 }
 
 
-/* CERTIFICATE DISPLAY AREA (when a license is expanded) */
-.user-rr-certificate-display-area { /* Renamed from rr-certificate-section to be more specific */
+/* CERTIFICATE DISPLAY AREA */
+.user-rr-certificate-display-area {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1rem 0;
+  padding: 1.5rem 0;
   box-sizing: border-box;
-  background-color: #ecf0f1; /* --user-rr-gray-light */
-  border-radius: 4px; /* --user-rr-border-radius */
+  background-color: var(--user-rr-gray-lightest);
+  border-radius: var(--user-rr-border-radius);
   margin-top: 1rem;
 }
 
-
-/* PDF Layout (A4 Sized Element) - Prefixed with pdf-rr- */
-.pdf-rr-layout {
+/* PDF Layout (A4 Sized Element) */
+.user-rr-pdf-layout {
   width: 210mm;
-  min-height: 297mm; /* Use min-height to allow content to expand if necessary, though overflow should be hidden */
-  background-color: #ffffff; /* --user-rr-white */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12); /* Using a generic shadow */
+  min-height: 297mm; 
+  background-color: var(--user-rr-white);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
   overflow: hidden;
   box-sizing: border-box;
   position: relative;
-  margin: 0 auto 20px auto; /* Centered, with bottom margin */
+  margin: 0 auto 20px auto;
 }
-
-/* Outer border container for PDF */
-.pdf-rr-outer-border {
-  border: 2px solid var(--pdf-rr-border-color);
-  padding: 4px;
+.user-rr-outer-pdf-border {
+  border: 2px solid var(--user-rr-pdf-border-color);
+  padding: 4mm;
   width: 100%;
   height: 100%;
   box-sizing: border-box;
 }
-
-.pdf-rr-border {
-  border: 1px solid var(--pdf-rr-border-color);
-  padding: 20px; /* Standard padding */
+.user-rr-pdf-border {
+  border: 1px solid var(--user-rr-pdf-border-color);
+  padding: 15mm 10mm; 
   width: 100%;
   height: 100%;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  font-family: 'Arial', sans-serif; /* Common font for PDFs */
+  font-family: 'Times New Roman', Times, serif;
 }
 
 /* PDF Header */
-.pdf-rr-header {
+.user-rr-pdf-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 2px solid var(--user-rr-pdf-border-color);
+  padding-bottom: 8px;
   margin-bottom: 10px;
-  border-bottom: 1px solid var(--pdf-rr-border-color);
-  padding-bottom: 10px;
 }
-.pdf-rr-header-left { display: flex; align-items: center; }
-.pdf-rr-logo-icon { width: 60px; height: 40px; margin-right: 10px; }
-.pdf-rr-logo-icon img { width: 100%; height: 100%; object-fit: contain; }
-.pdf-rr-org-name h3 { font-size: 14px; color: #2c3e50; /* --user-rr-primary */ margin: 0 0 2px 0; font-weight: 600;}
-.pdf-rr-org-name h4 { font-size: 12px; font-weight: 400; margin: 0; }
-.pdf-rr-header-right { text-align: right; }
-.pdf-rr-date { font-size: 12px; }
+.user-rr-pdf-header-left { display: flex; align-items: center; }
+.user-rr-pdf-logo-icon { height: 45px; width: 45px; margin-right: 10px; }
+.user-rr-pdf-logo-icon img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.user-rr-pdf-org-name h3 { font-size: 14px; color: var(--user-rr-pdf-gov-blue); margin: 0 0 2px 0; font-weight: bold;}
+.user-rr-pdf-org-name h4 { font-size: 12px; font-weight: 500; margin: 0; }
+.user-rr-pdf-header-right { text-align: right; }
 
 /* PDF Certificate Title */
-.pdf-rr-certificate-title { text-align: center; margin-bottom: 10px; }
-.pdf-rr-certificate-title h2 { font-size: 18px; font-weight: 600; margin: 0 0 3px 0; color: #2c3e50; /* --user-rr-primary */ }
-.pdf-rr-certificate-title h3 { font-size: 16px; font-weight: 500; margin: 0; color: var(--pdf-rr-gov-maroon); }
+.user-rr-pdf-certificate-title { text-align: center; margin-bottom: 10px; }
+.user-rr-pdf-certificate-title h2 { font-size: 18px; font-weight: bold; margin: 0 0 4px 0; color: var(--user-rr-black); }
+.user-rr-pdf-certificate-title h3 { font-size: 16px; font-weight: bold; margin-bottom: 8px; text-decoration: underline; color: var(--user-rr-pdf-gov-maroon); letter-spacing: 0.5px; }
 
-/* PDF Body - takes remaining space */
-.pdf-rr-body {
+/* PDF Body */
+.user-rr-pdf-body {
   font-size: 11px;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
 /* PDF Photo Section */
-.pdf-rr-photo-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
-.pdf-rr-info-block { flex: 1; }
-.pdf-rr-info-row { display: flex; margin-bottom: 5px; }
-.pdf-rr-info-label { min-width: 160px; font-weight: 500; }
-.pdf-rr-info-value { flex: 1; }
-.pdf-rr-photo-box { width: 100px; height: 120px; border: 1px solid var(--pdf-rr-border-color); display: flex; align-items: center; justify-content: center; margin-left: 15px; flex-shrink: 0; }
-.pdf-rr-photo { max-width: 100%; max-height: 100%; object-fit: contain; }
-.pdf-rr-photo-placeholder { font-size: 11px; color: #bdc3c7; /* --user-rr-gray */ text-align: center; }
-
-/* PDF Section Title (for Pet Details, Owner Details) */
-.pdf-rr-section-title {
-  background-color: #ecf0f1; /* --user-rr-gray-light */
-  padding: 6px 10px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #2c3e50; /* --user-rr-primary */
-  border-left: 3px solid #2c3e50; /* --user-rr-primary */
-  margin: 10px 0 8px 0;
-}
-
-.pdf-rr-details-section { margin-bottom: 5px; }
-.pdf-rr-details-table { width: 100%; }
-.pdf-rr-details-row { display: flex; margin-bottom: 3px; border-bottom: 1px dotted #ecf0f1; /* --user-rr-gray-light */ padding-bottom: 2px; }
-.pdf-rr-details-label { width: 160px; font-weight: 500; flex-shrink: 0; }
-.pdf-rr-details-value { flex: 1; word-break: break-word; }
-.pdf-rr-details-columns { display: flex; gap: 15px; }
-.pdf-rr-details-column-left, .pdf-rr-details-column-right { flex: 1; }
-.pdf-rr-vaccine-img-link { color: #3498db; /* --user-rr-secondary */ text-decoration: underline; } /* Renamed for clarity */
-
-/* PDF Declaration */
-.pdf-rr-declaration {
-  margin-top: 15px;
-  padding: 8px;
-  background-color: #f9f9f9;
-  font-style: italic;
-  font-size: 9px; /* Slightly larger than 8px for better readability */
-  line-height: 1.3;
-  border-top: 1px solid #ecf0f1; /* --user-rr-gray-light */
-}
-.pdf-rr-declaration p { margin: 0; }
-
-/* PDF Signatures */
-.pdf-rr-signatures {
+.user-rr-pdf-photo-section {
   display: flex;
   justify-content: space-between;
-  margin-top: auto; /* Pushes to bottom if pdf-rr-body doesn't fill space */
-  padding-top: 15px; /* Space before signatures */
   margin-bottom: 10px;
-  padding: 0 10px;
+  align-items: flex-start;
 }
-.pdf-rr-signature-block { text-align: center; width: 45%; }
-.pdf-rr-signature-line { border-bottom: 1px solid var(--pdf-rr-border-color); height: 30px; margin-bottom: 5px; }
-.pdf-rr-signature-block p { font-size: 10px; margin: 0; }
+.user-rr-pdf-info-block { flex: 2; margin-right: 15px; }
+.user-rr-pdf-info-row { display: flex; margin-bottom: 5px; font-size: 11px; }
+.user-rr-pdf-info-label { font-weight: bold; min-width: 170px; color: var(--user-rr-gray-dark); }
+.user-rr-pdf-info-value { flex: 1; padding-left: 5px; color: var(--user-rr-black); }
+.user-rr-pdf-photo-box {
+  width: 90mm; 
+  max-width: 100px; 
+  height: 110mm;
+  max-height: 120px;
+  border: 1.5px solid var(--user-rr-pdf-border-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  background-color: var(--user-rr-gray-lightest);
+}
+.user-rr-pdf-photo { width: 100%; height: 100%; object-fit: cover; }
+.user-rr-pdf-photo-placeholder { text-align: center; font-size: 10px; color: var(--user-rr-gray); padding: 5px; }
+
+/* PDF Details Sections */
+.user-rr-pdf-details-section { margin-bottom: 8px; }
+.user-rr-pdf-section-title {
+  font-weight: bold;
+  font-size: 13px;
+  border-bottom: 1px solid var(--user-rr-pdf-border-color);
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  color: var(--user-rr-pdf-gov-blue);
+  background-color: var(--user-rr-gray-lightest);
+  padding: 4px 8px;
+  border-left: 3px solid var(--user-rr-pdf-gov-maroon);
+}
+.user-rr-pdf-details-columns { display: flex; gap: 20px; }
+.user-rr-pdf-details-column-left, .user-rr-pdf-details-column-right { flex: 1; }
+.user-rr-pdf-details-row { display: flex; margin-bottom: 4px; font-size: 11px; }
+.user-rr-pdf-details-label { font-weight: bold; width: 170px; flex-shrink: 0; color: var(--user-rr-gray-dark); }
+.user-rr-pdf-details-value { flex: 1; padding-left: 5px; word-break: break-word; color: var(--user-rr-black); }
+.user-rr-pdf-vaccine-link { color: var(--user-rr-secondary); text-decoration: underline; }
+.user-rr-pdf-owner-details-table .user-rr-pdf-details-label { width: 250px; } /* Specific for owner details if wider labels needed */
+
+/* PDF Declaration */
+.user-rr-pdf-declaration {
+  margin: 15px 0 10px 0;
+  font-size: 10px;
+  text-align: left;
+  border: 1px solid var(--user-rr-gray-light);
+  background-color: var(--user-rr-gray-lightest);
+  border-radius: var(--user-rr-border-radius);
+  padding: 8px 10px;
+  line-height: 1.4;
+}
+.user-rr-pdf-declaration p { margin: 0; }
+
+/* PDF Signatures */
+.user-rr-pdf-signatures {
+  display: flex;
+  justify-content: space-between;
+  margin-top: auto; 
+  padding-top: 15px; 
+  margin-bottom: 10px;
+}
+.user-rr-pdf-signature-block { text-align: center; width: 45%; }
+.user-rr-pdf-signature-line { border-bottom: 1px solid var(--user-rr-pdf-border-color); height: 30px; margin-bottom: 5px; }
+.user-rr-pdf-signature-block p { font-size: 10px; margin: 0; font-style: italic; }
 
 /* PDF Footer Bottom (QR, Stamp) */
-.pdf-rr-footer-bottom {
+.user-rr-pdf-footer-bottom {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
   padding-top: 10px;
-  border-top: 1px solid #ecf0f1; /* --user-rr-gray-light */
-  margin-top: 10px; /* Ensure some space if signatures are short */
+  border-top: 1px solid var(--user-rr-gray-light);
+  margin-top: 10px;
 }
-.pdf-rr-qr-code-area { width: 80px; text-align: center; } /* Renamed for clarity */
-.pdf-rr-qr-placeholder { width: 60px; height: 60px; border: 1px solid var(--pdf-rr-border-color); margin: 0 auto 5px; }
-.pdf-rr-qr-code-area p { font-size: 9px; margin:0; }
-.pdf-rr-stamp-area { text-align: center; } /* Renamed for clarity */
-.pdf-rr-stamp-placeholder { width: 70px; height: 70px; border: 1px dashed var(--pdf-rr-gov-maroon); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: var(--pdf-rr-gov-maroon); font-weight: 600; font-size: 10px; transform: rotate(-10deg); }
-.pdf-rr-stamp-placeholder p { margin:0; }
+.user-rr-pdf-qr-code-area { width: 70px; text-align: center; }
+.user-rr-pdf-qr-placeholder { width: 50px; height: 50px; border: 1px solid var(--user-rr-pdf-border-color); margin: 0 auto 5px; background-color: var(--user-rr-gray-lightest); }
+.user-rr-pdf-qr-code-area p { font-size: 9px; margin:0; }
+.user-rr-pdf-stamp-area { text-align: center; }
+.user-rr-pdf-stamp-placeholder {
+  width: 65px; height: 65px;
+  border: 1.5px dashed var(--user-rr-pdf-gov-maroon);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  color: var(--user-rr-pdf-gov-maroon);
+  font-weight: bold;
+  font-size: 9px;
+  transform: rotate(-12deg);
+  text-transform: uppercase;
+}
+.user-rr-pdf-stamp-placeholder p { margin:0; }
 
 /* PDF Contact Footer */
-.pdf-rr-contact-footer {
-  margin-top: 10px;
+.user-rr-pdf-contact-footer {
+  margin-top: 8px;
   padding-top: 5px;
   text-align: center;
   font-size: 9px;
-  color: #7f8c8d; /* --user-rr-gray-dark */
-  border-top: 1px solid #ecf0f1; /* --user-rr-gray-light */
+  color: var(--user-rr-gray-dark);
+  border-top: 1px solid var(--user-rr-gray-light);
 }
 
-/* Notices (Pending, Rejected) - UI elements, not part of printed PDF */
-.user-rr-pending-notice,
-.user-rr-rejected-notice {
+/* Notices (Pending, Rejected) - UI elements */
+.user-rr-notice {
   display: flex;
   align-items: flex-start;
   gap: 12px;
   padding: 1rem;
-  border-radius: 4px; /* --user-rr-border-radius */
+  border-radius: var(--user-rr-border-radius);
   margin: 15px auto 0;
-  max-width: calc(210mm - 40px); /* Align with PDF width if possible */
+  max-width: calc(210mm - 40px);
   width: calc(100% - 2rem);
   box-sizing: border-box;
+  font-size: 0.95rem;
 }
-.user-rr-pending-notice { background-color: rgba(243, 156, 18, 0.1); color: #f39c12; /* --user-rr-warning */ border: 1px solid rgba(243, 156, 18, 0.3); }
-.user-rr-rejected-notice { background-color: rgba(192, 57, 43, 0.1); color: #c0392b; /* --user-rr-danger */ border: 1px solid rgba(192, 57, 43, 0.3); }
-
-.user-rr-pending-notice p, .user-rr-rejected-notice p { margin: 0 0 0.5rem 0; }
-.user-rr-pending-notice p:last-child, .user-rr-rejected-notice p:last-child { margin-bottom: 0; }
-
-.user-rr-rejection-reason-box { /* Renamed for clarity */
-    margin-top: 8px;
-    padding: 8px;
-    background-color: rgba(255, 255, 255, 0.5);
-    border-radius: 4px; /* --user-rr-border-radius */
-    font-size: 0.9em;
+.user-rr-renewal-pending-notice { background-color: var(--user-rr-warning-bg); color: var(--user-rr-warning-text); border: 1px solid rgba(243, 156, 18, 0.3); }
+.user-rr-rejected-notice { background-color: var(--user-rr-danger-bg); color: var(--user-rr-danger-text); border: 1px solid rgba(192, 57, 43, 0.25); }
+.user-rr-notice p { margin: 0 0 0.5rem 0; }
+.user-rr-notice p:last-child { margin-bottom: 0; }
+.user-rr-rejection-reason-box {
+  margin-top: 8px;
+  padding: 8px 10px;
+  background-color: rgba(255, 255, 255, 0.6);
+  border-radius: var(--user-rr-border-radius);
+  font-size: 0.9em;
+  border-left: 3px solid var(--user-rr-danger-text);
 }
-.user-rr-rejection-reason-box strong { color: #c0392b; /* --user-rr-danger */ }
+.user-rr-rejection-reason-box strong { color: var(--user-rr-danger-text); }
 
 
 /* Responsive Styles */
 @media screen and (max-width: 768px) {
-  .user-rr-container { padding: 1rem; }
-  .user-rr-certificate-focused-container {
-    padding: 0.5rem;
-  }
+  .user-rr-page-container { padding: 1rem; }
+  .user-rr-certificate-focused-view { padding: 0.5rem; }
 
-  .user-rr-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
-  .user-rr-title { font-size: 1.5rem; }
-  .user-rr-back-to-list-btn { font-size: 0.9rem; }
+  .user-rr-page-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .user-rr-main-title { font-size: 1.6rem; }
+  .user-rr-back-button { font-size: 0.9rem; }
 
-  .user-rr-license-table th, .user-rr-license-table td { font-size: 0.85rem; padding: 0.75rem 0.5rem; }
-  .user-rr-status-badge { padding: 0.2rem 0.5rem; font-size: 0.75rem; gap: 0.25rem; }
-  .user-rr-status-badge svg { width: 12px; height: 12px; }
+  .user-rr-data-table th, .user-rr-data-table td { font-size: 0.85rem; padding: 0.75rem 0.5rem; }
+  .user-rr-status-badge { padding: 0.25rem 0.6rem; font-size: 0.75rem; gap: 0.25rem; }
+  .user-rr-status-badge svg { width: 13px; height: 13px; }
   
-  .user-rr-view-btn, .user-rr-action-btn { padding: 0.4rem 0.6rem; font-size: 0.8rem; }
-  /* Hiding text in buttons on mobile can be done via JSX based on isMobile prop,
-     but if icons alone are desired, CSS can also hide the span:
-     .user-rr-view-btn span, .user-rr-action-btn span { display: none; }
-     .user-rr-view-btn .user-rr-btn-icon, .user-rr-action-btn .user-rr-btn-icon { margin-right: 0; }
-  */
+  .user-rr-action-button { padding: 0.4rem 0.7rem; font-size: 0.8rem; }
+  
+  .user-rr-pdf-border { padding: 8mm 5mm; }
+  .user-rr-pdf-header { flex-direction: column; align-items: flex-start; gap: 6px; margin-bottom:8px; padding-bottom: 6px;}
+  .user-rr-pdf-logo-icon { width: 40px; height: 40px; margin-right: 8px; }
+  .user-rr-pdf-org-name h3 { font-size: 12px; }
+  .user-rr-pdf-org-name h4 { font-size: 10px; }
+  .user-rr-pdf-header-right { align-self: flex-end; margin-top: 5px;}
+  .user-rr-pdf-header-right .user-rr-pdf-logo-icon { width: 40px; height: 40px;}
 
-  .pdf-rr-border { padding: 10px; }
-  .pdf-rr-header { flex-direction: column; align-items: flex-start; gap: 5px; margin-bottom:8px; padding-bottom: 5px;}
-  .pdf-rr-logo-icon { width: 50px; height: 30px; margin-right: 8px; }
-  .pdf-rr-org-name h3 { font-size: 12px; }
-  .pdf-rr-org-name h4 { font-size: 10px; }
-  .pdf-rr-header-right { font-size: 10px; align-self: flex-end; margin-top: 5px;}
+  .user-rr-pdf-certificate-title h2 { font-size: 15px; }
+  .user-rr-pdf-certificate-title h3 { font-size: 14px; }
 
-  .pdf-rr-certificate-title h2 { font-size: 15px; }
-  .pdf-rr-certificate-title h3 { font-size: 13px; }
+  .user-rr-pdf-body { font-size: 10px; line-height: 1.4; }
+  .user-rr-pdf-photo-section { flex-direction: column; align-items: center; gap: 10px; margin-bottom: 10px;}
+  .user-rr-pdf-info-block { width: 100%; }
+  .user-rr-pdf-info-row { margin-bottom: 3px; font-size: 10px; }
+  .user-rr-pdf-info-label { min-width: 120px; }
+  .user-rr-pdf-photo-box { max-width: 90px; max-height: 110px; }
 
-  .pdf-rr-body { font-size: 9px; line-height: 1.3; }
-  .pdf-rr-photo-section { flex-direction: column; align-items: center; gap: 10px; margin-bottom: 10px;}
-  .pdf-rr-info-block { width: 100%; }
-  .pdf-rr-info-row { margin-bottom: 4px; font-size: 9px; }
-  .pdf-rr-info-label { min-width: 100px; }
-  .pdf-rr-photo-box { width: 80px; height: 100px; margin-left: 0; }
-  .pdf-rr-photo-placeholder { font-size: 10px; }
+  .user-rr-pdf-section-title { font-size: 11px; padding: 4px 6px; margin-bottom: 6px; }
+  .user-rr-pdf-details-columns { flex-direction: column; gap: 0; }
+  .user-rr-pdf-details-row { font-size: 10px; margin-bottom: 3px; padding-bottom: 2px; }
+  .user-rr-pdf-details-label { width: 130px; }
+  .user-rr-pdf-owner-details-table .user-rr-pdf-details-label { width: 180px;}
 
-  .pdf-rr-section-title { font-size: 11px; padding: 5px 8px; margin-bottom: 6px; }
-  .pdf-rr-details-columns { flex-direction: column; gap: 0; }
-  .pdf-rr-details-row { font-size: 9px; margin-bottom: 3px; padding-bottom: 2px; }
-  .pdf-rr-details-label { width: 100px; }
 
-  .pdf-rr-declaration { font-size: 8px; padding: 6px; }
-  .pdf-rr-signatures { flex-direction: column; gap: 10px; margin-top:10px; margin-bottom: 8px; }
-  .pdf-rr-signature-block { width: 100%; }
-  .pdf-rr-signature-line { height: 20px; margin-bottom: 3px; }
-  .pdf-rr-signature-block p { font-size: 9px; }
+  .user-rr-pdf-declaration { font-size: 9px; padding: 6px; }
+  .user-rr-pdf-signatures { flex-direction: column; gap: 10px; margin-top:12px; margin-bottom: 8px; }
+  .user-rr-pdf-signature-block { width: 100%; }
+  .user-rr-pdf-signature-line { height: 25px; margin-bottom: 4px; }
+  .user-rr-pdf-signature-block p { font-size: 9px; }
 
-  .pdf-rr-footer-bottom { flex-direction: column; align-items: center; gap: 10px; margin-top: 8px; }
-  .pdf-rr-qr-placeholder { width: 50px; height: 50px; }
-  .pdf-rr-stamp-placeholder { width: 60px; height: 60px; font-size: 9px; }
-  .pdf-rr-contact-footer { font-size: 8px; margin-top: 8px; }
+  .user-rr-pdf-footer-bottom { flex-direction: column; align-items: center; gap: 10px; margin-top: 8px; }
+  .user-rr-pdf-qr-placeholder { width: 45px; height: 45px; }
+  .user-rr-pdf-stamp-placeholder { width: 55px; height: 55px; font-size: 8px; }
+  .user-rr-pdf-contact-footer { font-size: 8px; margin-top: 8px; }
 
-  .user-rr-pending-notice, .user-rr-rejected-notice { padding: 0.75rem; font-size: 0.9rem; }
+  .user-rr-notice { padding: 0.75rem; font-size: 0.9rem; }
 }

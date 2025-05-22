@@ -1,27 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import html2pdf from 'html2pdf.js';
-import './styles/Download.css'; // Ensure this path is correct
+import './styles/Download.css';
 import {
   Download,
   CheckCircle,
   XCircle,
-  // ChevronDown, // Not used in this version for expanded view
-  // ChevronUp, // Not used
   FileText,
   Calendar,
   Clock,
   AlertCircle,
   User,
-  Dog, // Consider a more generic icon or logic to switch icons based on animalType
+  Dog,
   Eye,
   ChevronLeft,
-  // Award, // Not used
-  // Syringe, // Not used
-  // Stamp, // Not used
-  // Globe, // Not used
-  // Phone, // Not used
-  // MapPin, // Not used
-  // Image // Not used
+  ChevronDown, // For dropdown indicator
+  Filter // For mobile filter button
 } from 'lucide-react';
 
 const formatDate = (dateString) => {
@@ -29,11 +22,6 @@ const formatDate = (dateString) => {
   const date = new Date(dateString);
   return date.toLocaleDateString("en-GB");
 };
-
-// const getCurrentDate = () => { // Not used directly in this simplified version's PDF, but available
-//   const now = new Date();
-//   return now.toLocaleDateString('en-GB');
-// };
 
 const UserStatusBadge = ({ status, isMobile, languageType = 'en' }) => {
   const statusText = {
@@ -56,44 +44,45 @@ const UserStatusBadge = ({ status, isMobile, languageType = 'en' }) => {
 
   let badgeClass = "user-dl-status-badge";
   let Icon = AlertCircle;
-  let iconColor = 'var(--user-dl-warning)';
+  // let iconColor = 'var(--user-dl-warning)'; // Icon color will be inherited from badge text color for simplicity
 
   switch(statusKey) {
     case 'approved':
       badgeClass += " user-dl-status-approved";
       Icon = CheckCircle;
-      iconColor = 'var(--user-dl-success)';
+      // iconColor = 'var(--user-dl-success)';
       break;
     case 'pending':
       badgeClass += " user-dl-status-pending";
       Icon = Clock;
-      iconColor = 'var(--user-dl-warning)';
+      // iconColor = 'var(--user-dl-warning)';
       break;
     case 'rejected':
       badgeClass += " user-dl-status-rejected";
       Icon = XCircle;
-      iconColor = 'var(--user-dl-danger)';
+      // iconColor = 'var(--user-dl-danger)';
       break;
-    case 'provisional': // Assuming provisional might have its own style or share with pending/approved
-      badgeClass += " user-dl-status-pending"; // Example: treat like pending for badge color
-      Icon = Clock; // Example
-      iconColor = 'var(--user-dl-warning)';
+    case 'provisional':
+      badgeClass += " user-dl-status-provisional";
+      Icon = Clock;
+      // iconColor = 'var(--user-dl-warning)';
       break;
     default:
       badgeClass += " user-dl-status-default";
       Icon = AlertCircle;
-      iconColor = 'var(--user-dl-dark)';
+      // iconColor = 'var(--user-dl-dark)';
   }
 
   const displayStatusText = currentStatusText[statusKey] || status;
 
   return (
     <span className={badgeClass}>
-      <Icon size={16} style={{ color: iconColor }} />
+      <Icon size={isMobile ? 14 : 16} /> {/* Removed inline style for color */}
       {!isMobile && <span>{displayStatusText}</span>}
     </span>
   );
 };
+
 
 const getAnimalLabel = (animalType = 'Pet') => {
   if (!animalType) return 'Pet';
@@ -113,9 +102,8 @@ const VET_DETAILS = {
   address: "123 Main Street, Gorakhpur, UP 273001"
 };
 
-// This function now returns the certificate's visual structure and associated UI (button, notices)
 const renderCertificateView = (lic, downloadPDF, languageType = 'en') => {
-  const currentDateOnCertificate = new Date().toLocaleDateString('en-GB'); // Date for the certificate header
+  const currentDateOnCertificate = new Date().toLocaleDateString('en-GB'); 
   
   const expiryDate = lic.isProvisional ? 
     formatDate(lic.provisionalExpiryDate) : 
@@ -189,149 +177,133 @@ const renderCertificateView = (lic, downloadPDF, languageType = 'en') => {
   const certTitleHi = lic.isProvisional ? currentCertText.provisionalCertificateTitleHi : currentCertText.certificateTitleHi;
 
   return (
-    // This is the container for the certificate preview and its actions
-    <div className="certificate-display-area"> 
-      <div id={`pdf-${lic._id}`} className="pdf-layout"> {/* This is the A4 element */}
-        {/* Outer border */}
-        <div className="outer-pdf-border">
-          <div className="pdf-border">
-            {/* PDF Header */}
-            <div className="pdf-header">
-              <div className="pdf-header-left">
-                <div className="pdf-logo-icon">
-                  <img src="/logo.webp" alt="Organization Logo" />
+    <div className="user-dl-certificate-display-area"> 
+      <div id={`pdf-${lic._id}`} className="user-dl-pdf-layout">
+        <div className="user-dl-outer-pdf-border">
+          <div className="user-dl-pdf-border">
+            <div className="user-dl-pdf-header">
+              <div className="user-dl-pdf-header-left">
+                <div className="user-dl-pdf-logo-icon">
+                  <img src="/logo.webp" alt="Organization Logo" onError={(e) => e.target.style.display='none'} />
                 </div>
-                <div className="pdf-org-name">
+                <div className="user-dl-pdf-org-name">
                   <h3>{currentCertText.orgNameEn}</h3>
                   <h4>{currentCertText.orgNameHi}</h4>
                 </div>
               </div>
-              <div className="pdf-header-right">
-                 <div className="pdf-logo-icon">
-                  <img src="/up.webp" alt="Organization Logo" />
+              <div className="user-dl-pdf-header-right">
+                 <div className="user-dl-pdf-logo-icon">
+                  <img src="/up.webp" alt="State Logo" onError={(e) => e.target.style.display='none'} />
                 </div>
-              
               </div>
             </div>
 
-            {/* Certificate Title */}
-            <div className="pdf-certificate-title">
+            <div className="user-dl-pdf-certificate-title">
               <h2>{certTitleEn}</h2>
               <h3>{certTitleHi}</h3>
             </div>
             
-            {/* Provisional Notice - BANNER inside the certificate, if applicable */}
-           
-
-            {/* PDF Body */}
-            <div className="pdf-body">
-              <div className="pdf-photo-section">
-                <div className="pdf-info-block">
-                  <div className="pdf-info-row"><div className="pdf-info-label">नाम / Name</div><div className="pdf-info-value">: {lic.fullName || "N/A"}</div></div>
-                  <div className="pdf-info-row"><div className="pdf-info-label">पंजीकरण संख्या / Registration No.</div><div className="pdf-info-value">: {lic.license_Id || "N/A"}</div></div>
-                  <div className="pdf-info-row"><div className="pdf-info-label">जारी दिनांक / Issue Date</div><div className="pdf-info-value">: {formatDate(lic.createdAt)}</div></div>
-                  <div className="pdf-info-row"><div className="pdf-info-label">समाप्ति तिथि / Expiry Date</div><div className="pdf-info-value">: {expiryDate}</div></div>
+            <div className="user-dl-pdf-body">
+              <div className="user-dl-pdf-photo-section">
+                <div className="user-dl-pdf-info-block">
+                  <div className="user-dl-pdf-info-row"><div className="user-dl-pdf-info-label">नाम / Name</div><div className="user-dl-pdf-info-value">: {lic.fullName || "N/A"}</div></div>
+                  <div className="user-dl-pdf-info-row"><div className="user-dl-pdf-info-label">पंजीकरण संख्या / Registration No.</div><div className="user-dl-pdf-info-value">: {lic.license_Id || "N/A"}</div></div>
+                  <div className="user-dl-pdf-info-row"><div className="user-dl-pdf-info-label">जारी दिनांक / Issue Date</div><div className="user-dl-pdf-info-value">: {formatDate(lic.createdAt)}</div></div>
+                  <div className="user-dl-pdf-info-row"><div className="user-dl-pdf-info-label">समाप्ति तिथि / Expiry Date</div><div className="user-dl-pdf-info-value">: {expiryDate}</div></div>
                 </div>
-                <div className="pdf-photo-box">
+                <div className="user-dl-pdf-photo-box">
                   {lic.pet?.avatarUrl ? (
-                    <img src={lic.pet.avatarUrl} alt="Pet" className="pdf-photo" />
+                    <img src={lic.pet.avatarUrl} alt="Pet" className="user-dl-pdf-photo" onError={(e) => e.target.src='https://placehold.co/100x120/e0e0e0/757575?text=No+Image'} />
                   ) : (
-                    <div className="pdf-photo-placeholder">{currentCertText.photoPlaceholder}</div>
+                    <div className="user-dl-pdf-photo-placeholder">{currentCertText.photoPlaceholder}</div>
                   )}
                 </div>
               </div>
 
               {lic.isProvisional && (
-                <div className="pdf-details-section">
-                  <div className="pdf-section-title">{currentCertText.vetDetailsTitle}</div>
-                  <div className="pdf-details-columns">
-                    <div className="pdf-details-column-left">
-                      <div className="pdf-details-row"><div className="pdf-details-label">{currentCertText.vetNameLabel}</div><div className="pdf-details-value">{VET_DETAILS.name}</div></div>
-                      <div className="pdf-details-row"><div className="pdf-details-label">{currentCertText.vetPhoneLabel}</div><div className="pdf-details-value">{VET_DETAILS.phone}</div></div>
+                <div className="user-dl-pdf-details-section user-dl-pdf-vet-details-section">
+                  <div className="user-dl-pdf-section-title">{currentCertText.vetDetailsTitle}</div>
+                  <div className="user-dl-pdf-details-columns">
+                    <div className="user-dl-pdf-details-column-left">
+                      <div className="user-dl-pdf-details-row"><div className="user-dl-pdf-details-label">{currentCertText.vetNameLabel}</div><div className="user-dl-pdf-details-value">{VET_DETAILS.name}</div></div>
+                      <div className="user-dl-pdf-details-row"><div className="user-dl-pdf-details-label">{currentCertText.vetPhoneLabel}</div><div className="user-dl-pdf-details-value">{VET_DETAILS.phone}</div></div>
                     </div>
-                    <div className="pdf-details-column-right">
-                      <div className="pdf-details-row"><div className="pdf-details-label">{currentCertText.vetClinicLabel}</div><div className="pdf-details-value">{VET_DETAILS.clinic}</div></div>
-                      <div className="pdf-details-row"><div className="pdf-details-label">{currentCertText.vetAddressLabel}</div><div className="pdf-details-value">{VET_DETAILS.address}</div></div>
+                    <div className="user-dl-pdf-details-column-right">
+                      <div className="user-dl-pdf-details-row"><div className="user-dl-pdf-details-label">{currentCertText.vetClinicLabel}</div><div className="user-dl-pdf-details-value">{VET_DETAILS.clinic}</div></div>
+                      <div className="user-dl-pdf-details-row"><div className="user-dl-pdf-details-label">{currentCertText.vetAddressLabel}</div><div className="user-dl-pdf-details-value">{VET_DETAILS.address}</div></div>
                     </div>
                   </div>
-                  <div className="pdf-provisional-instructions">
+                  <div className="user-dl-pdf-provisional-instructions">
                     <p>{currentCertText.provisionalInstructions}</p>
                   </div>
                 </div>
               )}
 
-              <div className="pdf-details-section">
-                <div className="pdf-section-title">पशु का विवरण / Pet Details</div>
-                <div className="pdf-details-columns">
-                  <div className="pdf-details-column-left">
-                    <div className="pdf-details-row"><div className="pdf-details-label">{currentCertText.animalTypeLabelBilingual}</div><div className="pdf-details-value">: {getAnimalLabel(lic.animalType) || "N/A"}</div></div>
-                    <div className="pdf-details-row"><div className="pdf-details-label">पशु का नाम / Pet Name</div><div className="pdf-details-value">: {lic.pet?.name || "N/A"}</div></div>
-                    <div className="pdf-details-row"><div className="pdf-details-label">नस्ल / Breed</div><div className="pdf-details-value">: {lic.pet?.breed || "N/A"}</div></div>
-                    <div className="pdf-details-row"><div className="pdf-details-label">वर्ग / Category</div><div className="pdf-details-value">: {lic.pet?.category || "N/A"}</div></div>
-                    <div className="pdf-details-row"><div className="pdf-details-label">रंग / Color</div><div className="pdf-details-value">: {lic.pet?.color || "N/A"}</div></div>
-                    <div className="pdf-details-row"><div className="pdf-details-label">आयु / Age</div><div className="pdf-details-value">: {lic.pet?.age || "N/A"}</div></div>
+              <div className="user-dl-pdf-details-section user-dl-pdf-pet-details-section">
+                <div className="user-dl-pdf-section-title">पशु का विवरण / Pet Details</div>
+                <div className="user-dl-pdf-details-columns">
+                  <div className="user-dl-pdf-details-column-left">
+                    <div className="user-dl-pdf-details-row"><div className="user-dl-pdf-details-label">{currentCertText.animalTypeLabelBilingual}</div><div className="user-dl-pdf-details-value">: {getAnimalLabel(lic.animalType) || "N/A"}</div></div>
+                    <div className="user-dl-pdf-details-row"><div className="user-dl-pdf-details-label">पशु का नाम / Pet Name</div><div className="user-dl-pdf-details-value">: {lic.pet?.name || "N/A"}</div></div>
+                    <div className="user-dl-pdf-details-row"><div className="user-dl-pdf-details-label">नस्ल / Breed</div><div className="user-dl-pdf-details-value">: {lic.pet?.breed || "N/A"}</div></div>
+                    <div className="user-dl-pdf-details-row"><div className="user-dl-pdf-details-label">वर्ग / Category</div><div className="user-dl-pdf-details-value">: {lic.pet?.category || "N/A"}</div></div>
+                    <div className="user-dl-pdf-details-row"><div className="user-dl-pdf-details-label">रंग / Color</div><div className="user-dl-pdf-details-value">: {lic.pet?.color || "N/A"}</div></div>
+                    <div className="user-dl-pdf-details-row"><div className="user-dl-pdf-details-label">आयु / Age</div><div className="user-dl-pdf-details-value">: {lic.pet?.age || "N/A"}</div></div>
                   </div>
-                  <div className="pdf-details-column-right">
-                    <div className="pdf-details-row"><div className="pdf-details-label">लिंग / Gender</div><div className="pdf-details-value">: {lic.pet?.sex || "N/A"}</div></div>
-                    <div className="pdf-details-row"><div className="pdf-details-label">टीकाकरण की तारीख / Vaccination Date</div><div className="pdf-details-value">: {formatDate(lic.pet?.dateOfVaccination)}</div></div>
-                    <div className="pdf-details-row"><div className="pdf-details-label">टीकाकरण / Vaccinated</div><div className="pdf-details-value">: {lic.pet?.dateOfVaccination ? ' हां / Yes' : ' नहीं / No'}</div></div>
-                    {lic.pet?.vaccinationProofUrl && (<div className="pdf-details-row"><div className="pdf-details-label">टीकाकरण प्रमाणपत्र / Vaccination Certificate</div><div className="pdf-details-value"><a href={lic.pet.vaccinationProofUrl} target="_blank" rel="noreferrer noopener" className="pdf-vaccine-img">View</a></div></div>)}
-                    <div className="pdf-details-row"><div className="pdf-details-label">माइक्रोचिप / Microchipped</div><div className="pdf-details-value">: No</div></div>
-                    <div className="pdf-details-row"><div className="pdf-details-label">अगला टीकाकरण / Next Vaccination</div><div className="pdf-details-value">: {formatDate(lic.pet?.dueVaccination)}</div></div>
+                  <div className="user-dl-pdf-details-column-right">
+                    <div className="user-dl-pdf-details-row"><div className="user-dl-pdf-details-label">लिंग / Gender</div><div className="user-dl-pdf-details-value">: {lic.pet?.sex || "N/A"}</div></div>
+                    <div className="user-dl-pdf-details-row"><div className="user-dl-pdf-details-label">टीकाकरण की तारीख / Vaccination Date</div><div className="user-dl-pdf-details-value">: {formatDate(lic.pet?.dateOfVaccination)}</div></div>
+                    <div className="user-dl-pdf-details-row"><div className="user-dl-pdf-details-label">टीकाकरण / Vaccinated</div><div className="user-dl-pdf-details-value">: {lic.pet?.dateOfVaccination ? (languageType === 'hi' ? ' हां' : ' Yes') : (languageType === 'hi' ? ' नहीं' : ' No')}</div></div>
+                    {lic.pet?.vaccinationProofUrl && (<div className="user-dl-pdf-details-row"><div className="user-dl-pdf-details-label">टीकाकरण प्रमाणपत्र / Vaccination Certificate</div><div className="user-dl-pdf-details-value"><a href={lic.pet.vaccinationProofUrl} target="_blank" rel="noreferrer noopener" className="user-dl-pdf-vaccine-link">View</a></div></div>)}
+                    <div className="user-dl-pdf-details-row"><div className="user-dl-pdf-details-label">माइक्रोचिप / Microchipped</div><div className="user-dl-pdf-details-value">: {languageType === 'hi' ? 'नहीं' : 'No'}</div></div>
+                    <div className="user-dl-pdf-details-row"><div className="user-dl-pdf-details-label">अगला टीकाकरण / Next Vaccination</div><div className="user-dl-pdf-details-value">: {formatDate(lic.pet?.dueVaccination)}</div></div>
                   </div>
                 </div>
               </div>
 
-              <div className="pdf-details-section">
-                <div className="pdf-section-title">मालिक का विवरण / Owner Details</div>
-                <div className="pdf-details-table">
-                  <div className="pdf-details-row"><div className="pdf-details-label">पता / Address</div><div className="pdf-details-value">: {`${lic.address?.streetName || ""}, ${lic.address?.city || ""}, ${lic.address?.state || ""} - ${lic.address?.pinCode || "N/A"}`}</div></div>
-                  <div className="pdf-details-row"><div className="pdf-details-label">फोन नंबर / Phone Number</div><div className="pdf-details-value">: {lic.phoneNumber || "N/A"}</div></div>
-                  <div className="pdf-details-row"><div className="pdf-details-label">{`जानवरों की संख्या / No. of ${getAnimalLabel(lic.animalType)}s`}</div><div className="pdf-details-value">:{lic.numberOfAnimals || "N/A"}</div></div>
-                  <div className="pdf-details-row"><div className="pdf-details-label">घर का क्षेत्रफल / House Area</div><div className="pdf-details-value">: {lic.totalHouseArea ? `${lic.totalHouseArea} sq meter` : "N/A"}</div></div>
+              <div className="user-dl-pdf-details-section user-dl-pdf-owner-details-section">
+                <div className="user-dl-pdf-section-title">मालिक का विवरण / Owner Details</div>
+                <div className="user-dl-pdf-owner-details-table">
+                  <div className="user-dl-pdf-details-row"><div className="user-dl-pdf-details-label">पता / Address</div><div className="user-dl-pdf-details-value">: {`${lic.address?.streetName || ""}, ${lic.address?.city || ""}, ${lic.address?.state || ""} - ${lic.address?.pinCode || "N/A"}`}</div></div>
+                  <div className="user-dl-pdf-details-row"><div className="user-dl-pdf-details-label">फोन नंबर / Phone Number</div><div className="user-dl-pdf-details-value">: {lic.phoneNumber || "N/A"}</div></div>
+                  <div className="user-dl-pdf-details-row"><div className="user-dl-pdf-details-label">{`जानवरों की संख्या / No. of ${getAnimalLabel(lic.animalType)}s`}</div><div className="user-dl-pdf-details-value">:{lic.numberOfAnimals || "N/A"}</div></div>
+                  <div className="user-dl-pdf-details-row"><div className="user-dl-pdf-details-label">घर का क्षेत्रफल / House Area</div><div className="user-dl-pdf-details-value">: {lic.totalHouseArea ? `${lic.totalHouseArea} sq meter` : "N/A"}</div></div>
                 </div>
               </div>
 
-              <div className="pdf-declaration"><p>{currentCertText.declaration}</p></div>
-            </div>
-            {/* END PDF Body */}
-
-            {/* PDF Signatures and Footer are outside pdf-body to be at the bottom of pdf-border */}
-            <div className="pdf-signatures">
-              <div className="pdf-signature-block"><div className="pdf-signature-line"></div><p>{currentCertText.applicantSignature}</p></div>
-              <div className="pdf-signature-block"><div className="pdf-signature-line"></div><p>{currentCertText.issuingAuthority}</p></div>
+              <div className="user-dl-pdf-declaration"><p>{currentCertText.declaration}</p></div>
             </div>
 
-            <div className="pdf-footer-bottom">
-              <div className="pdf-qr-code">
-                <div className="pdf-qr-placeholder"></div>
+            <div className="user-dl-pdf-signatures">
+              <div className="user-dl-pdf-signature-block"><div className="user-dl-pdf-signature-line"></div><p>{currentCertText.applicantSignature}</p></div>
+              <div className="user-dl-pdf-signature-block"><div className="user-dl-pdf-signature-line"></div><p>{currentCertText.issuingAuthority}</p></div>
+            </div>
+
+            <div className="user-dl-pdf-footer-bottom">
+              <div className="user-dl-pdf-qr-code-area">
+                <div className="user-dl-pdf-qr-placeholder"></div>
                 <p>{currentCertText.qrCodeLabel}</p>
               </div>
               {lic.isProvisional && (
-              <div className="pdf-provisional-notice-banner">
+              <div className="user-dl-pdf-provisional-notice-banner">
                 <AlertCircle size={14} /> 
                 <span>{currentCertText.provisionalNoticeBanner}</span>
               </div>
             )}
-              <div className="pdf-stamp">
-                <div className="pdf-stamp-placeholder"><p>{currentCertText.officialStamp}</p></div>
+              <div className="user-dl-pdf-stamp-area">
+                <div className="user-dl-pdf-stamp-placeholder"><p>{currentCertText.officialStamp}</p></div>
               </div>
             </div>
-            <div className="pdf-contact-footer">
-              1234  |  info@awbi.org  |  www.awbi.org |
-                
-                  <span>{currentCertText.dateLabel} {currentDateOnCertificate}</span>
-                
+            <div className="user-dl-pdf-contact-footer">
+              1234  |  info@awbi.org  |  www.awbi.org | <span>{currentCertText.dateLabel} {currentDateOnCertificate}</span>
             </div>
+          </div> 
+        </div> 
+      </div> 
 
-          </div> {/* End pdf-border */}
-        </div> {/* End outer-pdf-border */}
-      </div> {/* End pdf-layout */}
-
-      {/* Action buttons and notices - rendered outside the .pdf-layout element */}
       {(lic.status === 'approved' || lic.isProvisional) && (
         <button
-          className="user-dl-button user-dl-certificate-download-btn"
+          className="user-dl-action-button user-dl-certificate-download-btn"
           onClick={(e) => {
             e.stopPropagation();
             downloadPDF(lic._id, lic.pet?.name || getAnimalLabel(lic.animalType));
@@ -342,20 +314,20 @@ const renderCertificateView = (lic, downloadPDF, languageType = 'en') => {
         </button>
       )}
 
-      {lic.status === 'pending' && !lic.isProvisional && ( // Show pending only if not also provisional
-        <div className="user-dl-pending-notice">
+      {lic.status === 'pending' && !lic.isProvisional && (
+        <div className="user-dl-notice user-dl-pending-notice">
           <AlertCircle size={18} />
           <p>{currentCertText.pendingNotice}</p>
         </div>
       )}
 
       {lic.status === 'rejected' && (
-        <div className="user-dl-rejected-notice">
+        <div className="user-dl-notice user-dl-rejected-notice">
           <XCircle size={18} />
           <div>
             <p>{currentCertText.rejectedNotice(lic.rejectionDate)}</p>
             {lic.rejectionReason && (
-              <div className="user-dl-rejection-reason">
+              <div className="user-dl-rejection-reason-box">
                 <strong>{currentCertText.reasonLabel}</strong> {lic.rejectionReason}
               </div>
             )}
@@ -374,46 +346,66 @@ const DogLicenseDownload = ({ languageType = 'en' }) => {
   const [expandedLicenseId, setExpandedLicenseId] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [filterStatus, setFilterStatus] = useState('All');
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const filterDropdownRef = useRef(null);
 
-  const backend = "https://dog-registration.onrender.com"; // Replace with your actual backend URL
+
+  const backend = "https://dog-registration.onrender.com";
   const token = localStorage.getItem('token');
 
   const textContent = {
     en: {
       pageTitle: 'My Pet License Applications',
       filterLabel: 'Filter by:',
+      filterDropdownLabel: 'Filter Status',
       filterButtons: { all: 'All', approved: 'Approved', pending: 'Pending', rejected: 'Rejected', provisional: 'Provisional' },
       backToList: 'Back to Applications List',
       loadingData: 'Loading license data…',
       tableHeaders: { regNo: 'Reg. No', owner: 'Owner', petName: 'Pet Name', animalType: 'Animal Type', status: 'Status', appliedDate: 'Applied Date', view: 'View/Download' },
-      tableCellView: 'View',
       emptyState: { noApplications: 'You have not applied for any licenses yet.', noFiltered: (status) => `No "${status}" licenses found.`, applyButton: 'Apply for a New License' }
     },
     hi: {
       pageTitle: 'मेरे पालतू पशु लाइसेंस आवेदन',
       filterLabel: 'फ़िल्टर करें:',
+      filterDropdownLabel: 'फ़िल्टर स्थिति',
       filterButtons: { all: 'सभी', approved: 'स्वीकृत', pending: 'लंबित', rejected: 'अस्वीकृत', provisional: 'अस्थायी' },
       backToList: 'आवेदन सूची पर वापस जाएं',
       loadingData: 'लाइसेंस डेटा लोड हो रहा है…',
       tableHeaders: { regNo: 'पंजीकरण संख्या', owner: 'मालिक', petName: 'पशु का नाम', animalType: 'पशु का प्रकार', status: 'स्थिति', appliedDate: 'आवेदन की तिथि', view: 'देखें/डाउनलोड करें' },
-      tableCellView: 'देखें',
       emptyState: { noApplications: 'आपने अभी तक किसी भी लाइसेंस के लिए आवेदन नहीं किया है।', noFiltered: (status) => `कोई भी "${status}" लाइसेंस नहीं मिला।`, applyButton: 'नए लाइसेंस के लिए आवेदन करें' }
     }
   };
   const currentText = textContent[languageType] || textContent.en;
 
   const getFilterButtonText = (statusKey) => currentText.filterButtons[statusKey] || statusKey;
-  const getTranslatedFilterStatus = (status) => {
-    const statusKey = Object.keys(textContent.en.filterButtons).find(key => textContent.en.filterButtons[key].toLowerCase() === status.toLowerCase());
-    return statusKey ? getFilterButtonText(statusKey) : status;
+  
+  const getTranslatedFilterStatus = (englishStatus) => {
+    const statusKey = Object.keys(textContent.en.filterButtons).find(key => textContent.en.filterButtons[key] === englishStatus);
+    if (statusKey) {
+      return currentText.filterButtons[statusKey] || englishStatus;
+    }
+    return englishStatus;
   };
+
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener('resize', handleResize);
-    handleResize(); // Initial check
+    handleResize();
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (filterDropdownRef.current && !filterDropdownRef.current.contains(event.target)) {
+        setShowFilterDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [filterDropdownRef]);
+
 
   useEffect(() => {
     setLoading(true);
@@ -425,7 +417,7 @@ const DogLicenseDownload = ({ languageType = 'en' }) => {
       })
       .catch(error => {
         console.error("Error fetching licenses:", error);
-        setLicenses([]); // Set to empty array on error
+        setLicenses([]);
       })
       .finally(() => setLoading(false));
   }, [backend, token]);
@@ -444,19 +436,15 @@ const DogLicenseDownload = ({ languageType = 'en' }) => {
     const opt = {
       margin: 0,
       filename: `${getAnimalLabel(animalTypeForName)}_License_${petName.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`,
-      image: { type: 'jpeg', quality: 0.95 }, // Slightly adjusted quality
+      image: { type: 'jpeg', quality: 0.95 },
       html2canvas: { 
-        scale: 1.5, // Adjust scale for balance of quality and performance/fit
+        scale: 1.5,
         useCORS: true,
-        // Ensure background of the element is captured if it's not white by default in html2canvas
-        backgroundColor: '#ffffff', // Explicitly set background for capture if needed
-        // You might need to adjust DPI if millimeter conversion is an issue for html2canvas
-        // dpi: 144, // (72 * 2 for example if scale is 2, 72 * 1.5 = 108)
+        backgroundColor: '#ffffff',
       },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    // Brief timeout to ensure styles are applied if any DOM changes were made right before
     setTimeout(() => {
       html2pdf().from(element).set(opt).save()
         .catch(error => console.error("PDF generation failed:", error));
@@ -467,11 +455,8 @@ const DogLicenseDownload = ({ languageType = 'en' }) => {
 
   const filteredLicenses = licenses.filter(license => {
     if (filterStatus === 'All') return true;
-    // Handle 'provisional' status distinctly if it's a primary status, 
-    // or if isProvisional is a boolean flag alongside another status.
-    // Assuming isProvisional is a primary filter option:
     if (filterStatus.toLowerCase() === 'provisional') {
-      return license.isProvisional; // Make sure your data model has 'isProvisional'
+      return license.isProvisional;
     }
     return license.status && license.status.toLowerCase() === filterStatus.toLowerCase();
   });
@@ -479,23 +464,22 @@ const DogLicenseDownload = ({ languageType = 'en' }) => {
 
   if (loading) {
     return (
-      <main className="user-dl-container">
-        <div className="user-dl-loading">
-          <div className="user-dl-spinner"></div>
-          <p className="user-dl-status">{currentText.loadingData}</p>
+      <main className="user-dl-page-container">
+        <div className="user-dl-loading-state">
+          <div className="user-dl-spinner-animation"></div>
+          <p className="user-dl-loading-text">{currentText.loadingData}</p>
         </div>
       </main>
     );
   }
   
-  // If a license is expanded (selectedLicense is not null)
   if (selectedLicense) {
     return (
-      <main className="user-dl-container user-dl-certificate-focused-container">
-        <header className="user-dl-header user-dl-certificate-header">
-          <div className="user-dl-back-to-list-header">
+      <main className="user-dl-page-container user-dl-certificate-focused-view">
+        <header className="user-dl-page-header user-dl-certificate-view-header">
+          <div className="user-dl-back-navigation">
             <button
-              className="user-dl-back-to-list-btn"
+              className="user-dl-back-button"
               onClick={() => toggleExpanded(selectedLicense._id)}
             >
               <ChevronLeft size={isMobile ? 20 : 24} />
@@ -503,36 +487,64 @@ const DogLicenseDownload = ({ languageType = 'en' }) => {
             </button>
           </div>
         </header>
-        {/* Render the certificate view itself */}
         {renderCertificateView(selectedLicense, downloadPDF, languageType)}
       </main>
     );
   }
 
-  // Main list view
   return (
-    <main className="user-dl-container">
-      <header className="user-dl-header">
-        <h1 className="user-dl-title">{currentText.pageTitle}</h1>
-        <div className="user-dl-filters">
-          <span className="user-dl-filter-label">{currentText.filterLabel}</span>
-          {Object.keys(currentText.filterButtons).map(key => (
-            <button
-              key={key}
-              className={`user-dl-filter-btn user-dl-filter-${key.toLowerCase()} ${
-                filterStatus.toLowerCase() === textContent.en.filterButtons[key].toLowerCase() ? 'user-dl-filter-active' : ''
-              }`}
-              onClick={() => setFilterStatus(textContent.en.filterButtons[key])}
+    <main className="user-dl-page-container">
+      <header className="user-dl-page-header">
+        <h1 className="user-dl-main-title">{currentText.pageTitle}</h1>
+        
+        {isMobile ? (
+          <div className="user-dl-filter-dropdown-container" ref={filterDropdownRef}>
+            <button 
+              className="user-dl-filter-dropdown-button" 
+              onClick={() => setShowFilterDropdown(!showFilterDropdown)}
             >
-              {getFilterButtonText(key)}
+              <Filter size={18} />
+              <span>{currentText.filterDropdownLabel}: {getTranslatedFilterStatus(filterStatus)}</span>
+              <ChevronDown size={16} className={`user-dl-dropdown-chevron ${showFilterDropdown ? 'user-dl-dropdown-chevron-open' : ''}`} />
             </button>
-          ))}
-        </div>
+            {showFilterDropdown && (
+              <ul className="user-dl-filter-dropdown-list">
+                {Object.keys(currentText.filterButtons).map(key => (
+                  <li 
+                    key={key} 
+                    onClick={() => {
+                      setFilterStatus(textContent.en.filterButtons[key]);
+                      setShowFilterDropdown(false);
+                    }}
+                    className={filterStatus.toLowerCase() === textContent.en.filterButtons[key].toLowerCase() ? 'user-dl-dropdown-item-active' : ''}
+                  >
+                    {getFilterButtonText(key)}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ) : (
+          <div className="user-dl-filter-controls">
+            <span className="user-dl-filter-label-text">{currentText.filterLabel}</span>
+            {Object.keys(currentText.filterButtons).map(key => (
+              <button
+                key={key}
+                className={`user-dl-filter-button user-dl-filter-style-${key.toLowerCase()} ${
+                  filterStatus.toLowerCase() === textContent.en.filterButtons[key].toLowerCase() ? 'user-dl-filter-active' : ''
+                }`}
+                onClick={() => setFilterStatus(textContent.en.filterButtons[key])}
+              >
+                {getFilterButtonText(key)}
+              </button>
+            ))}
+          </div>
+        )}
       </header>
 
       {filteredLicenses.length > 0 ? (
         <div className="user-dl-table-container">
-          <table className="user-dl-license-table">
+          <table className="user-dl-data-table">
             <thead>
               <tr>
                 <th>{currentText.tableHeaders.regNo}</th>
@@ -541,44 +553,45 @@ const DogLicenseDownload = ({ languageType = 'en' }) => {
                 {!isMobile && <th>{currentText.tableHeaders.animalType}</th>}
                 <th>{currentText.tableHeaders.status}</th>
                 {!isMobile && <th>{currentText.tableHeaders.appliedDate}</th>}
-               {!isMobile && <th>{currentText.tableHeaders.view}</th>}
+                {!isMobile && <th>{currentText.tableHeaders.view}</th>}
               </tr>
             </thead>
             <tbody>
               {filteredLicenses.map(license => (
-                <tr key={license._id} onClick={() => toggleExpanded(license._id)}>
-                  <td><div className="user-dl-cell">{!isMobile && <FileText size={16} className="user-dl-cell-icon" />} {license.license_Id || "N/A"}</div></td>
-                  <td><div className="user-dl-cell">{!isMobile && <User size={16} className="user-dl-cell-icon" />} {license.fullName}</div></td>
-                  {!isMobile && <td><div className="user-dl-cell"><Dog size={16} className="user-dl-cell-icon" /> {license.pet?.name || "N/A"}</div></td>}
-                  {!isMobile && <td><div className="user-dl-cell">{getAnimalLabel(license.animalType) || "N/A"}</div></td>}
-                  <td><div className="user-dl-cell"><UserStatusBadge status={license.isProvisional ? 'provisional' : license.status} isMobile={isMobile} languageType={languageType} /></div></td>
-                  {!isMobile && <td><div className="user-dl-cell"><Calendar size={16} className="user-dl-cell-icon" /> {formatDate(license.createdAt)}</div></td>}
-                  {!isMobile &&<td>
-                    <button
-                      className="user-dl-view-btn"
-                      onClick={(e) => { e.stopPropagation(); toggleExpanded(license._id); }}
-                    >
-                      <Eye size={16} className="user-dl-btn-icon" /> 
-                      {!isMobile && <span>{currentText.tableCellView}</span>}
-                    </button>
-                  </td>}
+                <tr key={license._id} onClick={() => toggleExpanded(license._id)} className="user-dl-table-row-clickable">
+                  <td><div className="user-dl-table-cell-content">{!isMobile && <FileText size={16} className="user-dl-cell-icon-style" />} {license.license_Id || "N/A"}</div></td>
+                  <td><div className="user-dl-table-cell-content">{!isMobile && <User size={16} className="user-dl-cell-icon-style" />} {license.fullName}</div></td>
+                  {!isMobile && <td><div className="user-dl-table-cell-content"><Dog size={16} className="user-dl-cell-icon-style" /> {license.pet?.name || "N/A"}</div></td>}
+                  {!isMobile && <td><div className="user-dl-table-cell-content">{getAnimalLabel(license.animalType) || "N/A"}</div></td>}
+                  <td><div className="user-dl-table-cell-content"><UserStatusBadge status={license.isProvisional ? 'provisional' : license.status} isMobile={isMobile} languageType={languageType} /></div></td>
+                  {!isMobile && <td><div className="user-dl-table-cell-content"><Calendar size={16} className="user-dl-cell-icon-style" /> {formatDate(license.createdAt)}</div></td>}
+                  {!isMobile && (
+                    <td>
+                      <button
+                        className="user-dl-table-view-button"
+                        onClick={(e) => { e.stopPropagation(); toggleExpanded(license._id); }}
+                      >
+                        <Eye size={16} className="user-dl-button-icon-style" /> 
+                         <span>{currentText.tableHeaders.view.split('/')[0]}</span>
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       ) : (
-        <div className="user-dl-empty-state">
-          <div className="user-dl-empty-icon"><FileText size={48} /></div>
-          <p className="user-dl-no-data">
+        <div className="user-dl-empty-data-state">
+          <div className="user-dl-empty-state-icon"><FileText size={48} /></div>
+          <p className="user-dl-no-data-text">
             {filterStatus === 'All' ? currentText.emptyState.noApplications : currentText.emptyState.noFiltered(getTranslatedFilterStatus(filterStatus))}
           </p>
-          {filterStatus === 'All' && ( // Show "Apply" button only if no filters are active and list is empty
-             licenses.length === 0 && // Or more strictly, only if there are truly no licenses at all
-            <button className="user-dl-new-application-btn" onClick={() => alert('Navigate to application form') /* Replace with actual navigation */}>
+          {filterStatus === 'All' && licenses.length === 0 &&
+            <button className="user-dl-apply-new-button" onClick={() => alert('Navigate to application form') /* Replace with actual navigation */}>
               {currentText.emptyState.applyButton}
             </button>
-          )}
+          }
         </div>
       )}
     </main>
