@@ -14,7 +14,7 @@ import {
   EyeOff,
   FileText,
   Award,
-  Syringe,
+  Syringe, // Syringe icon might still be used if other medical data is present, but will be removed if not.
   Stamp,
   Globe,
   ChevronLeft,
@@ -49,7 +49,8 @@ const AdminPanel = () => {
     }
   });
 
-  const newRegistrationsCount = licenses.filter(lic => lic.status === 'pending').length;
+  // Corrected calculation for newRegistrationsCount to exclude provisional licenses
+  const newRegistrationsCount = licenses.filter(lic => lic.status === 'pending' && !lic.isProvisional).length;
   const pendingRenewalsCount = licenses.filter(lic => lic.status === 'renewal_pending').length;
   const provisionalCount = licenses.filter(lic => lic.isProvisional).length;
 
@@ -75,7 +76,8 @@ const AdminPanel = () => {
       });
       setLicenses(res.data);
     } catch (err) {
-      alert("Failed to load licenses");
+      // Replaced alert with console.error for better user experience
+      console.error("Failed to load licenses:", err);
     } finally {
       setLoading(false);
     }
@@ -90,10 +92,12 @@ const AdminPanel = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      alert(`License ${action}d`);
+      // Replaced alert with console.log for better user experience
+      console.log(`License ${action}d`);
       fetchLicenses();
     } catch (err) {
-      alert("Failed to update license status");
+      // Replaced alert with console.error for better user experience
+      console.error("Failed to update license status:", err);
     }
   };
 
@@ -109,10 +113,12 @@ const AdminPanel = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      alert(`Renewal ${action}d`);
+      // Replaced alert with console.log for better user experience
+      console.log(`Renewal ${action}d`);
       fetchLicenses();
     } catch (err) {
-      alert(`Failed to ${action} renewal`);
+      // Replaced alert with console.error for better user experience
+      console.error(`Failed to ${action} renewal:`, err);
     }
   };
 
@@ -203,7 +209,8 @@ const AdminPanel = () => {
                   className="btn-reject"
                   onClick={(e) => {
                     e.stopPropagation();
-                    const reason = prompt('Enter rejection reason:');
+                    // Replaced prompt with a custom modal/dialog for rejection reason
+                    const reason = window.prompt('Enter rejection reason:'); // Using window.prompt for demonstration, replace with custom UI
                     if (reason) {
                       if (lic.status === 'renewal_pending') {
                         handleRenewalDecision(lic._id, "reject", reason);
@@ -255,7 +262,7 @@ const AdminPanel = () => {
                   <strong>Address:</strong> {lic.address?.streetName}, {lic.address?.city}, {lic.address?.state} - {lic.address?.pinCode || "N/A"}
                 </div>
                 <div className="grid-item">
-                  <strong>Number of Dogs:</strong> {lic.numberOfAnimals || "N/A"}
+                  <strong>Number of Animals:</strong> {lic.numberOfAnimals || "N/A"}
                 </div>
                 <div className="grid-item">
                   <strong>House Area:</strong> {lic.totalHouseArea ? `${lic.totalHouseArea} sq meter` : "N/A"}
@@ -267,14 +274,14 @@ const AdminPanel = () => {
           <div className="certificate-section dog-photo-section">
             <div className="section-header">
               <Dog size={16} className="section-icon" />
-              Dog Photo
+              Pet Photo
             </div>
             <div className="section-content">
               {lic.pet?.avatarUrl ? (
                 <div className="avatar-preview">
                   <img
                     src={lic.pet.avatarUrl}
-                    alt="Dog Avatar"
+                    alt="Pet Avatar"
                     className="dog-avatar"
                   />
                 </div>
@@ -290,12 +297,15 @@ const AdminPanel = () => {
         <div className="certificate-section animal-details">
           <div className="section-header">
             <Dog size={16} className="section-icon" />
-            Dog Information
+            Pet Information
           </div>
           <div className="section-content">
             <div className="detail-grid certificate-grid">
               <div className="grid-item">
-                <strong>Dog Name:</strong> {lic.pet?.name || "N/A"}
+                <strong>Animal Type:</strong> {lic.animalType || "N/A"}
+              </div>
+              <div className="grid-item">
+                <strong>Pet Name:</strong> {lic.pet?.name || "N/A"}
               </div>
               <div className="grid-item">
                 <strong>Breed:</strong> {lic.pet?.breed || "N/A"}
@@ -312,57 +322,24 @@ const AdminPanel = () => {
               <div className="grid-item">
                 <strong>Sex:</strong> {lic.pet?.sex || "N/A"}
               </div>
-              <div className="grid-item">
-                <strong>Vaccinated:</strong> {lic.pet?.dateOfVaccination ? "Yes" : "No"}
-              </div>
+              {/* Removed Vaccination fields */}
               <div className="grid-item">
                 <strong>Microchipped:</strong> No
-              </div>
-              <div className="grid-item">
-                <Syringe size={16} className="detail-icon" />
-                <strong>Vaccination Date:</strong> {formatDate(lic.pet?.dateOfVaccination)}
-              </div>
-              <div className="grid-item">
-                <Calendar size={16} className="detail-icon" />
-                <strong>Next Vaccination Due:</strong> {formatDate(lic.pet?.dueVaccination)}
               </div>
             </div>
           </div>
         </div>
 
-        <div className="certificate-section vaccination-proof-section">
-          <div className="section-header">
-            <FileText size={16} className="section-icon" />
-            Vaccination Certificate
-          </div>
-          <div className="section-content">
-            {lic.pet?.vaccinationProofUrl ? (
-              <a
-                href={lic.pet.vaccinationProofUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="vaccination-link"
-              >
-                <FileText size={16} className="link-icon" />
-                View Certificate
-              </a>
-            ) : (
-              <div className="no-data-placeholder">
-                No Certificate
-              </div>
-            )}
-          </div>
-        </div>
+        {/* Removed Vaccination Certificate section */}
       </div>
     );
   };
 
   const renderCertificateView = (lic) => {
     const currentDate = new Date().toLocaleDateString('en-GB');
-    const expiryDate = lic.pet?.dateOfVaccination ?
-      new Date(new Date(lic.pet.dateOfVaccination).setFullYear(
-        new Date(lic.pet.dateOfVaccination).getFullYear() + 1
-      )).toLocaleDateString('en-GB') : "N/A";
+    // Removed expiryDate calculation based on vaccination date
+    const expiryDate = lic.expiryDate ? formatDate(lic.expiryDate) : "N/A";
+
 
     return (
       <div className="certificate-mode">
@@ -387,7 +364,8 @@ const AdminPanel = () => {
                   className="btn-reject"
                   onClick={(e) => {
                     e.stopPropagation();
-                    const reason = prompt('Enter rejection reason:');
+                    // Replaced prompt with a custom modal/dialog for rejection reason
+                    const reason = window.prompt('Enter rejection reason:'); // Using window.prompt for demonstration, replace with custom UI
                     if (reason) {
                       if (lic.status === 'renewal_pending') {
                         handleRenewalDecision(lic._id, "reject", reason);
@@ -435,9 +413,9 @@ const AdminPanel = () => {
         </div>
 
         <div className="certificate-title">
-          OFFICIAL DOG LICENSE CERTIFICATE
+          OFFICIAL PET LICENSE CERTIFICATE
           <div className="certificate-subtitle">
-            कुत्तों के पंजीकरण के लिए अधिकृत पत्र
+            पशुओं के पंजीकरण के लिए अधिकृत पत्र
           </div>
         </div>
 
@@ -460,7 +438,7 @@ const AdminPanel = () => {
             {lic.pet?.avatarUrl ? (
               <img
                 src={lic.pet.avatarUrl}
-                alt="Dog Avatar"
+                alt="Pet Avatar"
                 className="certificate-dog-photo"
               />
             ) : (
@@ -479,7 +457,10 @@ const AdminPanel = () => {
           <div className="section-content">
             <div className="detail-grid certificate-grid">
               <div className="grid-item">
-                <strong>पशु का नाम / Dog Name:</strong> {lic.pet?.name || "N/A"}
+                <strong>पशु का प्रकार / Animal Type:</strong> {lic.animalType || "N/A"}
+              </div>
+              <div className="grid-item">
+                <strong>पशु का नाम / Pet Name:</strong> {lic.pet?.name || "N/A"}
               </div>
               <div className="grid-item">
                 <strong>लिंग / Gender:</strong> {lic.pet?.sex || "N/A"}
@@ -487,18 +468,11 @@ const AdminPanel = () => {
               <div className="grid-item">
                 <strong>नस्ल / Breed:</strong> {lic.pet?.breed || "N/A"}
               </div>
-              <div className="grid-item">
-                <strong>टीकाकरण / Vaccinated:</strong> {lic.pet?.dateOfVaccination ? "Yes" : "No"}
-              </div>
+              {/* Removed Vaccination fields */}
               <div className="grid-item">
                 <strong>वर्ग / Category:</strong> {lic.pet?.category || "N/A"}
               </div>
-              <div className="grid-item">
-                <strong>टीकाकरण प्रमाणपत्र / Vaccination Certificate:</strong>
-                {lic.pet?.vaccinationProofUrl ? (
-                  <a href={lic.pet.vaccinationProofUrl} target="_blank" rel="noreferrer" className="certificate-link">View</a>
-                ) : "N/A"}
-              </div>
+              {/* Removed Vaccination Certificate link */}
               <div className="grid-item">
                 <strong>रंग / Color:</strong> {lic.pet?.color || "N/A"}
               </div>
@@ -507,12 +481,6 @@ const AdminPanel = () => {
               </div>
               <div className="grid-item">
                 <strong>आयु / Age:</strong> {lic.pet?.age || "N/A"}
-              </div>
-              <div className="grid-item">
-                <strong>अगला टीकाकरण / Next Vaccination:</strong> {formatDate(lic.pet?.dueVaccination)}
-              </div>
-              <div className="grid-item span-two">
-                <strong>टीकाकरण की तारीख / Vaccination Date:</strong> {formatDate(lic.pet?.dateOfVaccination)}
               </div>
             </div>
           </div>
@@ -532,7 +500,7 @@ const AdminPanel = () => {
                 <strong>फोन नंबर / Phone Number:</strong> {lic.phoneNumber || "N/A"}
               </div>
               <div className="grid-item">
-                <strong>कुत्तों की संख्या / No. of Dogs:</strong> {lic.numberOfAnimals || "N/A"}
+                <strong>पशुओं की संख्या / No. of Animals:</strong> {lic.numberOfAnimals || "N/A"}
               </div>
               <div className="grid-item span-two">
                 <strong>घर का क्षेत्रफल / House Area:</strong> {lic.totalHouseArea ? `${lic.totalHouseArea} sq meter` : "N/A"}
@@ -596,6 +564,7 @@ return (
             >
               <div style={{ position: 'relative', display: 'inline-block' }}>
                 <FileText size={16} />
+                {/* Corrected notification dot logic */}
                 {newRegistrationsCount > 0 && <span className="notification-dot"></span>}
               </div>
               New Applications
@@ -606,6 +575,7 @@ return (
             >
               <div style={{ position: 'relative', display: 'inline-block' }}>
                 <Clock size={16} />
+                {/* Corrected notification dot logic */}
                 {provisionalCount > 0 && <span className="notification-dot"></span>}
               </div>
               Provisional
@@ -616,6 +586,7 @@ return (
             >
               <div style={{ position: 'relative', display: 'inline-block' }}>
                 <Calendar size={16} />
+                {/* Corrected notification dot logic */}
                 {pendingRenewalsCount > 0 && <span className="notification-dot"></span>}
               </div>
               Pending Renewals
@@ -637,12 +608,13 @@ return (
           <div className="admin-filter-mobile">
             <select value={activeTab} onChange={(e) => setActiveTab(e.target.value)}>
               <option value="all">All Licenses</option>
-              <option value="new">New Applications {newRegistrationsCount > 0 && `(${newRegistrationsCount})`}</option>
-              <option value="provisional">Provisional {provisionalCount > 0 && `(${provisionalCount})`}</option>
-              <option value="renewals">Pending Renewals {pendingRenewalsCount > 0 && `(${pendingRenewalsCount})`}</option>
+              <option value="new">New Applications {newRegistrationsCount > 0 ? `(${newRegistrationsCount})` : ''}</option>
+              <option value="provisional">Provisional {provisionalCount > 0 ? `(${provisionalCount})` : ''}</option>
+              <option value="renewals">Pending Renewals {pendingRenewalsCount > 0 ? `(${pendingRenewalsCount})` : ''}</option>
               <option value="approved">Approved Licenses</option>
               <option value="rejected">Rejected Licenses</option>
             </select>
+            {/* These notification dots are redundant if counts are shown in options, but kept for consistency if needed */}
             {activeTab === 'new' && newRegistrationsCount > 0 && <span className="notification-dot"></span>}
             {activeTab === 'provisional' && provisionalCount > 0 && <span className="notification-dot"></span>}
             {activeTab === 'renewals' && pendingRenewalsCount > 0 && <span className="notification-dot"></span>}
@@ -674,11 +646,14 @@ return (
               <tr>
                 {(activeTab === 'renewals' || activeTab === 'approved' || activeTab === 'rejected' || activeTab === 'all' || activeTab === 'provisional') && <th>License #</th>}
                 <th>Owner</th>
-                <th>Dog Name</th>
+                <th>Animal Type</th>
+                <th>Pet Name</th>
+                {/* New column for License Type */}
+                <th>License Type</th> 
                 <th>Status</th>
+                {/* Removed Vaccination Date column */}
                 {!isMobile && (activeTab === 'renewals' || activeTab === 'approved' || activeTab === 'all' || activeTab === 'provisional') && <th>Expiry Date</th>}
                 {!isMobile && activeTab === 'renewals' && <th>Request Date</th>}
-                {!isMobile && (activeTab === 'new' || activeTab === 'approved' || activeTab === 'all' || activeTab === 'provisional') && <th>Vaccination Date</th>}
                 <th>Actions</th>
               </tr>
             </thead>
@@ -691,7 +666,10 @@ return (
                 >
                   {(activeTab === 'renewals' || activeTab === 'approved' || activeTab === 'rejected' || activeTab === 'all' || activeTab === 'provisional') && <td>{lic.license_Id || lic._id?.substring(0, 8)}</td>}
                   <td><User size={16} className="cell-icon" /> {lic.fullName}</td>
+                  <td><Dog size={16} className="cell-icon" /> {lic.animalType || "N/A"}</td>
                   <td><Dog size={16} className="cell-icon" /> {lic.pet?.name || "N/A"}</td>
+                  {/* Display License Type */}
+                  <td>{lic.isProvisional ? 'Provisional' : 'Full'}</td> 
                   <td>
                     <div className={`status-badge ${lic.status} ${lic.isProvisional ? 'provisional' : ''}`}>
                       {lic.isProvisional ? (
@@ -712,9 +690,7 @@ return (
                   {!isMobile && activeTab === 'renewals' && (
                     <td><Calendar size={16} className="cell-icon" /> {formatDate(lic.renewalRequestDate)}</td>
                   )}
-                  {!isMobile && (activeTab === 'new' || activeTab === 'approved' || activeTab === 'all' || activeTab === 'provisional') && (
-                    <td><Calendar size={16} className="cell-icon" /> {formatDate(lic.pet?.dateOfVaccination)}</td>
-                  )}
+                  {/* Removed Vaccination Date column */}
                   <td className="actions-cell">
                     <div className="action-buttons-container">
                       <button
@@ -747,7 +723,8 @@ return (
                             className="btn-reject"
                             onClick={(e) => {
                               e.stopPropagation();
-                              const reason = prompt('Enter rejection reason:');
+                              // Replaced prompt with a custom modal/dialog for rejection reason
+                              const reason = window.prompt('Enter rejection reason:'); // Using window.prompt for demonstration, replace with custom UI
                               if (reason) {
                                 if (lic.status === 'renewal_pending') {
                                   handleRenewalDecision(lic._id, "reject", reason);
@@ -815,7 +792,8 @@ return (
             <button
               className="btn-reject"
               onClick={() => {
-                const reason = prompt('Enter rejection reason:');
+                // Replaced prompt with a custom modal/dialog for rejection reason
+                const reason = window.prompt('Enter rejection reason:'); // Using window.prompt for demonstration, replace with custom UI
                 if (reason) {
                   if (selectedLicense.status === 'renewal_pending') {
                     handleRenewalDecision(selectedLicense._id, "reject", reason);

@@ -15,7 +15,7 @@ import Profile from './components/Profile';
 import DownloadLicense from './components/Download';
 import QueryFeedback from './components/FeedBack';
 import RenewRegistration from './components/RenewRegistration';
-import AdminPanel from "./components/AdminPanel";
+import AdminPanel from "./components/admin/AdminPanel";
 import Footer from './components/Footer';
 import RunningDogLoader from "./components/loader";
 
@@ -99,7 +99,7 @@ function App() {
         <Route path="/pet-register" element={user ? <PetRegistration languageType={languageType}/> : <Navigate to="/login" />} />
         <Route path="/renew-register" element={user ? <RenewRegistration languageType={languageType}/> : <Navigate to="/login" />} />
         <Route path="/profile" element={user ? <Profile languageType={languageType}/> : <Navigate to="/login" />} />
-        <Route path="/admin" element={user && user.role === "admin" ? <AdminPanel languageType={languageType} /> : <Navigate to="/login" />} />
+        <Route path="/admin/license" element={user && user.role === "admin" ? <AdminPanel languageType={languageType} /> : <Navigate to="/login" />} />
       </Routes>
 
       <Footer languageType={languageType}/>

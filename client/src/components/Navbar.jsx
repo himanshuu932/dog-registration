@@ -14,9 +14,11 @@ const userNavItems = [
 
 // Navigation items specifically for Admin role with translations
 const adminNavItems = [
-  { hi: 'लाइसेंस जोड़ें', en: 'Licenses Add License' },
-  { hi: 'लाइसेंस सत्यापित करें', en: 'Verify License' },
-  { hi: 'होम', en: 'Home' } // Added home for admin
+   { hi: 'होम', en: 'Home' } ,
+  { hi: 'लाइसेंस', en: 'Licenses' },
+  { hi: 'लाइसेंस जोड़ें', en: 'Add License' },
+  { hi: 'लाइसेंस सत्यापित करें', en: 'Verify License' }
+   // Added home for admin
 ];
 
 // Text content for other parts of the navbar
@@ -45,7 +47,7 @@ function Navbar({ languageType = 'en', user, notifications = [], onLogout, setLa
   const hamburgerRef = useRef(null); // Ref for the hamburger button
 
   // Determine which set of nav items to use
-  const currentNavItems = user?.role === 'Admin' ? adminNavItems : userNavItems;
+  const currentNavItems = user?.role === 'admin' ? adminNavItems : userNavItems;
 
   // Helper function to get the label in the current language
   const label = (item) => languageType === 'hi' ? item.hi : item.en;
@@ -99,9 +101,16 @@ function Navbar({ languageType = 'en', user, notifications = [], onLogout, setLa
         navigate('/feedback');
         break;
       // Admin specific routes
-      case 'Licenses Add License':
-        navigate('/admin/add-license'); // Assuming this is the admin route
+      case 'Licenses':
+        navigate('/admin/license'); // Assuming this is the admin route
         break;
+      case 'Add License':
+        navigate('/admin/add-license'); 
+        break;  
+       case 'Home':
+        navigate('/admin/home'); 
+        break;  
+
       case 'Verify License':
         navigate('/admin/verify-license'); // Assuming this is the admin route
         break;
