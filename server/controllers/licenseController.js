@@ -1,5 +1,7 @@
 const DogLicense = require("../models/dogLicense.js");
 const vetDetails = require('../config/vetDetails');
+const LicenseID = require('../models/licenseId');
+
 const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
 const path = require('path');
@@ -93,7 +95,15 @@ exports.applyLicense = async (req, res) => {
       const seconds = now.getSeconds().toString().padStart(2, '0');
     const random = Math.floor(Math.random() * 9000 + 1000).toString();
     const prefix = isProvisional ? 'PL' : 'FL';
-    const license_Id = `${prefix}${year}${month}${day}${hours}${minutes}${seconds}${random}`;
+    const counter = await LicenseID.findOneAndUpdate(
+  {},
+  { $inc: { seq: 1 } },
+  { new: true, upsert: true }
+);
+
+const license_Id = `${prefix}${counter.seq}`;
+
+
 
     const newLicense = new DogLicense({
       owner: req.user.userId,
