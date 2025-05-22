@@ -140,6 +140,19 @@ const renderCertificateView = (lic, downloadPDF, languageType = 'en') => {
       reasonLabel: 'Reason:',
       contactSupport: <>Please contact support for more information.</>,
       animalTypeLabelBilingual: 'Animal Type / पशु का प्रकार',
+      rulesTitle: 'Rules and Regulations / नियम और कानून',
+      rules: [
+        'Pet owners must ensure their animals are vaccinated against rabies annually. / पालतू पशु मालिकों को यह सुनिश्चित करना होगा कि उनके जानवरों को सालाना रेबीज का टीका लगाया जाए।',
+        'Pets must be kept on a leash in public areas. / सार्वजनिक स्थानों पर पालतू जानवरों को पट्टा (लीश) लगाकर रखना चाहिए।',
+        'Owners are responsible for cleaning up after their pets. / मालिकों को अपने पालतू जानवरों के बाद गंदगी साफ करने की जिम्मेदारी है।',
+        'No person shall abandon any pet animal in any public place. / कोई भी व्यक्ति किसी भी पालतू जानवर को किसी भी सार्वजनिक स्थान पर नहीं छोड़ेगा।',
+        'All pets must be registered with the local municipal authority. / सभी पालतू जानवरों को स्थानीय नगर पालिका प्राधिकरण के साथ पंजीकृत होना चाहिए।',
+        'The license must be renewed annually. / लाइसेंस का नवीनीकरण सालाना किया जाना चाहिए।',
+        'Any change in ownership or address must be reported to the authority. / स्वामित्व या पते में कोई भी बदलाव प्राधिकरण को सूचित किया जाना चाहिए।',
+        'Keeping exotic or wild animals without proper authorization is prohibited. / उचित प्राधिकरण के बिना विदेशी या जंगली जानवरों को रखना प्रतिबंधित है।',
+        'Cruelty to animals is strictly prohibited and punishable by law. / जानवरों के प्रति क्रूरता सख्त वर्जित है और कानून द्वारा दंडनीय है।',
+        'Noise pollution caused by pets, especially barking, must be controlled. / पालतू जानवरों द्वारा उत्पन्न ध्वनि प्रदूषण, विशेष रूप से भौंकना, नियंत्रित किया जाना चाहिए।',
+      ]
     },
     hi: {
       orgNameEn: 'Nagar Nigam Gorakhpur',
@@ -168,6 +181,19 @@ const renderCertificateView = (lic, downloadPDF, languageType = 'en') => {
       reasonLabel: 'कारण:',
       contactSupport: <>अधिक जानकारी के लिए कृपया सहायता से संपर्क करें।</>,
       animalTypeLabelBilingual: 'पशु का प्रकार / Animal Type',
+      rulesTitle: 'नियम और कानून / Rules and Regulations',
+      rules: [
+        'पालतू पशु मालिकों को यह सुनिश्चित करना होगा कि उनके जानवरों को सालाना रेबीज का टीका लगाया जाए। / Pet owners must ensure their animals are vaccinated against rabies annually.',
+        'सार्वजनिक स्थानों पर पालतू जानवरों को पट्टा (लीश) लगाकर रखना चाहिए। / Pets must be kept on a leash in public areas.',
+        'मालिकों को अपने पालतू जानवरों के बाद गंदगी साफ करने की जिम्मेदारी है। / Owners are responsible for cleaning up after their pets.',
+        'कोई भी व्यक्ति किसी भी पालतू जानवर को किसी भी सार्वजनिक स्थान पर नहीं छोड़ेगा। / No person shall abandon any pet animal in any public place.',
+        'सभी पालतू जानवरों को स्थानीय नगर पालिका प्राधिकरण के साथ पंजीकृत होना चाहिए। / All pets must be registered with the local municipal authority.',
+        'लाइसेंस का नवीनीकरण सालाना किया जाना चाहिए। / The license must be renewed annually.',
+        'स्वामित्व या पते में कोई भी बदलाव प्राधिकरण को सूचित किया जाना चाहिए। / Any change in ownership or address must be reported to the authority.',
+        'उचित प्राधिकरण के बिना विदेशी या जंगली जानवरों को रखना प्रतिबंधित है। / Keeping exotic or wild animals without proper authorization is prohibited.',
+        'जानवरों के प्रति क्रूरता सख्त वर्जित है और कानून द्वारा दंडनीय है। / Cruelty to animals is strictly prohibited and punishable by law.',
+        'पालतू जानवरों द्वारा उत्पन्न ध्वनि प्रदूषण, विशेष रूप से भौंकना, नियंत्रित किया जाना चाहिए। / Noise pollution caused by pets, especially barking, must be controlled.',
+      ]
     }
   };
 
@@ -299,6 +325,39 @@ const renderCertificateView = (lic, downloadPDF, languageType = 'en') => {
             </div>
           </div> 
         </div> 
+
+        {/* New section for Rules and Regulations - Second Page */}
+        <div className="user-dl-outer-pdf-border user-dl-pdf-rules-page">
+          <div className="user-dl-pdf-border">
+            <div className="user-dl-pdf-header">
+              <div className="user-dl-pdf-header-left">
+                <div className="user-dl-pdf-logo-icon">
+                  <img src="/logo.webp" alt="Organization Logo" onError={(e) => e.target.style.display='none'} />
+                </div>
+                <div className="user-dl-pdf-org-name">
+                  <h3>{currentCertText.orgNameEn}</h3>
+                  <h4>{currentCertText.orgNameHi}</h4>
+                </div>
+              </div>
+              <div className="user-dl-pdf-header-right">
+                 <div className="user-dl-pdf-logo-icon">
+                  <img src="/up.webp" alt="State Logo" onError={(e) => e.target.style.display='none'} />
+                </div>
+              </div>
+            </div>
+            <div className="user-dl-pdf-rules-box">
+              <h2 className="user-dl-pdf-rules-title">{currentCertText.rulesTitle}</h2>
+              <ul className="user-dl-pdf-rules-list">
+                {currentCertText.rules.map((rule, index) => (
+                  <li key={index}>{rule}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="user-dl-pdf-contact-footer user-dl-pdf-rules-footer">
+              1234  |  info@awbi.org  |  www.awbi.org | <span>{currentCertText.dateLabel} {currentDateOnCertificate}</span>
+            </div>
+          </div>
+        </div>
       </div> 
 
       {(lic.status === 'approved' || lic.isProvisional) && (
@@ -438,7 +497,7 @@ const DogLicenseDownload = ({ languageType = 'en' }) => {
       filename: `${getAnimalLabel(animalTypeForName)}_License_${petName.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`,
       image: { type: 'jpeg', quality: 0.95 },
       html2canvas: { 
-        scale: 1.5,
+        scale: 2,
         useCORS: true,
         backgroundColor: '#ffffff',
       },
