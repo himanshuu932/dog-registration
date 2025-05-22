@@ -135,7 +135,7 @@ function LoginPage({ user, setUser, languageType }) {
 
       // Redirect based on user role
       if (loggedUser.role === "admin") {
-        navigate("/admin");
+        navigate("/");
       } else {
         navigate("/home");
       }

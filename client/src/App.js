@@ -18,6 +18,8 @@ import RenewRegistration from './components/RenewRegistration';
 import AdminPanel from "./components/admin/AdminPanel";
 import Footer from './components/Footer';
 import RunningDogLoader from "./components/loader";
+import AdminAddForm from "./components/admin/Add";
+import Verify from "./components/admin/Verify";
 
 function App() {
   const [languageType, setLanguageType] = useState("en");
@@ -100,8 +102,10 @@ function App() {
         <Route path="/renew-register" element={user ? <RenewRegistration languageType={languageType}/> : <Navigate to="/login" />} />
         <Route path="/profile" element={user ? <Profile languageType={languageType}/> : <Navigate to="/login" />} />
         <Route path="/admin/license" element={user && user.role === "admin" ? <AdminPanel languageType={languageType} /> : <Navigate to="/login" />} />
+        <Route path="/admin/add-license" element={user && user.role === "admin" ? <AdminAddForm languageType={languageType} /> : <Navigate to="/login" />} />
+        <Route path="/admin/verify-license" element={user && user.role === "admin" ? <Verify languageType={languageType} /> : <Navigate to="/login" />} />
       </Routes>
-
+         
       <Footer languageType={languageType}/>
     </div>
   );

@@ -1,0 +1,697 @@
+/* Root Variables - Matching Download.css */
+:root {
+  --verify-primary: #2c3e50;
+  --verify-primary-light: #34495e;
+  --verify-secondary: #3498db;
+  --verify-accent: #1abc9c;
+  --verify-success: #23814a;
+  --verify-danger: #c0392b;
+  --verify-warning: #f39c12;
+  --verify-pending: #f1c40f;
+  --verify-provisional-bg: #fff8e1;
+  --verify-provisional-text: #b48b0b;
+
+  --verify-gray-lightest: #f8f9fa;
+  --verify-gray-light: #ecf0f1;
+  --verify-gray: #bdc3c7;
+  --verify-gray-dark: #7f8c8d;
+  --verify-white: #ffffff;
+  --verify-black: #2c3e50;
+  --verify-shadow: rgba(0, 0, 0, 0.1);
+  --verify-border-radius: 6px;
+  --verify-font-main: 'Roboto', 'Arial', sans-serif;
+
+  --verify-pdf-border-color: #0a0a0a;
+  --verify-pdf-gov-maroon: #8b0000;
+  --verify-pdf-gov-blue: #005ea5;
+}
+
+/* Main Verify Container */
+.verify-license-container {
+  max-width: 100vw;
+  min-height: 70vh;
+  margin: 2rem auto;
+  padding: 2rem;
+  font-family: var(--verify-font-main);
+  color: var(--verify-black);
+  background-color: var(--verify-white);
+  border-radius: var(--verify-border-radius);
+  box-shadow: 0 4px 12px var(--verify-shadow);
+  box-sizing: border-box;
+}
+
+/* Page Title */
+.verify-page-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--verify-primary);
+  margin: 0 0 2rem 0;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--verify-gray-light);
+}
+
+.verify-title-icon {
+  color: var(--verify-secondary);
+}
+
+/* Input Section */
+.verify-input-section {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: var(--verify-gray-lightest);
+  border-radius: var(--verify-border-radius);
+  border: 1px solid var(--verify-gray-light);
+}
+
+.verify-input-group {
+  flex: 1;
+}
+
+.verify-input-group label {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--verify-black);
+  margin-bottom: 0.5rem;
+}
+
+.verify-id-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--verify-gray);
+  border-radius: var(--verify-border-radius);
+  font-size: 1rem;
+  font-family: var(--verify-font-main);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+.verify-id-input:focus {
+  outline: none;
+  border-color: var(--verify-secondary);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.verify-fetch-button {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--verify-secondary);
+  color: var(--verify-white);
+  border: none;
+  border-radius: var(--verify-border-radius);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  white-space: nowrap;
+}
+
+.verify-fetch-button:hover:not(:disabled) {
+  background-color: #287ab8;
+  transform: translateY(-1px);
+}
+
+.verify-fetch-button:disabled {
+  background-color: var(--verify-gray);
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Error Message */
+.verify-error-message {
+  background-color: rgba(192, 57, 43, 0.08);
+  color: var(--verify-danger);
+  border: 1px solid rgba(192, 57, 43, 0.25);
+  border-radius: var(--verify-border-radius);
+  padding: 1rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Certificate Display Area - Matching Download.jsx exactly */
+.verify-certificate-display-area {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem 0;
+  box-sizing: border-box;
+  background-color: var(--verify-gray-lightest);
+  border-radius: var(--verify-border-radius);
+  margin-top: 1rem;
+}
+
+/* PDF Layout (A4 Sized Element) - Exact match with Download.jsx */
+.verify-pdf-layout {
+  width: 210mm;
+  min-height: 297mm;
+  background-color: var(--verify-white);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  overflow: hidden;
+  box-sizing: border-box;
+  position: relative;
+  margin: 0 auto 20px auto;
+}
+
+.verify-outer-pdf-border {
+  border: 2px solid var(--verify-pdf-border-color);
+  padding: 4mm;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.verify-pdf-border {
+  border: 1px solid var(--verify-pdf-border-color);
+  padding: 15mm 10mm;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+/* PDF Header */
+.verify-pdf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--verify-pdf-border-color);
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+}
+
+.verify-pdf-header-left { 
+  display: flex; 
+  align-items: center; 
+}
+
+.verify-pdf-logo-icon { 
+  height: 45px; 
+  width: 45px; 
+  margin-right: 10px; 
+}
+
+.verify-pdf-logo-icon img { 
+  max-width: 100%; 
+  max-height: 100%; 
+  object-fit: contain; 
+}
+
+.verify-pdf-org-name h3 { 
+  font-size: 14px; 
+  color: var(--verify-pdf-gov-blue); 
+  margin: 0 0 2px 0; 
+  font-weight: bold;
+}
+
+.verify-pdf-org-name h4 { 
+  font-size: 12px; 
+  font-weight: 500; 
+  margin: 0; 
+}
+
+.verify-pdf-header-right { 
+  text-align: right; 
+}
+
+/* PDF Certificate Title */
+.verify-pdf-certificate-title { 
+  text-align: center; 
+  margin-bottom: 10px; 
+}
+
+.verify-pdf-certificate-title h2 { 
+  font-size: 18px; 
+  font-weight: bold; 
+  margin: 0 0 4px 0; 
+  color: var(--verify-black); 
+}
+
+.verify-pdf-certificate-title h3 { 
+  font-size: 16px; 
+  font-weight: bold; 
+  margin-bottom: 8px; 
+  text-decoration: underline; 
+  color: var(--verify-pdf-gov-maroon); 
+  letter-spacing: 0.5px; 
+}
+
+/* PDF Provisional Notice Banner */
+.verify-pdf-provisional-notice-banner {
+  background-color: var(--verify-provisional-bg);
+  border: 1px solid #ffe0b2;
+  border-radius: var(--verify-border-radius);
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 5px auto 10px auto;
+  color: var(--verify-provisional-text);
+  font-size: 9px;
+  font-weight: 500;
+  text-align: center;
+  max-width: 70%;
+}
+
+.verify-pdf-provisional-notice-banner svg { 
+  flex-shrink: 0; 
+}
+
+/* PDF Body */
+.verify-pdf-body {
+  font-size: 11px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  line-height: 1.5;
+}
+
+/* PDF Photo Section */
+.verify-pdf-photo-section {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  align-items: flex-start;
+}
+
+.verify-pdf-info-block { 
+  flex: 2; 
+  margin-right: 15px; 
+}
+
+.verify-pdf-info-row { 
+  display: flex; 
+  margin-bottom: 5px; 
+  font-size: 11px; 
+}
+
+.verify-pdf-info-label { 
+  font-weight: bold; 
+  min-width: 170px; 
+  color: var(--verify-gray-dark); 
+}
+
+.verify-pdf-info-value { 
+  flex: 1; 
+  padding-left: 5px; 
+  color: var(--verify-black); 
+}
+
+.verify-pdf-photo-box {
+  width: 90mm;
+  max-width: 100px;
+  height: 110mm;
+  max-height: 120px;
+  border: 1.5px solid var(--verify-pdf-border-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  background-color: var(--verify-gray-lightest);
+}
+
+.verify-pdf-photo { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+}
+
+.verify-pdf-photo-placeholder { 
+  text-align: center; 
+  font-size: 10px; 
+  color: var(--verify-gray); 
+  padding: 5px; 
+}
+
+/* PDF Details Sections */
+.verify-pdf-details-section { 
+  margin-bottom: 8px; 
+}
+
+.verify-pdf-section-title {
+  font-weight: bold;
+  font-size: 13px;
+  border-bottom: 1px solid var(--verify-pdf-border-color);
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  color: var(--verify-pdf-gov-blue);
+  background-color: var(--verify-gray-lightest);
+  padding: 4px 8px;
+  border-left: 3px solid var(--verify-pdf-gov-maroon);
+}
+
+.verify-pdf-details-columns { 
+  display: flex; 
+  gap: 20px; 
+}
+
+.verify-pdf-details-column-left, 
+.verify-pdf-details-column-right { 
+  flex: 1; 
+}
+
+.verify-pdf-details-row { 
+  display: flex; 
+  margin-bottom: 4px; 
+  font-size: 11px; 
+}
+
+.verify-pdf-details-label { 
+  font-weight: bold; 
+  width: 170px; 
+  flex-shrink: 0; 
+  color: var(--verify-gray-dark); 
+}
+
+.verify-pdf-details-value { 
+  flex: 1; 
+  padding-left: 5px; 
+  word-break: break-word; 
+  color: var(--verify-black); 
+}
+
+.verify-pdf-vaccine-link { 
+  color: var(--verify-secondary); 
+  text-decoration: underline; 
+}
+
+.verify-pdf-owner-details-table .verify-pdf-details-label { 
+  width: 250px; 
+}
+
+.verify-pdf-provisional-instructions {
+  background-color: var(--verify-provisional-bg);
+  border: 1px solid #ffe0b2;
+  padding: 8px 10px;
+  font-size: 10px;
+  margin-top: 10px;
+  border-radius: var(--verify-border-radius);
+  line-height: 1.4;
+  color: var(--verify-provisional-text);
+}
+
+.verify-pdf-provisional-instructions p { 
+  margin: 0; 
+}
+
+/* PDF Declaration */
+.verify-pdf-declaration {
+  margin: 15px 0 10px 0;
+  font-size: 10px;
+  text-align: left;
+  border: 1px solid var(--verify-gray-light);
+  background-color: var(--verify-gray-lightest);
+  border-radius: var(--verify-border-radius);
+  padding: 8px 10px;
+  line-height: 1.4;
+}
+
+.verify-pdf-declaration p { 
+  margin: 0; 
+}
+
+/* PDF Signatures */
+.verify-pdf-signatures {
+  display: flex;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 15px;
+  margin-bottom: 10px;
+}
+
+.verify-pdf-signature-block { 
+  text-align: center; 
+  width: 45%; 
+}
+
+.verify-pdf-signature-line { 
+  border-bottom: 1px solid var(--verify-pdf-border-color); 
+  height: 30px; 
+  margin-bottom: 5px; 
+}
+
+.verify-pdf-signature-block p { 
+  font-size: 10px; 
+  margin: 0; 
+  font-style: italic; 
+}
+
+/* PDF Footer Bottom */
+.verify-pdf-footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-top: 10px;
+  border-top: 1px solid var(--verify-gray-light);
+  margin-top: 10px;
+}
+
+.verify-pdf-qr-code-area { 
+  width: 70px; 
+  text-align: center; 
+}
+
+.verify-pdf-qr-placeholder { 
+  width: 50px; 
+  height: 50px; 
+  border: 1px solid var(--verify-pdf-border-color); 
+  margin: 0 auto 5px; 
+  background-color: var(--verify-gray-lightest); 
+}
+
+.verify-pdf-qr-code-area p { 
+  font-size: 9px; 
+  margin: 0; 
+}
+
+.verify-pdf-stamp-area { 
+  text-align: center; 
+}
+
+.verify-pdf-stamp-placeholder {
+  width: 65px; 
+  height: 65px;
+  border: 1.5px dashed var(--verify-pdf-gov-maroon);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  color: var(--verify-pdf-gov-maroon);
+  font-weight: bold;
+  font-size: 9px;
+  transform: rotate(-12deg);
+  text-transform: uppercase;
+}
+
+.verify-pdf-stamp-placeholder p { 
+  margin: 0; 
+}
+
+/* PDF Contact Footer */
+.verify-pdf-contact-footer {
+  margin-top: 8px;
+  padding-top: 5px;
+  text-align: center;
+  font-size: 9px;
+  color: var(--verify-gray-dark);
+  border-top: 1px solid var(--verify-gray-light);
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 768px) {
+  .verify-license-container { 
+    padding: 1rem; 
+  }
+
+  .verify-page-title { 
+    font-size: 1.6rem; 
+  }
+
+  .verify-input-section { 
+    flex-direction: column; 
+    align-items: stretch; 
+    gap: 1rem; 
+  }
+
+  .verify-fetch-button { 
+    align-self: flex-start; 
+  }
+
+  .verify-pdf-border { 
+    padding: 8mm 5mm; 
+  }
+
+  .verify-pdf-header { 
+    flex-direction: column; 
+    align-items: flex-start; 
+    gap: 6px; 
+    margin-bottom: 8px; 
+    padding-bottom: 6px;
+  }
+
+  .verify-pdf-logo-icon { 
+    width: 40px; 
+    height: 40px; 
+    margin-right: 8px; 
+  }
+
+  .verify-pdf-org-name h3 { 
+    font-size: 12px; 
+  }
+
+  .verify-pdf-org-name h4 { 
+    font-size: 10px; 
+  }
+
+  .verify-pdf-header-right { 
+    align-self: flex-end; 
+    margin-top: 5px;
+  }
+
+  .verify-pdf-header-right .verify-pdf-logo-icon { 
+    width: 40px; 
+    height: 40px;
+  }
+
+  .verify-pdf-certificate-title h2 { 
+    font-size: 15px; 
+  }
+
+  .verify-pdf-certificate-title h3 { 
+    font-size: 14px; 
+  }
+
+  .verify-pdf-provisional-notice-banner { 
+    font-size: 8px; 
+    padding: 5px 7px; 
+    gap: 4px; 
+    margin-bottom: 8px; 
+    max-width: 85%;
+  }
+
+  .verify-pdf-provisional-notice-banner svg { 
+    width: 11px; 
+    height: 11px; 
+  }
+
+  .verify-pdf-body { 
+    font-size: 10px; 
+    line-height: 1.4; 
+  }
+
+  .verify-pdf-photo-section { 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 10px; 
+    margin-bottom: 10px;
+  }
+
+  .verify-pdf-info-block { 
+    width: 100%; 
+  }
+
+  .verify-pdf-info-row { 
+    margin-bottom: 3px; 
+    font-size: 10px; 
+  }
+
+  .verify-pdf-info-label { 
+    min-width: 120px; 
+  }
+
+  .verify-pdf-photo-box { 
+    max-width: 90px; 
+    max-height: 110px; 
+  }
+
+  .verify-pdf-section-title { 
+    font-size: 11px; 
+    padding: 4px 6px; 
+    margin-bottom: 6px; 
+  }
+
+  .verify-pdf-details-columns { 
+    flex-direction: column; 
+    gap: 0; 
+  }
+
+  .verify-pdf-details-row { 
+    font-size: 10px; 
+    margin-bottom: 3px; 
+    padding-bottom: 2px; 
+  }
+
+  .verify-pdf-details-label { 
+    width: 130px; 
+  }
+
+  .verify-pdf-owner-details-table .verify-pdf-details-label { 
+    width: 180px;
+  }
+
+  .verify-pdf-provisional-instructions { 
+    font-size: 9px; 
+    padding: 6px; 
+    margin-top: 8px;
+  }
+
+  .verify-pdf-declaration { 
+    font-size: 9px; 
+    padding: 6px; 
+  }
+
+  .verify-pdf-signatures { 
+    flex-direction: column; 
+    gap: 10px; 
+    margin-top: 12px; 
+    margin-bottom: 8px; 
+  }
+
+  .verify-pdf-signature-block { 
+    width: 100%; 
+  }
+
+  .verify-pdf-signature-line { 
+    height: 25px; 
+    margin-bottom: 4px; 
+  }
+
+  .verify-pdf-signature-block p { 
+    font-size: 9px; 
+  }
+
+  .verify-pdf-footer-bottom { 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 10px; 
+    margin-top: 8px; 
+  }
+
+  .verify-pdf-qr-placeholder { 
+    width: 45px; 
+    height: 45px; 
+  }
+
+  .verify-pdf-stamp-placeholder { 
+    width: 55px; 
+    height: 55px; 
+    font-size: 8px; 
+  }
+
+  .verify-pdf-contact-footer { 
+    font-size: 8px; 
+    margin-top: 8px; 
+  }
+}

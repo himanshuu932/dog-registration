@@ -11,6 +11,25 @@ exports.getAllLicenses = async (req, res) => {
   }
 };
 
+// New function to fetch a license by its ID
+exports.getLicenseById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find by license_Id instead of _id
+    const license = await DogLicense.findOne({ license_Id: id }).populate("owner", "username email");
+
+    if (!license) {
+      return res.status(404).json({ message: "License not found" });
+    }
+
+    res.json(license);
+  } catch (error) {
+    console.error("Get license by license_Id error:", error);
+    res.status(500).json({ message: "Failed to fetch license by license_Id" });
+  }
+};
+
 exports.approveLicense = async (req, res) => {
   try {
     const oneYearLater = new Date();
@@ -154,4 +173,3 @@ exports.rejectRenewal = async (req, res) => {
     res.status(500).json({ message: "Failed to reject renewal" });
   }
 };
-

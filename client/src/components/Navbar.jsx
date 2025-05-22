@@ -146,7 +146,7 @@ function Navbar({ languageType = 'en', user, notifications = [], onLogout, setLa
           </button>
 
           <div className="navbar__logo">
-            <img src="./logo.webp" alt="Logo" className="navbar__logo-img" />
+            <img src="/logo.webp" alt="Logo" className="navbar__logo-img" />
             <span className="gov-logo">{currentText.logoText}</span>
           </div>
 
