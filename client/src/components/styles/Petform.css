@@ -183,19 +183,23 @@ select:focus {
   filter: invert(1);
 }
 
-.upload-btn {
+/* Standardized button styles for both "Upload" and "Choose File" */
+.upload-btn,
+.file-choose-btn {
   background-color: #003366; /* Gov Navy Blue */
   color: white;
-  border: none;
-  padding: 8px 20px;
+  width: 150px;
+  border: none; /* Removed border to match */
+  padding: 8px 20px; /* Standardized padding */
   border-radius: 5px;
   cursor: pointer;
-  font-weight: bold;
-  margin-bottom: 10px;
+  font-weight: bold; /* Standardized font-weight */
   transition: background-color 0.3s ease;
+  /* Removed margin-bottom here, spacing managed by parent container */
 }
 
-.upload-btn:hover {
+.upload-btn:hover,
+.file-choose-btn:hover {
   background-color: #002244; /* Darker shade on hover */
 }
 
@@ -218,22 +222,8 @@ select:focus {
 .file-input-container {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 10px; /* Space between buttons and file name */
   flex-wrap: wrap; /* Allow wrapping on smaller screens */
-}
-
-.file-choose-btn {
-  background-color: #003366; /* Gov Navy Blue */
-  color: white; /* Text color for the "Choose File" button */
-  border: 1px solid #003366;
-  padding: 8px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.file-choose-btn:hover {
-  background-color: #002244; /* Darker shade on hover */
 }
 
 .file-chosen {
@@ -249,6 +239,50 @@ select:focus {
   margin-top: 5px;
   width: 100%; /* Ensure this spans full width below the input */
 }
+
+/* Loader (Progress Bar) Styling */
+.upload-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 10px;
+  font-size: 14px;
+  color: #333;
+}
+
+.upload-progress progress {
+  flex-grow: 1;
+  height: 10px;
+  border-radius: 5px;
+  overflow: hidden; /* Ensures the border-radius applies to the fill */
+  background-color: #e0e0e0; /* Background for the empty part of the progress bar */
+  border: none;
+}
+
+/* Style for Webkit browsers (Chrome, Safari) */
+.upload-progress progress::-webkit-progress-bar {
+  background-color: #e0e0e0;
+  border-radius: 5px;
+}
+
+.upload-progress progress::-webkit-progress-value {
+  background-color: #4CAF50; /* Green fill color */
+  border-radius: 5px;
+  transition: width 0.3s ease-in-out; /* Smooth transition for progress */
+}
+
+/* Style for Firefox */
+.upload-progress progress::-moz-progress-bar {
+  background-color: #4CAF50; /* Green fill color */
+  border-radius: 5px;
+}
+
+/* Style for IE/Edge */
+.upload-progress progress {
+  color: #4CAF50; /* Fallback for IE/Edge */
+}
+
 
 /* Validation Message Styling */
 .error-text {
@@ -461,6 +495,30 @@ select:focus {
 .info-note strong {
   color: #856404;
 }
+
+/* --- NEW STYLES FOR FEES SUMMARY SECTION (HIGHLIGHTED BLUE) --- */
+.fees-summary-section {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #e0f2f7; /* Light blue background */
+  border-radius: 8px;
+  border-left: 4px solid #007bff; /* Blue border on the left */
+  margin-bottom: 30px; /* Add some space below it */
+}
+
+.fees-summary-section .preview-row:last-child {
+    border-bottom: none; /* Ensure no border for the last row in this specific section */
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.fees-summary-section .total-fees-row .preview-label,
+.fees-summary-section .total-fees-row .preview-value {
+    font-weight: bold; /* Make total fees bold */
+    color: #003366; /* Darker blue for total text */
+}
+/* --- END NEW STYLES --- */
+
 
 /* ===== RESPONSIVE LAYOUT ADJUSTMENTS ===== */
 

@@ -14,10 +14,15 @@ const PetRegistrationForm = () => {
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarFileName, setAvatarFileName] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false); // New state for avatar upload
+  const [avatarUploadProgress, setAvatarUploadProgress] = useState(0); // New state for avatar upload progress
   const [vaccinationProof, setVaccinationProof] = useState({
     url: '',
     publicId: ''
   });
+  // New state for fees
+  const [fineFees, setFineFees] = useState(0);
+  const [totalFees, setTotalFees] = useState(200); // Initial registration fee
 
   // Animal type data
   const animalBreeds = {
@@ -99,6 +104,41 @@ const PetRegistrationForm = () => {
     }
   };
 
+  // Function to calculate fine fees
+  const calculateFineFees = () => {
+    const registrationDate = new Date(); // Current date of registration
+    const financialYearEnd = new Date(registrationDate.getFullYear(), 2, 31); // March 31st of the current year
+
+    let fees = 0;
+
+    if (registrationDate > financialYearEnd) {
+      const currentMonth = registrationDate.getMonth(); // 0-indexed (April is 3)
+      const currentDay = registrationDate.getDate();
+
+      // If registration is in April, no late fees
+      if (currentMonth === 3) { // April
+        fees = 0;
+      } else if (currentMonth === 4) { // May
+        fees = 100; // Flat 100 for May
+      } else if (currentMonth > 4) { // After May (June onwards)
+        fees = 100; // May's flat fee
+        // Calculate daily fine for subsequent months
+        let daysForDailyFine = 0;
+        // Add days for full months between May and current month
+        for (let i = 5; i < currentMonth; i++) { // Iterate from June (month 5) up to the month before current
+          const year = registrationDate.getFullYear();
+          daysForDailyFine += new Date(year, i + 1, 0).getDate(); // Get days in month (i+1 because month index is 0-based)
+        }
+        daysForDailyFine += currentDay; // Add days in current month
+
+        fees += daysForDailyFine * 50; // 50 Rs per day
+      }
+    }
+    setFineFees(fees);
+    setTotalFees(200 + fees); // Update total fees
+  };
+
+
   const validateStep = () => {
     const newErrors = {};
     if (activeTab === 1) {
@@ -124,7 +164,7 @@ const PetRegistrationForm = () => {
 
       if (!formData.petColor.trim()) newErrors.petColor = `${formData.animalType} Colour is required`;
       if (!formData.petAge) newErrors.petAge = `${formData.animalType} Age is required`;
-      if (!formData.petSex) newErrors.petSex = `${formData.animalType} Sex is required`;
+      if (!formData.petSex) newErrors.petSex = `${formData.animalType} Sex is required'`;
       if (!formData.isVaccinated) newErrors.isVaccinated = 'Vaccination status is required';
 
       if (formData.isVaccinated === 'Yes') {
@@ -139,6 +179,9 @@ const PetRegistrationForm = () => {
 
   const handleNext = () => {
     if (validateStep()) {
+      if (activeTab === 2) { // If moving from step 2 to step 3 (preview)
+        calculateFineFees();
+      }
       setActiveTab((prev) => prev + 1);
     } else {
       toast.error('Please fill in all required fields.'); // Toast for validation failure
@@ -239,6 +282,9 @@ const PetRegistrationForm = () => {
     }
 
     try {
+      setIsUploadingAvatar(true); // Start avatar upload loader
+      setAvatarUploadProgress(0);
+
       const formData = new FormData();
       formData.append('file', avatarFile);
 
@@ -247,6 +293,10 @@ const PetRegistrationForm = () => {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
+        },
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setAvatarUploadProgress(percentCompleted);
         }
       });
 
@@ -255,6 +305,8 @@ const PetRegistrationForm = () => {
     } catch (error) {
       console.error('Avatar upload error:', error);
       toast.error('Failed to upload avatar.'); // Error toast
+    } finally {
+      setIsUploadingAvatar(false); // End avatar upload loader
     }
   };
 
@@ -269,7 +321,11 @@ const PetRegistrationForm = () => {
     setAvatarFile(null);
     setAvatarFileName('');
     setAvatarUrl('');
+    setIsUploadingAvatar(false); // Reset avatar upload state
+    setAvatarUploadProgress(0); // Reset avatar upload progress
     setVaccinationProof({ url: '', publicId: '' });
+    setFineFees(0); // Reset fees
+    setTotalFees(200); // Reset fees
   };
 
 
@@ -319,6 +375,9 @@ const PetRegistrationForm = () => {
             vaccinationProofPublicId: vaccinationProof.publicId,
           }),
           avatarUrl: avatarUrl
+        },
+        fees: { 
+            totalFees: totalFees
         }
       };
 
@@ -489,9 +548,16 @@ const PetRegistrationForm = () => {
                     type="button"
                     className="upload-btn"
                     onClick={handleAvatarUpload}
+                    disabled={isUploadingAvatar} // Disable button during upload
                   >
-                    Upload
+                    {isUploadingAvatar ? 'Uploading...' : 'Upload'} {/* Show "Uploading..." text */}
                   </button>
+                  {isUploadingAvatar && ( // Show progress bar for avatar upload
+                    <div className="upload-progress">
+                      <progress value={avatarUploadProgress} max="100"></progress>
+                      <span>{avatarUploadProgress}%</span>
+                    </div>
+                  )}
                   <p className="upload-note">* Upload the image of your {formData.animalType}</p>
                   <p className="upload-format">* Only jpeg, jpg and png format allowed with the maximum size of 5MB.</p>
                   {avatarFileName && <p className="file-chosen">{avatarFileName}</p>}
@@ -824,6 +890,31 @@ const PetRegistrationForm = () => {
               )}
             </div>
 
+            {/* --- NEW FEES SUMMARY SECTION --- */}
+            <h2 className="section-title">Fees Summary</h2>
+            <div className="fees-summary-section"> {/* New class for styling */}
+                <div className="preview-row">
+                    <div className="preview-item">
+                        <span className="preview-label">Registration Fees:</span>
+                        <span className="preview-value">Rs. 200</span>
+                    </div>
+                </div>
+                <div className="preview-row">
+                    <div className="preview-item">
+                        <span className="preview-label">Fine Fees:</span>
+                        <span className="preview-value">Rs. {fineFees}</span>
+                    </div>
+                </div>
+                <div className="preview-row total-fees-row"> {/* Add a class for total row if needed */}
+                    <div className="preview-item">
+                        <span className="preview-label">Total Fees:</span>
+                        <span className="preview-value">Rs. {totalFees}</span>
+                    </div>
+                </div>
+            </div>
+            {/* --- END NEW FEES SUMMARY SECTION --- */}
+
+
             {formData.isVaccinated === 'No' && (
               <div className="vet-info-section">
                 <h3 className="section-subtitle">Approved Veterinary Clinic Information</h3>
@@ -929,10 +1020,11 @@ const PetRegistrationForm = () => {
                 !formData.declaration2 ||
                 !formData.declaration3 ||
                 !formData.declaration4 ||
-                (formData.isVaccinated === 'Yes' && file && !vaccinationProof.url && isUploading)
+                (formData.isVaccinated === 'Yes' && file && !vaccinationProof.url && isUploading) ||
+                isUploadingAvatar // Disable submit button during avatar upload
               }
             >
-              {isUploading ? 'Uploading...' : 'Submit'}
+              {(isUploading || isUploadingAvatar) ? 'Uploading...' : 'Submit'} {/* Show "Uploading..." text for both */}
             </button>
           )}
         </div>

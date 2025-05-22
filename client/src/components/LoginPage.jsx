@@ -257,7 +257,7 @@ function LoginPage({ user, setUser, languageType }) {
             <FontAwesomeIcon icon={faArrowLeft} /> {t.back}
           </button>
 
-          <img src='./logo.webp' alt="Nagar Nigam Logo" className="logo" />
+          <img src='/logo.webp' alt="Nagar Nigam Logo" className="logo" />
           <h2>{t.municipalCorporation}</h2>
           <h3>{t.petRegistrationPortal}</h3>
 
