@@ -9,6 +9,7 @@ const {
   approveRenewal,
   rejectRenewal,
   getLicenseById, // New import
+  createLicenseByAdmin,
   // getPendingRenewals, // Commented out as it's not used in the provided snippet
 } = require("../controllers/adminLicenseController");
 
@@ -19,6 +20,8 @@ router.post("/reject/:id", verifyToken, isAdmin, rejectLicense); // This line wa
 // router.get('/renewals/pending', verifyToken, isAdmin, getPendingRenewals);
 router.post('/renew-registration/approve', verifyToken, isAdmin, approveRenewal);
 router.post('/renew-registration/reject', verifyToken, isAdmin, rejectRenewal);
+
+router.post("/add-license", verifyToken, isAdmin, createLicenseByAdmin);
 
 // New route to fetch a license by ID
 router.get("/:id", verifyToken, isAdmin, getLicenseById);

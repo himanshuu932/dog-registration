@@ -66,7 +66,7 @@ const AdminPanel = () => {
     };
   }, []);
 
-  const backend = "https://dog-registration.onrender.com";
+  const backend = "http://localhost:5000";
   const token = localStorage.getItem("token");
 
   const fetchLicenses = async () => {
@@ -240,6 +240,17 @@ const AdminPanel = () => {
             </div>
           </div>
         )}
+
+        <div className="certificate-section">
+  <div className="section-header">
+    <Award size={16} className="section-icon" />
+    License ID
+  </div>
+  <div className="section-content">
+    {lic.license_Id || "Not assigned"}
+  </div>
+</div>
+
 
         <div className="owner-photo-group">
           <div className="certificate-section owner-details">
@@ -424,9 +435,10 @@ const AdminPanel = () => {
             <div className="info-row">
               <strong>नाम / Name:</strong> {lic.fullName || "N/A"}
             </div>
-            <div className="info-row">
-              <strong>पंजीकरण संख्या / Registration No.:</strong> {lic._id?.substring(0, 20) || "N/A"}
-            </div>
+          <div className="info-row">
+  <strong>पंजीकरण संख्या / Registration No.:</strong> {lic.license_Id || lic._id?.substring(0, 8)}
+</div>
+
             <div className="info-row">
               <strong>जारी दिनांक / Issue Date:</strong> {currentDate}
             </div>

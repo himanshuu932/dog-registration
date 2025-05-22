@@ -1,5 +1,6 @@
 // controllers/adminLicenseController.js
 const DogLicense = require("../models/dogLicense");
+const LicenseID = require("../models/licenseId");
 
 exports.getAllLicenses = async (req, res) => {
   try {
@@ -73,6 +74,62 @@ exports.rejectLicense = async (req, res) => {
     res.status(500).json({ message: "Failed to reject license" });
   }
 };
+
+
+exports.createLicenseByAdmin = async (req, res) => {
+  try {
+    const {
+      animalType, fullName, phoneNumber, gender,
+      address, totalHouseArea, numberOfAnimals, pet
+    } = req.body;
+
+    const isVaccinatedStr = String(pet?.isVaccinated || '').toLowerCase();
+    const isProvisional = isVaccinatedStr !== 'yes';
+    const prefix = isProvisional ? 'PL' : 'FL';
+
+    const counter = await LicenseID.findOneAndUpdate(
+      {},
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true }
+    );
+
+    const license_Id = `${prefix}${counter.seq}`;
+
+    const newLicense = new DogLicense({
+      owner: req.user.userId,
+      license_Id,
+      animalType,
+      fullName,
+      phoneNumber,
+      gender,
+      address,
+      totalHouseArea,
+      numberOfAnimals,
+      pet,
+      isProvisional,
+      provisionalExpiryDate: isProvisional ? new Date(Date.now() + 30 * 86400000) : null,
+      expiryDate: isProvisional ? null : new Date(Date.now() + 365 * 86400000),
+      status: 'approved', // ✅ Directly approved
+      approvedBy: req.user.userId,
+      approvalDate: new Date()
+    });
+
+    const savedLicense = await newLicense.save();
+
+    res.status(201).json({
+      message: "License created and approved successfully",
+      licenseId: savedLicense._id,
+      generatedLicenseId: savedLicense.license_Id
+    });
+  } catch (error) {
+    console.error("Admin license creation error:", error);
+    res.status(500).json({
+      message: "Failed to create license",
+      error: error.message
+    });
+  }
+};
+
 
 
 // Admin approves renewal
