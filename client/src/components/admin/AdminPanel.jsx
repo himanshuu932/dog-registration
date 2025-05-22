@@ -66,7 +66,7 @@ const AdminPanel = () => {
     };
   }, []);
 
-  const backend = "http://localhost:5000";
+  const backend = "https://dog-registration.onrender.com";
   const token = localStorage.getItem("token");
 
   const fetchLicenses = async () => {

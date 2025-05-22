@@ -99,7 +99,7 @@ function LoginPage({ user, setUser, languageType }) {
   const [signupPhoneNumber, setSignupPhoneNumber] = useState("");
   const [step, setStep] = useState(1);
 
-  const backend = "http://localhost:5000";
+  const backend = "https://dog-registration.onrender.com";
 
   const formatPhoneNumber = (number) => number ? number.toString() : "";
 
