@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import './styles/Petform.css';
+import './styles/Petform.css'; // Ensure this path is correct
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify'; // Import ToastContainer and toast
+import 'react-toastify/dist/ReactToastify.css'; // Import toastify CSS
 
 const PetRegistrationForm = () => {
   const [activeTab, setActiveTab] = useState(1);
@@ -31,15 +33,15 @@ const PetRegistrationForm = () => {
   };
 
   const VET_DETAILS = {
-  name: "Dr. John Smith",
-  clinic: "City Veterinary Hospital",
-  phone: "+1 (555) 123-4567",
-  address: "123 Main Street, Gorakhpur, UP 273001",
-  instructions: "Please visit the above veterinary clinic within 30 days to vaccinate your pet and convert your provisional license to a full license."
-};
+    name: "Dr. John Smith",
+    clinic: "City Veterinary Hospital",
+    phone: "+1 (555) 123-4567",
+    address: "123 Main Street, Gorakhpur, UP 273001",
+    instructions: "Please visit the above veterinary clinic within 30 days to vaccinate your pet and convert your provisional license to a full license."
+  };
 
   const initialFormData = {
-    animalType: 'Dog', // New field for animal type
+    animalType: 'Dog',
     fullName: '',
     phoneNumber: '',
     gender: '',
@@ -79,23 +81,21 @@ const PetRegistrationForm = () => {
       [name]: ''
     }));
 
-    // Reset petBreed if animalType or petCategory changes to Indian/Desi for Dog
     if (name === 'animalType' || (name === 'petCategory' && value === 'Indian/Desi' && formData.animalType === 'Dog')) {
-        setFormData(prev => ({
-            ...prev,
-            petBreed: '' // Reset petBreed when animalType changes or petCategory is Indian/Desi for Dog
-        }));
+      setFormData(prev => ({
+        ...prev,
+        petBreed: ''
+      }));
     }
-    // Clear vaccination details if pet is not vaccinated
     if (name === 'isVaccinated' && value === 'No') {
       setFormData(prev => ({
         ...prev,
         dateOfVaccination: '',
         dueVaccination: '',
       }));
-      setFile(null); // Clear the file selection
+      setFile(null);
       setFileName('No file chosen');
-      setVaccinationProof({ url: '', publicId: '' }); // Clear uploaded vaccination proof
+      setVaccinationProof({ url: '', publicId: '' });
     }
   };
 
@@ -114,20 +114,23 @@ const PetRegistrationForm = () => {
     } else if (activeTab === 2) {
       if (!formData.petName.trim()) newErrors.petName = `${formData.animalType} Name is required`;
       if (!formData.petCategory) newErrors.petCategory = `${formData.animalType} Category is required`;
-      // Only require petBreed if not "Indian/Desi" for Dog
-      if (!(formData.animalType === 'Dog' && formData.petCategory === 'Indian/Desi') && !formData.petBreed) {
+
+      // Only require petBreed if animalType is not Dog OR petCategory is not Indian/Desi
+      if (!(formData.animalType === 'Dog' && formData.petCategory === 'Indian/Desi')) {
+        if (!formData.petBreed) {
           newErrors.petBreed = `${formData.animalType} Breed is required`;
+        }
       }
+
       if (!formData.petColor.trim()) newErrors.petColor = `${formData.animalType} Colour is required`;
       if (!formData.petAge) newErrors.petAge = `${formData.animalType} Age is required`;
       if (!formData.petSex) newErrors.petSex = `${formData.animalType} Sex is required`;
       if (!formData.isVaccinated) newErrors.isVaccinated = 'Vaccination status is required';
 
-      // Only require vaccination details if pet is vaccinated
       if (formData.isVaccinated === 'Yes') {
-          if (!formData.dateOfVaccination) newErrors.dateOfVaccination = 'Vaccination Date is required';
-          if (!formData.dueVaccination) newErrors.dueVaccination = 'Due Date is required';
-          if (!file) newErrors.vaccinationCertificate = 'Vaccination Certificate is required';
+        if (!formData.dateOfVaccination) newErrors.dateOfVaccination = 'Vaccination Date is required';
+        if (!formData.dueVaccination) newErrors.dueVaccination = 'Due Date is required';
+        if (!file) newErrors.vaccinationCertificate = 'Vaccination Certificate is required';
       }
     }
     setErrors(newErrors);
@@ -137,6 +140,8 @@ const PetRegistrationForm = () => {
   const handleNext = () => {
     if (validateStep()) {
       setActiveTab((prev) => prev + 1);
+    } else {
+      toast.error('Please fill in all required fields.'); // Toast for validation failure
     }
   };
 
@@ -155,17 +160,20 @@ const PetRegistrationForm = () => {
 
   const uploadFile = async () => {
     if (!file) {
+      toast.error('Please select a file to upload for vaccination certificate.'); // Toast for no file
       setErrors(prev => ({ ...prev, vaccinationCertificate: 'Please select a file' }));
       return false;
     }
 
     const validTypes = ['image/jpeg', 'image/png', 'application/pdf'];
     if (!validTypes.includes(file.type)) {
+      toast.error('Only JPG, PNG, or PDF files are allowed for vaccination certificate.'); // Toast for invalid type
       setErrors(prev => ({ ...prev, vaccinationCertificate: 'Only JPG, PNG, or PDF files are allowed' }));
       return false;
     }
 
     if (file.size > 5000000) { // 5MB
+      toast.error('Vaccination certificate file size must be less than 5MB.'); // Toast for large file
       setErrors(prev => ({ ...prev, vaccinationCertificate: 'File size must be less than 5MB' }));
       return false;
     }
@@ -194,9 +202,11 @@ const PetRegistrationForm = () => {
         publicId: response.data.publicId
       });
       setIsUploading(false);
+      toast.success('Vaccination certificate uploaded successfully!'); // Success toast
       return true;
     } catch (error) {
       console.error('Upload error:', error);
+      toast.error('Vaccination certificate file upload failed.'); // Error toast
       setErrors(prev => ({ ...prev, vaccinationCertificate: 'File upload failed' }));
       setIsUploading(false);
       return false;
@@ -213,19 +223,18 @@ const PetRegistrationForm = () => {
 
   const handleAvatarUpload = async () => {
     if (!avatarFile) {
-      // Avatar is not compulsory, so no alert here
-      console.log('No avatar file selected.');
+      toast.info('No avatar file selected. Skipping avatar upload.'); // Info toast
       return;
     }
 
     const validTypes = ['image/jpeg', 'image/png'];
     if (!validTypes.includes(avatarFile.type)) {
-      alert('Only JPG or PNG files are allowed for avatar');
+      toast.error('Only JPG or PNG files are allowed for avatar.'); // Error toast
       return;
     }
 
     if (avatarFile.size > 5000000) { // 5MB
-      alert('File size must be less than 5MB');
+      toast.error('Avatar file size must be less than 5MB.'); // Error toast
       return;
     }
 
@@ -242,10 +251,10 @@ const PetRegistrationForm = () => {
       });
 
       setAvatarUrl(response.data.url);
-      alert('Avatar uploaded successfully!');
+      toast.success('Avatar uploaded successfully!'); // Success toast
     } catch (error) {
       console.error('Avatar upload error:', error);
-      alert('Failed to upload avatar');
+      toast.error('Failed to upload avatar.'); // Error toast
     }
   };
 
@@ -268,11 +277,10 @@ const PetRegistrationForm = () => {
     e.preventDefault();
 
     if (!formData.declaration1 || !formData.declaration2 || !formData.declaration3 || !formData.declaration4) {
-      alert('Please accept all declarations before submitting.');
+      toast.error('Please accept all declarations before submitting.'); // Toast for declarations
       return;
     }
 
-    // Upload file first if selected AND pet is vaccinated
     if (formData.isVaccinated === 'Yes' && file && !vaccinationProof.url) {
       const uploadSuccess = await uploadFile();
       if (!uploadSuccess) return;
@@ -281,11 +289,10 @@ const PetRegistrationForm = () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        alert('You must be logged in to submit the form.');
+        toast.error('You must be logged in to submit the form.'); // Toast for login
         return;
       }
 
-      // In the handleSubmit function, update the submissionData object:
       const submissionData = {
         animalType: formData.animalType,
         fullName: formData.fullName,
@@ -296,23 +303,22 @@ const PetRegistrationForm = () => {
         city: formData.city,
         state: formData.state,
         totalHouseArea: formData.totalHouseArea,
-        numberOfAnimals: formData.numberOfDogs, // Changed to match backend
+        numberOfAnimals: formData.numberOfDogs,
         pet: {
-            name: formData.petName,
-            category: formData.petCategory,
-            breed: formData.petBreed,
-            color: formData.petColor,
-            age: formData.petAge,
-            sex: formData.petSex,
-            isVaccinated: formData.isVaccinated,
-            // Conditionally include vaccination details
-            ...(formData.isVaccinated === 'Yes' && {
-                dateOfVaccination: formData.dateOfVaccination,
-                dueVaccination: formData.dueVaccination,
-                vaccinationProofUrl: vaccinationProof.url,
-                vaccinationProofPublicId: vaccinationProof.publicId,
-            }),
-            avatarUrl: avatarUrl
+          name: formData.petName,
+          category: formData.petCategory,
+          breed: formData.petBreed,
+          color: formData.petColor,
+          age: formData.petAge,
+          sex: formData.petSex,
+          isVaccinated: formData.isVaccinated,
+          ...(formData.isVaccinated === 'Yes' && {
+            dateOfVaccination: formData.dateOfVaccination,
+            dueVaccination: formData.dueVaccination,
+            vaccinationProofUrl: vaccinationProof.url,
+            vaccinationProofPublicId: vaccinationProof.publicId,
+          }),
+          avatarUrl: avatarUrl
         }
       };
 
@@ -322,20 +328,25 @@ const PetRegistrationForm = () => {
         }
       });
 
-      alert('Form submitted successfully!');
+      toast.success('Form submitted successfully!'); // Success toast
       console.log('Server response:', res.data);
-      resetForm(); // Clear all fields after successful submission
+      resetForm();
     } catch (err) {
       console.error('Error submitting form:', err);
-      alert(err.response?.data?.message || 'Something went wrong. Please try again.');
+      toast.error(err.response?.data?.message || 'Something went wrong. Please try again.'); // Error toast
     }
   };
 
   const renderError = (field) =>
     errors[field] && <span className="error-text">{errors[field]}</span>;
 
-return (
+  // Determine if petBreed is required based on animalType and petCategory
+  const isPetBreedRequired = !(formData.animalType === 'Dog' && formData.petCategory === 'Indian/Desi');
+
+  return (
     <div className="pet-registration-container">
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover /> {/* ToastContainer for displaying toasts */}
+
       <div className="tabs-container">
         <div className={`tab ${activeTab === 1 ? 'active' : ''}`}>
           <div className="tab-number">1</div>
@@ -461,7 +472,7 @@ return (
                     ) : (
                       <img
                         src={formData.animalType === 'Dog' ? '/dog-icon.png' :
-                             formData.animalType === 'Cat' ? '/cat-icon.png' : '/rabbit-icon.png'}
+                          formData.animalType === 'Cat' ? '/cat-icon.png' : '/rabbit-icon.png'}
                         alt={`${formData.animalType} Icon`}
                       />
                     )}
@@ -521,21 +532,24 @@ return (
 
                   <div className="form-row">
                     <div className="form-group">
-                      <label htmlFor="petBreed">{formData.animalType} Breed<span className="required">*</span></label>
+                      <label htmlFor="petBreed">
+                        {formData.animalType} Breed
+                        {isPetBreedRequired && <span className="required">*</span>}
+                      </label>
                       <select
                         id="petBreed"
                         name="petBreed"
                         value={formData.petBreed}
                         onChange={handleChange}
-                        required={!(formData.animalType === 'Dog' && formData.petCategory === 'Indian/Desi')}
-                        disabled={formData.animalType === 'Dog' && formData.petCategory === 'Indian/Desi'}
+                        required={isPetBreedRequired}
+                        disabled={!isPetBreedRequired}
                       >
                         <option value="">Select Breed</option>
                         {animalBreeds[formData.animalType]
-                            .filter(breed => !(formData.animalType === 'Dog' && formData.petCategory === 'Indian/Desi' && breed !== 'Any'))
-                            .map(breed => (
+                          .filter(breed => !(formData.animalType === 'Dog' && formData.petCategory === 'Indian/Desi' && breed !== 'Any'))
+                          .map(breed => (
                             <option key={breed} value={breed}>{breed}</option>
-                        ))}
+                          ))}
                       </select>
                       {renderError('petBreed')}
                     </div>
@@ -608,71 +622,71 @@ return (
                     </div>
 
                     {formData.isVaccinated === 'Yes' && (
-                        <>
-                          <div className="form-group">
-                            <label htmlFor="dateOfVaccination">Date of Vaccination<span className="required">*</span></label>
-                            <input
-                              type="date"
-                              id="dateOfVaccination"
-                              name="dateOfVaccination"
-                              value={formData.dateOfVaccination}
-                              onChange={handleChange}
-                              required
-                            />
-                            {renderError('dateOfVaccination')}
-                          </div>
-                          <div className="form-group">
-                            <label htmlFor="dueVaccination">Due date of Vaccination<span className="required">*</span></label>
-                            <input
-                              type="date"
-                              id="dueVaccination"
-                              name="dueVaccination"
-                              value={formData.dueVaccination}
-                              onChange={handleChange}
-                              required
-                            />
-                            {renderError('dueVaccination')}
-                          </div>
-                        </>
+                      <>
+                        <div className="form-group">
+                          <label htmlFor="dateOfVaccination">Date of Vaccination<span className="required">*</span></label>
+                          <input
+                            type="date"
+                            id="dateOfVaccination"
+                            name="dateOfVaccination"
+                            value={formData.dateOfVaccination}
+                            onChange={handleChange}
+                            required
+                          />
+                          {renderError('dateOfVaccination')}
+                        </div>
+                        <div className="form-group">
+                          <label htmlFor="dueVaccination">Due date of Vaccination<span className="required">*</span></label>
+                          <input
+                            type="date"
+                            id="dueVaccination"
+                            name="dueVaccination"
+                            value={formData.dueVaccination}
+                            onChange={handleChange}
+                            required
+                          />
+                          {renderError('dueVaccination')}
+                        </div>
+                      </>
                     )}
                   </div>
 
                   {formData.isVaccinated === 'Yes' && (
-                      <div className="form-group full-width">
-                        <label htmlFor="vaccinationCertificate">
-                          Upload {formData.animalType === 'Dog' ? 'Rabies' : 'Vaccination'} Certificate<span className="required">*</span>
+                    <div className="form-group full-width">
+                      <label htmlFor="vaccinationCertificate">
+                        Upload {formData.animalType === 'Dog' ? 'Rabies' : 'Vaccination'} Certificate<span className="required">*</span>
+                      </label>
+                      <div className="file-input-container">
+                        <input
+                          type="file"
+                          id="vaccinationCertificate"
+                          name="vaccinationCertificate"
+                          accept=".jpg,.jpeg,.png,.pdf"
+                          onChange={handleFileChange}
+                          style={{ display: 'none' }}
+                          required={formData.isVaccinated === 'Yes'}
+                        />
+                        <label htmlFor="vaccinationCertificate" className="file-choose-btn">
+                          Choose File
                         </label>
-                        <div className="file-input-container">
-                          <input
-                            type="file"
-                            id="vaccinationCertificate"
-                            name="vaccinationCertificate"
-                            accept=".jpg,.jpeg,.png,.pdf"
-                            onChange={handleFileChange}
-                            style={{ display: 'none' }}
-                            required={formData.isVaccinated === 'Yes'}
-                          />
-                          <label htmlFor="vaccinationCertificate" className="file-choose-btn">
-                            Choose File
-                          </label>
-                          <button
-                            type="button"
-                            className="upload-btn"
-                            onClick={uploadFile}
-                          >
-                            Upload Certificate
-                          </button>
-                          <span className="file-chosen">{fileName}</span>
-                        </div>
-                        {renderError('vaccinationCertificate')}
-                        {isUploading && (
-                          <div className="upload-progress">
-                            <progress value={uploadProgress} max="100"></progress>
-                            <span>{uploadProgress}%</span>
-                          </div>
-                        )}
-                        <p className="file-format">JPG, PNG and PDF Allowed, Maximum Size 5MB</p>
+                        <button
+                          type="button"
+                          className="upload-btn"
+                          onClick={uploadFile}
+                        >
+                          Upload Certificate
+                        </button>
+                        <span className="file-chosen">{fileName}</span>
                       </div>
+                      {renderError('vaccinationCertificate')}
+                      {isUploading && (
+                        <div className="upload-progress">
+                          <progress value={uploadProgress} max="100"></progress>
+                          <span>{uploadProgress}%</span>
+                        </div>
+                      )}
+                      <p className="file-format">JPG, PNG and PDF Allowed, Maximum Size 5MB</p>
+                    </div>
                   )}
                 </div>
               </div>
@@ -680,228 +694,227 @@ return (
           </div>
         )}
 
-  {activeTab === 3 && (
-  <div className="form-step">
-    <h2 className="section-title">Pet Owner's Details</h2>
+        {activeTab === 3 && (
+          <div className="form-step">
+            <h2 className="section-title">Pet Owner's Details</h2>
 
-    <div className="preview-section">
-      <div className="preview-row">
-        <div className="preview-item">
-          <span className="preview-label">Owner Name :</span>
-          <span className="preview-value">{formData.fullName || 'Not provided'}</span>
-        </div>
-        <div className="preview-item">
-          <span className="preview-label">Phone Number :</span>
-          <span className="preview-value">{formData.phoneNumber || 'Not provided'}</span>
-        </div>
-      </div>
+            <div className="preview-section">
+              <div className="preview-row">
+                <div className="preview-item">
+                  <span className="preview-label">Owner Name :</span>
+                  <span className="preview-value">{formData.fullName || 'Not provided'}</span>
+                </div>
+                <div className="preview-item">
+                  <span className="preview-label">Phone Number :</span>
+                  <span className="preview-value">{formData.phoneNumber || 'Not provided'}</span>
+                </div>
+              </div>
 
-      <div className="preview-row">
-        <div className="preview-item">
-          <span className="preview-label">Gender :</span>
-          <span className="preview-value">{formData.gender || 'Not provided'}</span>
-        </div>
-        <div className="preview-item">
-          <span className="preview-label">Street name :</span>
-          <span className="preview-value">{formData.streetName || 'Not provided'}</span>
-        </div>
-      </div>
+              <div className="preview-row">
+                <div className="preview-item">
+                  <span className="preview-label">Gender :</span>
+                  <span className="preview-value">{formData.gender || 'Not provided'}</span>
+                </div>
+                <div className="preview-item">
+                  <span className="preview-label">Street name :</span>
+                  <span className="preview-value">{formData.streetName || 'Not provided'}</span>
+                </div>
+              </div>
 
-      <div className="preview-row">
-        <div className="preview-item">
-          <span className="preview-label">City :</span>
-          <span className="preview-value">{formData.city || 'Not provided'}</span>
-        </div>
-        <div className="preview-item">
-          <span className="preview-label">State :</span>
-          <span className="preview-value">{formData.state || 'Not provided'}</span>
-        </div>
-        <div className="preview-item">
-          <span className="preview-label">Pin code :</span>
-          <span className="preview-value">{formData.pinCode || 'Not provided'}</span>
-        </div>
-      </div>
+              <div className="preview-row">
+                <div className="preview-item">
+                  <span className="preview-label">City :</span>
+                  <span className="preview-value">{formData.city || 'Not provided'}</span>
+                </div>
+                <div className="preview-item">
+                  <span className="preview-label">State :</span>
+                  <span className="preview-value">{formData.state || 'Not provided'}</span>
+                </div>
+                <div className="preview-item">
+                  <span className="preview-label">Pin code :</span>
+                  <span className="preview-value">{formData.pinCode || 'Not provided'}</span>
+                </div>
+              </div>
 
-      <div className="preview-row">
-        <div className="preview-item">
-          <span className="preview-label">Total House Area :</span>
-          <span className="preview-value">{formData.totalHouseArea || 'Not provided'}</span>
-        </div>
-        <div className="preview-item">
-          <span className="preview-label">Number of Animals :</span>
-          <span className="preview-value">{formData.numberOfDogs || '1'}</span>
-        </div>
-      </div>
-    </div>
-
-    <h2 className="section-title">{formData.animalType} Details 1</h2>
-    <div className="preview-section">
-      <div className="preview-row">
-        <div className="preview-item">
-          <span className="preview-label">{formData.animalType} Name:</span>
-          <span className="preview-value">{formData.petName || 'Not provided'}</span>
-        </div>
-        <div className="preview-item">
-          <span className="preview-label">{formData.animalType} Category:</span>
-          <span className="preview-value">{formData.petCategory || 'Not provided'}</span>
-        </div>
-      </div>
-
-      <div className="preview-row">
-        <div className="preview-item">
-          <span className="preview-label">{formData.animalType} Breed:</span>
-          <span className="preview-value">{formData.petBreed || 'Not provided'}</span>
-        </div>
-        <div className="preview-item">
-          <span className="preview-label">{formData.animalType} Colour:</span>
-          <span className="preview-value">{formData.petColor || 'Not provided'}</span>
-        </div>
-      </div>
-
-      <div className="preview-row">
-        <div className="preview-item">
-          <span className="preview-label">Age of {formData.animalType}:</span>
-          <span className="preview-value">{formData.petAge || 'Not provided'}</span>
-        </div>
-        <div className="preview-item">
-          <span className="preview-label">Sex of {formData.animalType}:</span>
-          <span className="preview-value">{formData.petSex || 'Not provided'}</span>
-        </div>
-      </div>
-
-      <div className="preview-row">
-        <div className="preview-item">
-          <span className="preview-label">Vaccinated:</span>
-          <span className="preview-value">{formData.isVaccinated || 'Not provided'}</span>
-        </div>
-        {formData.isVaccinated === 'Yes' && (
-          <>
-            <div className="preview-item">
-              <span className="preview-label">Date of Vaccination:</span>
-              <span className="preview-value">
-                {formData.dateOfVaccination ? new Date(formData.dateOfVaccination).toLocaleDateString() : 'Not provided'}
-              </span>
+              <div className="preview-row">
+                <div className="preview-item">
+                  <span className="preview-label">Total House Area :</span>
+                  <span className="preview-value">{formData.totalHouseArea || 'Not provided'}</span>
+                </div>
+                <div className="preview-item">
+                  <span className="preview-label">Number of Animals :</span>
+                  <span className="preview-value">{formData.numberOfDogs || '1'}</span>
+                </div>
+              </div>
             </div>
-            <div className="preview-item">
-              <span className="preview-label">Vaccine Due Date:</span>
-              <span className="preview-value">
-                {formData.dueVaccination ? new Date(formData.dueVaccination).toLocaleDateString() : 'Not provided'}
-              </span>
-            </div>
-          </>
-        )}
-      </div>
 
-      {formData.isVaccinated === 'Yes' && (
-        <div className="preview-row">
-          <div className="preview-item">
-            <span className="preview-label">Vaccination Certificate:</span>
-            <span className="preview-value">
-              {vaccinationProof.url ? (
-                <a href={vaccinationProof.url} target="_blank" rel="noopener noreferrer">
-                  View Certificate
-                </a>
-              ) : (
-                'No file uploaded'
+            <h2 className="section-title">{formData.animalType} Details 1</h2>
+            <div className="preview-section">
+              <div className="preview-row">
+                <div className="preview-item">
+                  <span className="preview-label">{formData.animalType} Name:</span>
+                  <span className="preview-value">{formData.petName || 'Not provided'}</span>
+                </div>
+                <div className="preview-item">
+                  <span className="preview-label">{formData.animalType} Category:</span>
+                  <span className="preview-value">{formData.petCategory || 'Not provided'}</span>
+                </div>
+              </div>
+
+              <div className="preview-row">
+                <div className="preview-item">
+                  <span className="preview-label">{formData.animalType} Breed:</span>
+                  <span className="preview-value">{formData.petBreed || 'Not provided'}</span>
+                </div>
+                <div className="preview-item">
+                  <span className="preview-label">{formData.animalType} Colour:</span>
+                  <span className="preview-value">{formData.petColor || 'Not provided'}</span>
+                </div>
+              </div>
+
+              <div className="preview-row">
+                <div className="preview-item">
+                  <span className="preview-label">Age of {formData.animalType}:</span>
+                  <span className="preview-value">{formData.petAge || 'Not provided'}</span>
+                </div>
+                <div className="preview-item">
+                  <span className="preview-label">Sex of {formData.animalType}:</span>
+                  <span className="preview-value">{formData.petSex || 'Not provided'}</span>
+                </div>
+              </div>
+
+              <div className="preview-row">
+                <div className="preview-item">
+                  <span className="preview-label">Vaccinated:</span>
+                  <span className="preview-value">{formData.isVaccinated || 'Not provided'}</span>
+                </div>
+                {formData.isVaccinated === 'Yes' && (
+                  <>
+                    <div className="preview-item">
+                      <span className="preview-label">Date of Vaccination:</span>
+                      <span className="preview-value">
+                        {formData.dateOfVaccination ? new Date(formData.dateOfVaccination).toLocaleDateString() : 'Not provided'}
+                      </span>
+                    </div>
+                    <div className="preview-item">
+                      <span className="preview-label">Vaccine Due Date:</span>
+                      <span className="preview-value">
+                        {formData.dueVaccination ? new Date(formData.dueVaccination).toLocaleDateString() : 'Not provided'}
+                      </span>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {formData.isVaccinated === 'Yes' && (
+                <div className="preview-row">
+                  <div className="preview-item">
+                    <span className="preview-label">Vaccination Certificate:</span>
+                    <span className="preview-value">
+                      {vaccinationProof.url ? (
+                        <a href={vaccinationProof.url} target="_blank" rel="noopener noreferrer">
+                          View Certificate
+                        </a>
+                      ) : (
+                        'No file uploaded'
+                      )}
+                    </span>
+                  </div>
+                </div>
               )}
-            </span>
-          </div>
-        </div>
-      )}
-    </div>
+            </div>
 
-    {/* Add the vet details section for non-vaccinated pets */}
-    {formData.isVaccinated === 'No' && (
-      <div className="vet-info-section">
-        <h3 className="section-subtitle">Approved Veterinary Clinic Information</h3>
-        <div className="preview-row">
-          <div className="preview-item">
-            <span className="preview-label">Clinic Name:</span>
-            <span className="preview-value">{VET_DETAILS.clinic}</span>
-          </div>
-          <div className="preview-item">
-            <span className="preview-label">Veterinarian:</span>
-            <span className="preview-value">{VET_DETAILS.name}</span>
-          </div>
-        </div>
-        <div className="preview-row">
-          <div className="preview-item">
-            <span className="preview-label">Contact Number:</span>
-            <span className="preview-value">{VET_DETAILS.phone}</span>
-          </div>
-          <div className="preview-item">
-            <span className="preview-label">Address:</span>
-            <span className="preview-value">{VET_DETAILS.address}</span>
-          </div>
-        </div>
-        <div className="info-note">
-          <p><strong>Important:</strong> {VET_DETAILS.instructions}</p>
-        </div>
-      </div>
-    )}
+            {formData.isVaccinated === 'No' && (
+              <div className="vet-info-section">
+                <h3 className="section-subtitle">Approved Veterinary Clinic Information</h3>
+                <div className="preview-row">
+                  <div className="preview-item">
+                    <span className="preview-label">Clinic Name:</span>
+                    <span className="preview-value">{VET_DETAILS.clinic}</span>
+                  </div>
+                  <div className="preview-item">
+                    <span className="preview-label">Veterinarian:</span>
+                    <span className="preview-value">{VET_DETAILS.name}</span>
+                  </div>
+                </div>
+                <div className="preview-row">
+                  <div className="preview-item">
+                    <span className="preview-label">Contact Number:</span>
+                    <span className="preview-value">{VET_DETAILS.phone}</span>
+                  </div>
+                  <div className="preview-item">
+                    <span className="preview-label">Address:</span>
+                    <span className="preview-value">{VET_DETAILS.address}</span>
+                  </div>
+                </div>
+                <div className="info-note">
+                  <p><strong>Important:</strong> {VET_DETAILS.instructions}</p>
+                </div>
+              </div>
+            )}
 
-    <h2 className="section-title">Declaration</h2>
-    <div className="declaration-section">
-      <div className="declaration-item">
-        <input
-          type="checkbox"
-          id="declaration1"
-          name="declaration1"
-          checked={formData.declaration1}
-          onChange={handleChange}
-          required
-        />
-        <label htmlFor="declaration1">
-          I hereby declare that the entries made by me in the Application Form are complete and true to the best of my knowledge, belief and information.
-        </label>
-      </div>
+            <h2 className="section-title">Declaration</h2>
+            <div className="declaration-section">
+              <div className="declaration-item">
+                <input
+                  type="checkbox"
+                  id="declaration1"
+                  name="declaration1"
+                  checked={formData.declaration1}
+                  onChange={handleChange}
+                  required
+                />
+                <label htmlFor="declaration1">
+                  I hereby declare that the entries made by me in the Application Form are complete and true to the best of my knowledge, belief and information.
+                </label>
+              </div>
 
-      <div className="declaration-item">
-        <input
-          type="checkbox"
-          id="declaration2"
-          name="declaration2"
-          checked={formData.declaration2}
-          onChange={handleChange}
-          required
-        />
-        <label htmlFor="declaration2">
-          I hereby undertake to present the original documents for verification immediately upon demand by the concerned authorities.
-        </label>
-      </div>
+              <div className="declaration-item">
+                <input
+                  type="checkbox"
+                  id="declaration2"
+                  name="declaration2"
+                  checked={formData.declaration2}
+                  onChange={handleChange}
+                  required
+                />
+                <label htmlFor="declaration2">
+                  I hereby undertake to present the original documents for verification immediately upon demand by the concerned authorities.
+                </label>
+              </div>
 
-      <div className="declaration-item">
-        <input
-          type="checkbox"
-          id="declaration3"
-          name="declaration3"
-          checked={formData.declaration3}
-          onChange={handleChange}
-          required
-        />
-        <label htmlFor="declaration3">
-          If in any case, concerned authorities encountered any fault then they would take action against me and anytime like cancellation of the license by the authorized authority.
-        </label>
-      </div>
+              <div className="declaration-item">
+                <input
+                  type="checkbox"
+                  id="declaration3"
+                  name="declaration3"
+                  checked={formData.declaration3}
+                  onChange={handleChange}
+                  required
+                />
+                <label htmlFor="declaration3">
+                  If in any case, concerned authorities encountered any fault then they would take action against me and anytime like cancellation of the license by the authorized authority.
+                </label>
+              </div>
 
-      <div className="declaration-item">
-        <input
-          type="checkbox"
-          id="declaration4"
-          name="declaration4"
-          checked={formData.declaration4}
-          onChange={handleChange}
-          required
-        />
-        <label htmlFor="declaration4">
-          I hereby assure the Municipal Corporation, Gorakhpur that, I am not using my pet for any breeding purpose and will follow all the rules and regulation (
-          <a href="./Rules.pdf" target='_blank' className="link">View PDF</a>
-          ) issued by Municipal Corporation, Gorakhpur from time to time.
-        </label>
-      </div>
-    </div>
-  </div>
-)}
+              <div className="declaration-item">
+                <input
+                  type="checkbox"
+                  id="declaration4"
+                  name="declaration4"
+                  checked={formData.declaration4}
+                  onChange={handleChange}
+                  required
+                />
+                <label htmlFor="declaration4">
+                  I hereby assure the Municipal Corporation, Gorakhpur that, I am not using my pet for any breeding purpose and will follow all the rules and regulation (
+                  <a href="./Rules.pdf" target='_blank' className="link">View PDF</a>
+                  ) issued by Municipal Corporation, Gorakhpur from time to time.
+                </label>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="form-buttons">
           {activeTab > 1 && <button type="button" className="back-btn" onClick={handleBack}>Back</button>}
