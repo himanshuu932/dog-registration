@@ -72,38 +72,26 @@ exports.uploadVaccinationProof = async (req, res) => {
 
 exports.applyLicense = async (req, res) => {
   try {
-   // console.log("🔥 applyLicense route hit");
-
     const {
       animalType,
       fullName, phoneNumber, gender, streetName, pinCode, city, state,
       totalHouseArea, numberOfAnimals,
-      pet
+      pet, fees
     } = req.body;
+    console.log("Received fees data: ", fees);
 
-   // console.log("📦 Received pet:", pet);
 
     const isVaccinatedStr = String(pet?.isVaccinated || '').toLowerCase();
     const isProvisional = isVaccinatedStr !== 'yes';
-
-    const now = new Date();
-    const year = now.getFullYear().toString().slice(-2).padStart(2, '0');
-    const month = (now.getMonth() + 1).toString().padStart(2, '0');
-    const day = now.getDate().toString().padStart(2, '0');
-     const hours = now.getHours().toString().padStart(2, '0');
-    const minutes = now.getMinutes().toString().padStart(2, '0');
-      const seconds = now.getSeconds().toString().padStart(2, '0');
-    const random = Math.floor(Math.random() * 9000 + 1000).toString();
     const prefix = isProvisional ? 'PL' : 'FL';
+
     const counter = await LicenseID.findOneAndUpdate(
-  {},
-  { $inc: { seq: 1 } },
-  { new: true, upsert: true }
-);
+      {},
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true }
+    );
 
-const license_Id = `${prefix}${counter.seq}`;
-
-
+    const license_Id = `${prefix}${counter.seq}`;
 
     const newLicense = new DogLicense({
       owner: req.user.userId,
@@ -115,11 +103,18 @@ const license_Id = `${prefix}${counter.seq}`;
       address: { streetName, pinCode, city, state },
       totalHouseArea,
       numberOfAnimals,
-      pet, // already includes isVaccinated
+      pet,
       isProvisional,
       provisionalExpiryDate: isProvisional ? new Date(Date.now() + 30 * 86400000) : null,
       expiryDate: isProvisional ? null : new Date(Date.now() + 365 * 86400000),
-      status: 'pending'
+      status: 'pending',
+    fees: {
+  total: fees?.total || 0,
+  fine: fees?.fine || 0,
+  paid: false,
+  paymentDate: null
+}
+
     });
 
     const savedLicense = await newLicense.save();
@@ -148,6 +143,7 @@ const license_Id = `${prefix}${counter.seq}`;
     });
   }
 };
+
 
 
 exports.getUserLicenses = async (req, res) => {

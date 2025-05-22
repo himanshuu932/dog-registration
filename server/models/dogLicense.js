@@ -2,6 +2,15 @@ const mongoose = require("mongoose");
 
 const dogLicenseSchema = new mongoose.Schema(
   {
+
+fees: {
+  total: { type: Number, default: 0 },
+  fine: { type: Number, default: 0 },
+  paid: { type: Boolean, default: false },
+  paymentDate: { type: Date, default: null }
+},
+
+
         isProvisional: {
       type: Boolean,
       default: false

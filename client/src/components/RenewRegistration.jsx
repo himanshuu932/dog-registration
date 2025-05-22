@@ -239,7 +239,7 @@ const RenewRegistration = ({ languageType = 'en' }) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [viewingLicenseId, setViewingLicenseId] = useState(null);
 
-  const backendUrl = "https://dog-registration.onrender.com";
+  const backendUrl = "http://localhost:5000";
   const authToken = localStorage.getItem('token');
 
   const textContent = {

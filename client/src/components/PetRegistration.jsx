@@ -73,7 +73,7 @@ const PetRegistrationForm = () => {
 
   const [formData, setFormData] = useState(initialFormData);
 
-  const backend = "https://dog-registration.onrender.com";
+  const backend = "http://localhost:5000";
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -376,9 +376,12 @@ const PetRegistrationForm = () => {
           }),
           avatarUrl: avatarUrl
         },
-        fees: { 
-            totalFees: totalFees
-        }
+fees: {
+  total: totalFees,
+  fine: fineFees
+}
+
+
       };
 
       const res = await axios.post(`${backend}/api/license/apply`, submissionData, {
