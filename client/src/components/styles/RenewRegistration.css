@@ -591,3 +591,149 @@
 
   .user-rr-notice { padding: 0.75rem; font-size: 0.9rem; }
 }
+.user-rr-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.user-rr-modal-content {
+  background-color: var(--user-rr-white);
+  padding: 2rem;
+  border-radius: var(--user-rr-border-radius);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.user-rr-modal-title {
+  font-size: 1.5rem;
+  color: var(--user-rr-primary);
+  margin: 0 0 0.5rem 0;
+  text-align: center;
+}
+
+.user-rr-modal-content p {
+  font-size: 1rem;
+  color: var(--user-rr-gray-dark);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.user-rr-captcha-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0.5rem 0;
+  align-items: center;
+}
+
+.user-rr-captcha-image-refresh {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid var(--user-rr-gray-light);
+  padding: 5px;
+  border-radius: var(--user-rr-border-radius);
+  background-color: var(--user-rr-gray-lightest);
+}
+
+.user-rr-captcha-svg {
+  min-width: 150px; 
+  height: 50px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.user-rr-captcha-svg svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+
+.user-rr-captcha-refresh-btn {
+  background: var(--user-rr-gray-light);
+  border: 1px solid var(--user-rr-gray);
+  color: var(--user-rr-primary);
+  padding: 0.5rem;
+  border-radius: var(--user-rr-border-radius);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+.user-rr-captcha-refresh-btn:hover {
+  background-color: var(--user-rr-gray);
+}
+
+.user-rr-captcha-input {
+  padding: 0.75rem;
+  border: 1px solid var(--user-rr-gray);
+  border-radius: var(--user-rr-border-radius);
+  font-size: 1rem;
+  width: 100%;
+  max-width: 250px; 
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.user-rr-modal-error-text {
+  color: var(--user-rr-danger-text);
+  background-color: var(--user-rr-danger-bg);
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--user-rr-border-radius);
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+.user-rr-modal-success-text {
+  color: var(--user-rr-success-text);
+  background-color: var(--user-rr-success-bg);
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--user-rr-border-radius);
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+
+.user-rr-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.user-rr-modal-cancel-btn {
+  background-color: #d71515;
+  color: #fff;
+  border: 1px solid var(--user-rr-gray);
+}
+.user-rr-modal-cancel-btn:hover {
+  background-color: var(--user-rr-gray);
+}
+
+.user-rr-modal-confirm-btn {
+  background-color: var(--user-rr-success-text);
+}
+.user-rr-modal-confirm-btn:hover {
+  background-color: #207343; 
+}
+.user-rr-modal-confirm-btn:disabled {
+  background-color: var(--user-rr-gray);
+  cursor: not-allowed;
+}

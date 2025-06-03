@@ -16,7 +16,7 @@ mongoose.connect(process.env.MONGO_URI)
 
 app.use(cors({ origin: true, credentials: true }));
 app.use(bodyParser.json());
-
+app.use('/api/captcha', require('./routes/captchaRoutes'));
 app.use("/api/auth", authRoutes);
 app.use("/api/license", licenseRoutes);
 app.use("/api/admin", adminRoutes);

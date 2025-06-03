@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import "./LoginPage.css";
+import "./LoginPage.css"; // Ensure this CSS file is correctly linked and updated
 
 import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
@@ -8,6 +8,8 @@ import { isValidPhoneNumber } from 'react-phone-number-input';
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { RefreshCw } from 'lucide-react'; // Added for CAPTCHA refresh
+
 
 // Translations object
 const translations = {
@@ -35,13 +37,19 @@ const translations = {
     name: "Name",
     chooseUsername: "Please choose a username",
     choosePassword: "Please choose a password",
-    enterPhoneNumberSignup: "Enter phone number", // For email signup step 2
+    enterPhoneNumberSignup: "Enter phone number",
     invalidOtpOrSignupFailed: "Invalid OTP or failed signup",
     verifying: "Verifying...",
     verifyOtpAndSignup: "Verify OTP & Signup",
     signupSuccessful: "Signup successful! You can now log in.",
     goBack: "Go Back",
-    back: "Back"
+    back: "Back",
+    // CAPTCHA specific translations
+    enterCaptcha: "Enter CAPTCHA",
+    invalidCaptcha: "Invalid CAPTCHA",
+    failedToLoadCaptcha: "Failed to load CAPTCHA",
+    refreshCaptcha: "Refresh CAPTCHA",
+    captchaVerifiedSendingOtp: "CAPTCHA verified. Sending OTP..." // Added for clarity
   },
   hi: {
     municipalCorporation: "नगर निगम गोरखपुर",
@@ -67,15 +75,24 @@ const translations = {
     name: "नाम",
     chooseUsername: "कृपया यूज़रनेम चुनें",
     choosePassword: "कृपया पासवर्ड चुनें",
-    enterPhoneNumberSignup: "फ़ोन नंबर दर्ज करें", // For email signup step 2
+    enterPhoneNumberSignup: "फ़ोन नंबर दर्ज करें",
     invalidOtpOrSignupFailed: "अमान्य ओटीपी या साइन अप विफल रहा",
     verifying: "सत्यापित हो रहा है...",
     verifyOtpAndSignup: "ओटीपी सत्यापित करें और साइन अप करें",
     signupSuccessful: "साइन अप सफल! अब आप लॉग इन कर सकते हैं।",
     goBack: "वापस जाएं",
-    back: "वापस"
+    back: "वापस",
+    // CAPTCHA specific translations
+    enterCaptcha: "कैप्चा दर्ज करें",
+    invalidCaptcha: "अमान्य कैप्चा",
+    failedToLoadCaptcha: "कैप्चा लोड करने में विफल",
+    refreshCaptcha: "कैप्चा रीफ़्रेश करें",
+    captchaVerifiedSendingOtp: "कैप्चा सत्यापित। ओटीपी भेज रहा है..."
   }
 };
+
+const API_DOG_REGISTRATION = "https://dog-registration.onrender.com/api";
+// const API_KALYANMANDAPAM = "https://kalyanmandapam.onrender.com/api"; // This is the API from LoginPage.jsx, kept separate for clarity if needed.
 
 function LoginPage({ user, setUser, languageType }) {
   const [view, setView] = useState("login");
@@ -83,7 +100,7 @@ function LoginPage({ user, setUser, languageType }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768); // Still tracking, but not used for button visibility
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   // Login state
   const [username, setUsername] = useState("");
@@ -99,12 +116,39 @@ function LoginPage({ user, setUser, languageType }) {
   const [signupPhoneNumber, setSignupPhoneNumber] = useState("");
   const [step, setStep] = useState(1);
 
-  const backend = "https://dog-registration.onrender.com";
-
-  const formatPhoneNumber = (number) => number ? number.toString() : "";
+  // CAPTCHA STATES
+  const [captchaSvg, setCaptchaSvg] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [captchaInput, setCaptchaInput] = useState("");
 
   // Get translations based on languageType
   const t = translations[languageType] || translations.en;
+
+  // Function to load/reload CAPTCHA
+  const loadCaptcha = useCallback(() => {
+    //setError(""); // Clear general errors when captcha is (re)loaded
+    setCaptchaInput(""); // Clear input when new captcha is loaded
+    setCaptchaSvg("");   // Clear current SVG while loading
+    setCaptchaToken(""); // Clear current token
+
+    axios
+      .get(`${API_DOG_REGISTRATION}/captcha/get-captcha`) // Using the API from dog-registration backend
+      .then((res) => {
+        setCaptchaSvg(res.data.svg);
+        setCaptchaToken(res.data.token);
+      })
+      .catch((err) => {
+        console.error("Failed to load CAPTCHA:", err);
+        setError(t.failedToLoadCaptcha);
+      });
+  }, [t]); // languageType for error messages
+
+  useEffect(() => {
+    // Only fetch CAPTCHA for login or the first step of signup
+    if (view === "login" || (view === "signup" && step === 1)) {
+      loadCaptcha();
+    }
+  }, [view, step, loadCaptcha]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -118,14 +162,28 @@ function LoginPage({ user, setUser, languageType }) {
     };
   }, []);
 
+  const formatPhoneNumber = (number) => number ? number.toString() : "";
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
     setLoading(true);
+
     try {
+      // 1. Verify CAPTCHA first
+      const captchaRes = await axios.post(`${API_DOG_REGISTRATION}/captcha/verify-captcha`, {
+        captchaInput,
+        captchaToken,
+      });
+
+      if (!captchaRes.data?.success) {
+        throw new Error(t.invalidCaptcha);
+      }
+
+      // If CAPTCHA is successful, proceed with user login
       const res = await axios.post(
-        `${backend}/api/auth/login`,
+        `${API_DOG_REGISTRATION}/auth/login`,
         { username, password },
         { withCredentials: true }
       );
@@ -139,8 +197,20 @@ function LoginPage({ user, setUser, languageType }) {
       } else {
         navigate("/home");
       }
+      setSuccess(t.loginSuccessful); // Assuming you add this to translations
     } catch (err) {
-      setError(err.response?.data?.message || t.loginFailed);
+      console.error("Login/CAPTCHA error:", err.response || err.message);
+      let errorMessage = t.loginFailed;
+
+      if (err.message === t.invalidCaptcha) {
+        errorMessage = err.message;
+      } else if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      }
+
+      setError(errorMessage);
+      loadCaptcha(); // Refresh CAPTCHA on error
+
     } finally {
       setLoading(false);
     }
@@ -153,24 +223,48 @@ function LoginPage({ user, setUser, languageType }) {
 
     if (method === "phone" && !isValidPhoneNumber(phoneNumber)) {
       setError(t.invalidPhoneNumber);
+      setLoading(false);
       return;
     }
     if (method === "email" && !email) {
       setError(t.invalidEmail);
+      setLoading(false);
       return;
     }
 
     setLoading(true);
     try {
+      // 1. Verify CAPTCHA first for signup (step 1)
+      const captchaRes = await axios.post(`${API_DOG_REGISTRATION}/captcha/verify-captcha`, {
+        captchaInput,
+        captchaToken,
+      });
+
+      if (!captchaRes.data?.success) {
+        throw new Error(t.invalidCaptcha);
+      }
+
+      setSuccess(t.captchaVerifiedSendingOtp); // Assuming you add this translation
+
+      // 2. If CAPTCHA is successful, proceed with sending OTP
       if (method === "phone") {
-        await axios.post(`${backend}/api/auth/send-otp`, { phone: formatPhoneNumber(phoneNumber) });
+        await axios.post(`${API_DOG_REGISTRATION}/auth/send-otp`, { phone: formatPhoneNumber(phoneNumber) });
       } else {
-        await axios.post(`${backend}/api/auth/send-email-otp`, { email });
+        await axios.post(`${API_DOG_REGISTRATION}/auth/send-email-otp`, { email });
       }
       setStep(2);
       setSuccess(t.otpSentSuccess);
     } catch (err) {
-      setError(err.response?.data?.message || t.invalidOtpOrSignupFailed);
+      console.error("Signup/CAPTCHA error:", err.response || err.message);
+      let errorMessage = err.response?.data?.message || t.invalidOtpOrSignupFailed;
+
+      if (err.message === t.invalidCaptcha) {
+        errorMessage = err.message;
+      }
+
+      setError(errorMessage);
+      loadCaptcha(); // Refresh CAPTCHA on error
+
     } finally {
       setLoading(false);
     }
@@ -182,19 +276,23 @@ function LoginPage({ user, setUser, languageType }) {
     setSuccess("");
 
     if (!otp) {
-      setError(t.otp); // Assuming "OTP" as error message for empty OTP
+      setError(t.otp);
+      setLoading(false);
       return;
     }
     if (!signupUsername) {
       setError(t.chooseUsername);
+      setLoading(false);
       return;
     }
     if (!signupPassword) {
       setError(t.choosePassword);
+      setLoading(false);
       return;
     }
     if (method === "email" && !isValidPhoneNumber(signupPhoneNumber)) {
       setError(t.invalidPhoneNumber);
+      setLoading(false);
       return;
     }
 
@@ -208,11 +306,11 @@ function LoginPage({ user, setUser, languageType }) {
 
       if (method === "phone") {
         payload.phone = formatPhoneNumber(phoneNumber);
-        await axios.post(`${backend}/api/auth/verify-otp`, payload);
+        await axios.post(`${API_DOG_REGISTRATION}/auth/verify-otp`, payload);
       } else {
         payload.email = email;
         payload.phone = formatPhoneNumber(signupPhoneNumber);
-        await axios.post(`${backend}/api/auth/verify-email-otp`, payload);
+        await axios.post(`${API_DOG_REGISTRATION}/auth/verify-email-otp`, payload);
       }
 
       setSuccess(t.signupSuccessful);
@@ -226,6 +324,8 @@ function LoginPage({ user, setUser, languageType }) {
         setSignupUsername("");
         setSignupPassword("");
         setSignupPhoneNumber("");
+        setError(""); // Clear error on successful signup
+        setSuccess(""); // Clear success on successful signup
       }, 1500);
     } catch (err) {
       setError(err.response?.data?.message || t.invalidOtpOrSignupFailed);
@@ -238,7 +338,36 @@ function LoginPage({ user, setUser, languageType }) {
     setError("");
     setSuccess("");
     setStep(1);
+    // loadCaptcha will be called by useEffect due to step change
   };
+
+  const renderCaptchaFields = () => (
+    captchaSvg && ( // Only render if captchaSvg is available
+      <div className="captcha-wrapper" style={{ display: "flex", alignItems: "center", gap: "10px" }}> {/* Main container for CAPTCHA elements */}
+        <div className="captcha-top-row" style={{ display: "flex", alignItems: "center", flexDirection: "row", gap: "10px" }}> {/* Container for image and refresh button */}
+          <div className="captcha-svg-container" dangerouslySetInnerHTML={{ __html: captchaSvg }} />
+          <button
+            type="button"
+            onClick={loadCaptcha} // Assuming loadCaptcha is your function to reload CAPTCHA
+            title={t.refreshCaptcha}
+            className="refresh-captcha-btn"
+            style={{ height: "40px", width: "40px", display: "flex", alignItems: "center", justifyContent: "center" }}
+          >
+            <RefreshCw size={22} />
+          </button>
+        </div>
+        <input
+          type="text"
+          placeholder={t.enterCaptcha}
+          value={captchaInput}
+          onChange={(e) => setCaptchaInput(e.target.value)}
+          required
+          className="captcha-input-field"
+        />
+      </div>
+    )
+  );
+
 
   return (
     <div className="login-wrapper">
@@ -299,10 +428,16 @@ function LoginPage({ user, setUser, languageType }) {
                 required
               />
 
+              {renderCaptchaFields()}
+
               {error && <div className="error-message">{error}</div>}
               {success && <div className="success-message">{success}</div>}
 
-              <button type="submit" disabled={loading}>
+              <button
+                type="submit"
+                disabled={loading || !captchaToken} // Disable if captcha isn't loaded
+                className={loading ? "disabled-login-button" : ""}
+              >
                 {loading ? t.loggingIn : t.login}
               </button>
 
@@ -319,8 +454,8 @@ function LoginPage({ user, setUser, languageType }) {
 
           {view === "signup" && (
             <div className="signup-form">
-              {step === 1 && (
-                <>
+              {step === 1 ? (
+                <form onSubmit={handleSendOtp}>
                   <div className="form-group-login">
                     <label>
                       <input
@@ -361,17 +496,17 @@ function LoginPage({ user, setUser, languageType }) {
                     />
                   )}
 
+                  {renderCaptchaFields()}
+
                   {error && <div className="error-message">{error}</div>}
                   {success && <div className="success-message">{success}</div>}
 
-                  <button onClick={handleSendOtp} disabled={loading}>
+                  <button type="submit" disabled={loading || !captchaToken}>
                     {loading ? t.sendingOtp : t.sendOtp}
                   </button>
-                </>
-              )}
-
-              {step === 2 && (
-                <>
+                </form>
+              ) : ( // Step 2: Verify OTP
+                <form onSubmit={handleVerifyOtp}>
                   <input
                     placeholder={t.otp}
                     value={otp}
@@ -402,19 +537,19 @@ function LoginPage({ user, setUser, languageType }) {
                   {error && <div className="error-message">{error}</div>}
                   {success && <div className="success-message">{success}</div>}
 
-                  <button onClick={handleVerifyOtp} disabled={loading}>
+                  <button type="submit" disabled={loading}>
                     {loading ? t.verifying : t.verifyOtpAndSignup}
                   </button>
 
-                  <div className="links">
+                  <p>
                     <a href="#" onClick={(e) => {
                       e.preventDefault();
                       setStep(1);
                       setError("");
                       setSuccess("");
                     }}>{t.goBack}</a>
-                  </div>
-                </>
+                  </p>
+                </form>
               )}
             </div>
           )}
