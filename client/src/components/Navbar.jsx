@@ -265,7 +265,6 @@ function Navbar({ languageType = 'en', user, notifications = [], onLogout, setLa
                             <p><strong>{currentText.nameLabel}:</strong> {user.username}</p>
                             <p><strong>{currentText.email}:</strong> {user.email || 'N/A'} <small>{currentText.fieldCannotBeChanged}</small></p>
                             <p><strong>{currentText.phone}:</strong> {user.phone || 'N/A'} <small>{currentText.fieldCannotBeChanged}</small></p>
-                            <p><strong>{currentText.role}:</strong> {user.role} <small>{currentText.fieldCannotBeChanged}</small></p>
                           </div>
                           <button className="btn btn--sm btn--profile-action" onClick={handleEditProfile}>
                             <Edit3 size={16} /> {currentText.editProfile}
