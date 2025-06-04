@@ -390,3 +390,178 @@
     right: -70px;
   }
 }
+/* Add to your Navbar.css or a relevant stylesheet */
+.navbar__user-section {
+  position: relative; /* For popover positioning */
+  display: flex;
+  align-items: center;
+}
+
+.navbar__username-btn {
+  background: none;
+  border: none;
+  color: inherit; /* Or your desired color */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: इन्हेरिट; /* Or specific size */
+  padding: 5px;
+}
+
+.profile-popover {
+  position: absolute;
+  top: calc(100% + 5px); /* Position below the username button */
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  padding: 15px;
+  width: 280px; /* Adjust as needed */
+  z-index: 1000;
+  border-radius: 4px;
+  color: #333;
+}
+
+.profile-popover__close {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.profile-popover h4 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.1em;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.profile-details p,
+.profile-edit-form p {
+  margin-bottom: 8px;
+  font-size: 0.9em;
+}
+.profile-details p strong,
+.profile-edit-form p strong {
+  margin-right: 5px;
+}
+
+.profile-details small,
+.profile-edit-form small {
+  color: #777;
+  font-size: 0.8em;
+}
+
+
+.profile-edit-form .form-group {
+  margin-bottom: 10px;
+}
+
+.profile-edit-form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.profile-edit-form input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  box-sizing: border-box;
+}
+
+.profile-edit-actions {
+  margin-top: 15px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.profile-edit-actions .btn {
+  margin-left: 10px;
+}
+
+.btn--sm {
+  padding: 6px 12px;
+  font-size: 0.85em;
+}
+
+.btn--profile-action {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  width: 100%; /* Make edit button full width */
+  justify-content: center;
+}
+.btn--profile-action svg {
+  margin-right: 5px;
+}
+
+
+.btn--primary { /* Example primary button style */
+  background-color: #007bff;
+  color: white;
+  border: none;
+}
+.btn--primary:hover {
+  background-color: #0056b3;
+}
+
+.btn--outline { /* Example outline button style */
+  background-color: transparent;
+  color: #007bff;
+  border: 1px solid #007bff;
+}
+.btn--outline:hover {
+  background-color: #f0f0f0;
+}
+
+
+.profile-message {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+.profile-message--success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.profile-message--error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* Mobile profile section adjustments */
+.navbar__mobile-menu .mobile-user-profile-section {
+    padding: 10px 15px;
+    border-bottom: 1px solid #eee; /* Separator */
+}
+
+.mobile-user-info {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 5px 0;
+}
+.mobile-user-info svg {
+    margin-right: 8px;
+}
+
+.profile-popover--mobile {
+    position: static; /* Or relative, adjust as needed for flow in mobile menu */
+    width: auto; /* Full width within mobile menu padding */
+    box-shadow: none;
+    border-top: 1px solid #eee;
+    margin-top: 10px;
+    padding: 10px 0 0 0; /* Adjust padding */
+}
