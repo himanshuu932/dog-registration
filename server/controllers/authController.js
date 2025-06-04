@@ -193,8 +193,7 @@ exports.updateProfile = async (req, res) => {
       user: { //
         _id: userToUpdate._id,
         username: userToUpdate.username, //
-        // 'name' alias removed
-        email: userToUpdate.email, //
+         email: userToUpdate.email, //
         phone: userToUpdate.phone, //
         role: userToUpdate.role, //
       }
