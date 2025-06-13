@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import html2pdf from 'html2pdf.js';
+import { QRCodeSVG } from 'qrcode.react'; // Correct: Use the named export QRCodeSVG
 import './styles/Download.css';
 import {
   Download,
@@ -29,13 +30,17 @@ const UserStatusBadge = ({ status, isMobile, languageType = 'en' }) => {
       approved: 'Approved',
       pending: 'Pending',
       rejected: 'Rejected',
-      provisional: 'Provisional'
+      provisional: 'Provisional',
+      'provisional approved': 'Provisional Approved',
+      'provisional pending': 'Provisional Pending'
     },
     hi: {
       approved: 'स्वीकृत',
       pending: 'लंबित',
       rejected: 'अस्वीकृत',
-      provisional: 'अस्थायी'
+      provisional: 'अस्थायी',
+      'provisional approved': 'अस्थायी स्वीकृत',
+      'provisional pending': 'अस्थायी लंबित'
     }
   };
 
@@ -44,40 +49,42 @@ const UserStatusBadge = ({ status, isMobile, languageType = 'en' }) => {
 
   let badgeClass = "user-dl-status-badge";
   let Icon = AlertCircle;
-  // let iconColor = 'var(--user-dl-warning)'; // Icon color will be inherited from badge text color for simplicity
 
   switch(statusKey) {
     case 'approved':
       badgeClass += " user-dl-status-approved";
       Icon = CheckCircle;
-      // iconColor = 'var(--user-dl-success)';
       break;
     case 'pending':
       badgeClass += " user-dl-status-pending";
       Icon = Clock;
-      // iconColor = 'var(--user-dl-warning)';
       break;
     case 'rejected':
       badgeClass += " user-dl-status-rejected";
       Icon = XCircle;
-      // iconColor = 'var(--user-dl-danger)';
       break;
     case 'provisional':
       badgeClass += " user-dl-status-provisional";
       Icon = Clock;
-      // iconColor = 'var(--user-dl-warning)';
       break;
+    case 'provisional approved':
+        badgeClass += " user-dl-status-approved";
+        Icon = CheckCircle;
+        break;
+    case 'provisional pending':
+        badgeClass += " user-dl-status-pending";
+        Icon = Clock;
+        break;
     default:
       badgeClass += " user-dl-status-default";
       Icon = AlertCircle;
-      // iconColor = 'var(--user-dl-dark)';
   }
 
   const displayStatusText = currentStatusText[statusKey] || status;
 
   return (
     <span className={badgeClass}>
-      <Icon size={isMobile ? 14 : 16} /> {/* Removed inline style for color */}
+      <Icon size={isMobile ? 14 : 16} />
       {!isMobile && <span>{displayStatusText}</span>}
     </span>
   );
@@ -307,7 +314,13 @@ const renderCertificateView = (lic, downloadPDF, languageType = 'en') => {
 
             <div className="user-dl-pdf-footer-bottom">
               <div className="user-dl-pdf-qr-code-area">
-                <div className="user-dl-pdf-qr-placeholder"></div>
+               <QRCodeSVG
+                      id={`qr-${lic.license_Id}`}
+                      value={lic.license_Id || 'N/A'}
+                      size={64}
+                      level={"H"}
+                      includeMargin={true}
+                  />
                 <p>{currentCertText.qrCodeLabel}</p>
               </div>
               {lic.isProvisional && (
@@ -321,7 +334,7 @@ const renderCertificateView = (lic, downloadPDF, languageType = 'en') => {
               </div>
             </div>
             <div className="user-dl-pdf-contact-footer">
-              1234  |  info@awbi.org  |  www.awbi.org | <span>{currentCertText.dateLabel} {currentDateOnCertificate}</span>
+             <span>{currentCertText.dateLabel} {currentDateOnCertificate}</span>
             </div>
           </div> 
         </div> 
@@ -354,7 +367,7 @@ const renderCertificateView = (lic, downloadPDF, languageType = 'en') => {
               </ul>
             </div>
             <div className="user-dl-pdf-contact-footer user-dl-pdf-rules-footer">
-              1234  |  info@awbi.org  |  www.awbi.org | <span>{currentCertText.dateLabel} {currentDateOnCertificate}</span>
+              <span>{currentCertText.dateLabel} {currentDateOnCertificate}</span>
             </div>
           </div>
         </div>
@@ -622,7 +635,7 @@ const DogLicenseDownload = ({ languageType = 'en' }) => {
                   <td><div className="user-dl-table-cell-content">{!isMobile && <User size={16} className="user-dl-cell-icon-style" />} {license.fullName}</div></td>
                   {!isMobile && <td><div className="user-dl-table-cell-content"><Dog size={16} className="user-dl-cell-icon-style" /> {license.pet?.name || "N/A"}</div></td>}
                   {!isMobile && <td><div className="user-dl-table-cell-content">{getAnimalLabel(license.animalType) || "N/A"}</div></td>}
-                  <td><div className="user-dl-table-cell-content"><UserStatusBadge status={license.isProvisional ? 'provisional' : license.status} isMobile={isMobile} languageType={languageType} /></div></td>
+                  <td><div className="user-dl-table-cell-content"><UserStatusBadge status={license.isProvisional ? `provisional ${license.status}` : license.status} isMobile={isMobile} languageType={languageType} /></div></td>
                   {!isMobile && <td><div className="user-dl-table-cell-content"><Calendar size={16} className="user-dl-cell-icon-style" /> {formatDate(license.createdAt)}</div></td>}
                   {!isMobile && (
                     <td>

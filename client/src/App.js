@@ -84,6 +84,7 @@ function App() {
       <Navbar
         languageType={languageType}
         user={user}
+        setUser={setUser}
         onLogin={handleLogin}
         onLogout={handleLogout}
        setLanguageType={setLanguageType}
