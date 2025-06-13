@@ -33,9 +33,6 @@
   box-shadow: 0 2px 10px var(--shadow);
   border-radius: 8px;
   position: relative; /* Needed for positioning children and stacking context */
-
-  /* Removed: Always single column layout */
-  /* display: block; */ /* Remove this line */
   gap: 0; /* Default gap */
 }
 
@@ -53,17 +50,14 @@
 }
 
 /* Styles for the list container */
-/* Added horizontal padding to align with overall panel padding */
 .license-list-container {
     position: relative; /* Create a stacking context */
     width: 100%; /* Take full width within admin-panel */
     overflow-y: auto; /* Added overflow-y for scrolling if the list is long */
     min-height: 70vh; /* Set minimum height to 70vh */
-     /* padding: 0 2rem; /* Add horizontal padding */ /* Moved padding to .admin-panel */
 }
 
 /* Styles for the details container */
-/* Added horizontal padding to align with overall panel padding */
 .license-details-container {
     overflow-y: auto; /* Add scroll if details are long */
      background-color: var(--gray-light); /* Background for the details panel */
@@ -74,12 +68,9 @@
      min-height: 0; /* Important for flex/grid items in auto rows */
      position: relative; /* Create a stacking context */
      margin-top: 1.5rem; /* Add space between list (if visible) and details */
-      /* padding: 2rem; /* Add padding */ /* Moved padding to .admin-panel */
 }
 
-/* Hide the list container when the details container is present (on all screen sizes) */
-/* This rule uses the :has() selector, which has broad but not universal browser support.
-   Ensure you check compatibility or use JS state management as an alternative if needed. */
+/* Hide the list container when the details container is present */
 .admin-panel:has(.license-details-container) .license-list-container {
     display: none;
 }
@@ -111,11 +102,9 @@ h2, h3, h4 {
 .license-table {
   width: 100%;
   border-collapse: collapse;
- /* Removed top margin to align with title border */
   box-shadow: 0 1px 3px var(--shadow);
   border-radius: var(--border-radius);
   overflow: hidden;
-  /* Removed: display: block; */ /* Remove this line */
   overflow-x: auto; /* Allow horizontal scrolling for the table if needed */
 }
 
@@ -150,28 +139,28 @@ h2, h3, h4 {
    text-overflow: ellipsis; /* Add ellipsis for overflow */
 }
 
-/* Cell Formatting - Keep existing cell formatting and add min-width/max-width for control */
+/* Cell Formatting */
 .user-cell, .dog-cell, .date-cell {
   display: flex;
   align-items: center;
-   min-width: 120px; /* Example minimum width */
-   max-width: 250px; /* Example maximum width */
+   min-width: 120px;
+   max-width: 250px;
 }
 .status-badge {
-     min-width: 100px; /* Ensure status badge has minimum width */
-     justify-content: center; /* Center content in the badge */
-     white-space: nowrap; /* Prevent badge text from wrapping */
+     min-width: 100px;
+     justify-content: center;
+     white-space: nowrap;
 }
 
 
 .cell-icon {
   margin-right: 0.5rem;
   color: var(--secondary);
-   flex-shrink: 0; /* Prevent icon from shrinking */
+   flex-shrink: 0;
 }
 
 
-/* Status Badge (Keep existing styles) */
+/* Status Badge */
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -199,8 +188,8 @@ h2, h3, h4 {
 }
 
 .status-badge.renewal_pending {
-  background-color: rgba(52, 152, 219, 0.15); /* Use a color from the blue/secondary range */
-  color: var(--secondary); /* Use secondary color for text */
+  background-color: rgba(52, 152, 219, 0.15);
+  color: var(--secondary);
 }
 
 
@@ -225,79 +214,54 @@ button {
   padding: 0.5rem 0.85rem;
   border-radius: var(--border-radius);
   font-size: 0.85rem;
-   white-space: nowrap; /* Prevent button text from wrapping */
+   white-space: nowrap;
 }
 
 .btn-view {
   background-color: var(--primary-light);
   color: var(--white);
 }
+.btn-view:hover { background-color: var(--primary); }
 
-.btn-view:hover {
-  background-color: var(--primary);
-}
-
-/* Adjusted colors for Approve and Reject buttons */
 .btn-approve {
-  background-color: var(--success); /* Match approved status color */
+  background-color: var(--success);
   color: var(--white);
 }
-
-.btn-approve:hover {
-  background-color: #219653; /* Darker shade for hover */
-}
+.btn-approve:hover { background-color: #219653; }
 
 .btn-reject {
-  background-color: var(--danger); /* Match rejected status color */
+  background-color: var(--danger);
   color: var(--white);
 }
-
-.btn-reject:hover {
-  background-color: #c0392b; /* Darker shade for hover */
-}
+.btn-reject:hover { background-color: #c0392b; }
 
 .btn-icon {
   margin-right: 0.35rem;
-   flex-shrink: 0; /* Prevent icon from shrinking */
+   flex-shrink: 0;
 }
 
 
-/* Container to put buttons in a row in the Actions cell */
+/* Container for action buttons */
 .actions-cell .action-buttons-container {
     display: flex;
     align-items: center;
-    gap: 0.5rem; /* Space between buttons/groups */
-    flex-wrap: wrap; /* Allow buttons to wrap if space is limited */
-     /* Ensure container doesn't push content out */
-     min-width: 100px; /* Ensure actions cell has a minimum width */
+    gap: 0.5rem;
+    flex-wrap: wrap;
+     min-width: 100px;
 }
 
-/* Style for pending action buttons group */
 .pending-actions {
-    display: flex; /* Use flexbox to arrange approve/reject in a row */
-    gap: 0.5rem; /* Space between approve and reject buttons */
+    display: flex;
+    gap: 0.5rem;
     align-items: center;
-    flex-shrink: 0; /* Prevent shrinking */
+    flex-shrink: 0;
 }
 
-/* Add this to your CSS */
-.renewal-highlight {
-  background-color: rgba(52, 152, 219, 0.1) !important;
-}
-
-.renewal-highlight:hover {
-  background-color: rgba(52, 152, 219, 0.2) !important;
-}
+.renewal-highlight { background-color: rgba(52, 152, 219, 0.1) !important; }
+.renewal-highlight:hover { background-color: rgba(52, 152, 219, 0.2) !important; }
 
 
-/* Removed: Resizable Divider Styles */
-
-
-/* Remove the old expanded row styles */
-.details-row {
-    display: none;
-}
-
+.details-row { display: none; }
 
 .view-toggle-btn {
   padding: 0.65rem 1rem;
@@ -306,19 +270,15 @@ button {
   background-color: var(--white);
   color: var(--primary);
   border: 1px solid var(--gray);
-  width: auto; /* Allow button to size based on content */
-  margin-bottom: 1rem; /* Add space below the toggle button */
-   /* Ensure it doesn't overflow its container */
+  width: auto;
+  margin-bottom: 1rem;
   max-width: 100%;
-  box-sizing: border-box; /* Include padding and border in element's total width */
+  box-sizing: border-box;
 }
-
-.view-toggle-btn:hover {
-  background-color: var(--gray-light);
-}
+.view-toggle-btn:hover { background-color: var(--gray-light); }
 
 
-/* Standard View (Form-like) Styling - Keep existing for responsiveness */
+/* Standard View (Form-like) Styling */
 .standard-form-view {
     background-color: var(--white);
     border: 1px solid var(--gray);
@@ -331,19 +291,13 @@ button {
     box-sizing: border-box;
 }
 
-/* Grouping for Owner Info and Photo in Standard View - Keep existing responsiveness */
 .standard-form-view .owner-photo-group {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
     margin-bottom: 1.5rem;
-    @media (max-width: 600px) {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
 }
 
-/* Reuse certificate section styling for standard form */
 .standard-form-view .certificate-section {
   margin-bottom: 0;
   border: 1px solid var(--gray-light);
@@ -352,7 +306,6 @@ button {
   box-shadow: none;
 }
 
-/* Specific margin for sections that are not the last one in the standard view */
 .standard-form-view .certificate-section:not(:last-child) {
     margin-bottom: 1.5rem;
 }
@@ -373,14 +326,12 @@ button {
   background-color: var(--white);
 }
 
-/* Reuse certificate grid styling for standard form - Keep existing responsiveness */
 .standard-form-view .certificate-grid {
  display: flex;
  flex-direction: column;
   gap: 0.75rem;
 }
 
-/* Ensure text does not overflow in grid items - Keep existing handling */
 .standard-form-view .certificate-grid .grid-item {
   padding: 0.6rem 0.8rem;
   display: flex;
@@ -418,12 +369,8 @@ button {
 
 .standard-form-view .certificate-grid .span-two {
   grid-column: span 2;
-    @media (max-width: 600px) {
-        grid-column: auto;
-    }
 }
 
-/* Standard View Dog Photo Section - Keep existing */
 .standard-form-view .dog-photo-section .section-content {
     display: flex;
     justify-content: center;
@@ -444,15 +391,12 @@ button {
     object-fit: cover;
 }
 
-
-/* Reuse vaccination link styling for standard form - Keep existing handling */
 .standard-form-view .vaccination-proof-section .section-content {
      display: flex;
      justify-content: center;
      align-items: center;
      min-height: 80px;
 }
-
 
 .standard-form-view .vaccination-link {
     display: inline-flex;
@@ -472,7 +416,6 @@ button {
     white-space: nowrap;
 }
 
-/* Styling for "No Photo" and "No Certificate" placeholders - Keep existing */
 .no-data-placeholder {
     color: var(--gray-dark);
     font-style: italic;
@@ -482,32 +425,25 @@ button {
 }
 
 
-/* Certificate View Styling - Keep existing for responsiveness */
+/* Certificate View Styling */
 .certificate-mode {
   background-color: var(--white);
   border: 1px solid var(--gray);
   border-radius: var(--border-radius);
   padding: 2.5rem;
-
   margin: 0 auto;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
    width: 100%;
-    box-sizing: border-box; /* Include padding and border in element's total width */
+    box-sizing: border-box;
 }
 
-/* Certificate Header - Keep existing responsiveness */
 .certificate-header {
   display: flex;
   justify-content: space-between;
   margin-bottom: 1.5rem;
   align-items: center;
-    @media (max-width: 500px) {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-    }
 }
 
 .logo-container {
@@ -520,17 +456,8 @@ button {
   color: var(--primary);
 }
 
-.header-text h3 {
-  margin: 0;
-  font-size: 1.4rem;
-  color: var(--primary);
-}
-
-.header-text p {
-  margin: 0.25rem 0 0;
-  color: var(--gray-dark);
-  font-size: 0.9rem;
-}
+.header-text h3 { margin: 0; font-size: 1.4rem; color: var(--primary); }
+.header-text p { margin: 0.25rem 0 0; color: var(--gray-dark); font-size: 0.9rem; }
 
 .date-container {
   display: flex;
@@ -538,11 +465,7 @@ button {
   font-size: 0.9rem;
   color: var(--gray-dark);
 }
-
-.date-icon {
-  margin-right: 0.5rem;
-  color: var(--secondary);
-}
+.date-icon { margin-right: 0.5rem; color: var(--secondary); }
 
 .certificate-title {
   font-size: 1.8rem;
@@ -565,16 +488,11 @@ button {
   color: var(--gray-dark);
 }
 
-/* Certificate Main Info - Keep existing responsiveness */
 .certificate-main-info {
   display: grid;
   grid-template-columns: 3fr 1fr;
   gap: 2rem;
   margin-bottom: 2rem;
-    @media (max-width: 700px) {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
 }
 
 .certificate-basic-info {
@@ -592,19 +510,8 @@ button {
   overflow-wrap: break-word;
   word-break: break-word;
 }
-
-.info-row strong {
-    margin-right: 0.5rem;
-    color: var(--primary-light);
-    font-weight: 600;
-    flex-shrink: 0;
-}
-
-.info-row span {
-    overflow-wrap: break-word;
-    word-break: break-word;
-}
-
+.info-row strong { margin-right: 0.5rem; color: var(--primary-light); font-weight: 600; flex-shrink: 0; }
+.info-row span { overflow-wrap: break-word; word-break: break-word; }
 
 .certificate-photo {
   display: flex;
@@ -624,7 +531,6 @@ button {
   height: auto;
 }
 
-/* Styling for "No Photo" placeholder within the certificate view - Keep existing */
 .certificate-photo .no-data-placeholder {
     display: flex;
     flex-direction: column;
@@ -636,7 +542,7 @@ button {
 }
 
 
-/* Certificate Specific Section Styles - Used by .certificate-mode */
+/* Certificate Specific Section Styles */
 .certificate-mode .certificate-section {
   margin-bottom: 2rem;
   border: 1px solid var(--gray-light);
@@ -644,7 +550,6 @@ button {
   overflow: hidden;
   box-shadow: 0 2px 5px var(--shadow);
 }
-
 .certificate-mode .section-header {
   background-color: var(--primary);
   color: var(--white);
@@ -654,20 +559,14 @@ button {
   align-items: center;
   font-size: 1.1rem;
 }
+.certificate-mode .section-content { padding: 1.5rem; background-color: var(--white); }
 
-.certificate-mode .section-content {
-  padding: 1.5rem;
-  background-color: var(--white);
-}
-
-/* Certificate Specific Grid Styles - Used by .certificate-mode - Keep existing responsiveness */
+/* Certificate Specific Grid Styles */
 .certificate-mode .certificate-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1rem;
 }
-
-/* Ensure text does not overflow in grid items - Keep existing handling */
 .certificate-mode .certificate-grid .grid-item {
   padding: 0.75rem;
   display: flex;
@@ -687,39 +586,23 @@ button {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
-
 .certificate-mode .certificate-grid .grid-item strong {
   margin-right: 0.5rem;
   color: var(--primary-light);
   font-weight: 600;
   margin-bottom: 0.25rem;
 }
-
 .certificate-mode .certificate-grid .grid-item .detail-icon {
     margin-right: 0.5rem;
     color: var(--secondary);
     flex-shrink: 0;
 }
 
-
-.certificate-mode .certificate-grid .span-two {
-  grid-column: span 2;
-   @media (max-width: 700px) {
-        grid-column: auto;
-    }
-}
+.certificate-mode .certificate-grid .span-two { grid-column: span 2; }
 
 
-.check-icon {
-  color: var(--success);
-  margin-left: 0.25rem;
-}
-
-.x-icon {
-  color: var(--danger);
-  margin-left: 0.25rem;
-}
+.check-icon { color: var(--success); margin-left: 0.25rem; }
+.x-icon { color: var(--danger); margin-left: 0.25rem; }
 
 .certificate-link {
   color: var(--secondary);
@@ -731,12 +614,8 @@ button {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.certificate-link:hover { text-decoration: underline; }
 
-.certificate-link:hover {
-  text-decoration: underline;
-}
-
-/* Certificate Specific Elements - Keep existing responsiveness */
 .declaration-box {
   background-color: var(--gray-light);
   padding: 1.5rem;
@@ -751,411 +630,219 @@ button {
   word-break: break-word;
 }
 
-/* Signature Section - Keep existing responsiveness */
 .signature-section {
   display: flex;
   justify-content: space-between;
   margin: 3rem 0 2rem;
-    @media (max-width: 500px) {
-        flex-direction: column;
-        gap: 1.5rem;
-    }
 }
+.signature-box { width: 45%; text-align: center; }
+.signature-line { border-bottom: 1px solid var(--black); margin-bottom: 0.5rem; height: 2rem; }
 
-.signature-box {
-  width: 45%;
-  text-align: center;
-    @media (max-width: 500px) {
-        width: 100%;
-    }
-}
-
-.signature-line {
-  border-bottom: 1px solid var(--black);
-  margin-bottom: 0.5rem;
-  height: 2rem;
-}
-
-/* Footer Elements - Keep existing responsiveness */
 .certificate-footer-elements {
   display: flex;
   justify-content: space-between;
   margin: 2rem 0 1rem;
   align-items: flex-end;
-    @media (max-width: 500px) {
-        flex-direction: column;
-        align-items: center;
-        gap: 1.5rem;
-    }
 }
 
 .qr-code .qr-box {
-  width: 100px;
-  height: 100px;
-  border: 1px solid var(--gray-dark);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.8rem;
-  color: var(--gray-dark);
+  width: 100px; height: 100px; border: 1px solid var(--gray-dark); display: flex;
+  flex-direction: column; align-items: center; justify-content: center;
+  font-size: 0.8rem; color: var(--gray-dark);
 }
 
 .official-stamp {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: var(--gray-dark);
-  font-size: 0.9rem;
-  font-weight: 500;
-  text-transform: uppercase;
+  display: flex; flex-direction: column; align-items: center;
+  color: var(--gray-dark); font-size: 0.9rem; font-weight: 500; text-transform: uppercase;
 }
+.stamp-icon { margin-bottom: 0.5rem; color: var(--secondary); }
 
-.stamp-icon {
-  margin-bottom: 0.5rem;
-  color: var(--secondary);
-}
-
-/* Certificate Footer - Keep existing responsiveness */
 .certificate-footer {
-  text-align: center;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--gray-light);
-  color: var(--gray-dark);
-  font-size: 0.875rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-   gap: 0.5rem;
+  text-align: center; margin-top: 2rem; padding-top: 1.5rem;
+  border-top: 1px solid var(--gray-light); color: var(--gray-dark); font-size: 0.875rem;
+  display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 0.5rem;
 }
-
-.footer-icon {
-  margin-right: 0.4rem;
-  color: var(--secondary-light);
-}
-
-.certificate-footer span {
-    margin: 0 0.5rem;
-    flex-shrink: 0;
-}
+.footer-icon { margin-right: 0.4rem; color: var(--secondary-light); }
+.certificate-footer span { margin: 0 0.5rem; flex-shrink: 0; }
 
 
 /* Desktop Tabs */
 .admin-tabs-desktop {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  border-bottom: 2px solid #e0e0e0;
-  padding-bottom: 0.5rem;
-  overflow-x: auto; /* Allow tabs to scroll if they overflow */
-  white-space: nowrap; /* Prevent tabs from wrapping */
+  display: flex; gap: 1rem; margin-bottom: 1.5rem;
+  border-bottom: 2px solid #e0e0e0; padding-bottom: 0.5rem;
+  overflow-x: auto; white-space: nowrap;
 }
-
 .admin-tabs-desktop .admin-tab {
-  background: none;
-  border: none;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--gray-dark); /* Default color for inactive tabs */
-  cursor: pointer;
-  padding: 0.4rem 0.75rem;
-  border-bottom: 3px solid transparent;
-  transition: all 0.2s ease;
-   display: inline-flex; /* Align icon and text */
-   align-items: center;
-   gap: 0.3rem; /* Space between icon and text */
-   position: relative; /* Needed for absolute positioning of the dot */
+  background: none; border: none; font-size: 1rem; font-weight: 600;
+  color: var(--gray-dark); cursor: pointer; padding: 0.4rem 0.75rem;
+  border-bottom: 3px solid transparent; transition: all 0.2s ease;
+  display: inline-flex; align-items: center; gap: 0.3rem; position: relative;
 }
-
-.admin-tabs-desktop .admin-tab:hover {
-  color: var(--primary-light); /* Hover color */
-}
-
-.admin-tabs-desktop .admin-tab.active {
-  color: var(--primary); /* Active tab color */
-  border-bottom: 3px solid var(--primary); /* Active tab indicator */
-}
+.admin-tabs-desktop .admin-tab:hover { color: var(--primary-light); }
+.admin-tabs-desktop .admin-tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
 
 /* Mobile Dropdown Filter */
 .admin-filter-mobile {
-  display: none; /* Hidden by default */
-  margin-bottom: 1.5rem;
-  width: 100%;
-   position: relative; /* Needed for absolute positioning of the dot */
+  display: none; margin-bottom: 1.5rem; width: 100%; position: relative;
 }
-
 .admin-filter-mobile select {
-    font-family: var(--font-main);
-    font-size: 1rem;
-    padding: 0.75rem 1rem;
-    border: 1px solid var(--gray);
-    border-radius: var(--border-radius);
-    background-color: var(--white);
-    color: var(--black);
-    cursor: pointer;
-    outline: none;
-    width: 100%;
-    box-sizing: border-box;
-    -webkit-appearance: none; /* Remove default dropdown arrow */
-    -moz-appearance: none;
-    appearance: none;
-     background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%20viewBox%3D%220%200%20292.4%20292.4%22%3E%3Cpath%20fill%3D%22%232c3e50%22%20d%3D%22M287%2C114.7L159.2%2C27.1c-9.5-9.3-25-9.3-34.5%2C0l-128%2C87.6c-10.1%2C10.1-2.9%2C17.3%2C11.4%2C17.3H275.6C289.1%2C132%2C297.1%2C124.9%2C287%2C114.7z%22%2F%3E%3C%2Fsvg%3E'); /* Custom arrow */
-    background-repeat: no-repeat;
-    background-position: right 1rem center;
-    background-size: 1em;
+    font-family: var(--font-main); font-size: 1rem; padding: 0.75rem 1rem;
+    border: 1px solid var(--gray); border-radius: var(--border-radius);
+    background-color: var(--white); color: var(--black); cursor: pointer;
+    outline: none; width: 100%; box-sizing: border-box;
+    -webkit-appearance: none; -moz-appearance: none; appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%20viewBox%3D%220%200%20292.4%20292.4%22%3E%3Cpath%20fill%3D%22%232c3e50%22%20d%3D%22M287%2C114.7L159.2%2C27.1c-9.5-9.3-25-9.3-34.5%2C0l-128%2C87.6c-10.1%2C10.1-2.9%2C17.3%2C11.4%2C17.3H275.6C289.1%2C132%2C297.1%2C124.9%2C287%2C114.7z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em;
 }
 
+tr.provisional:hover { background-color: rgba(39, 174, 96, 0.1); }
+.admin-tabs-desktop .admin-tab.provisional-active { border-bottom: 3px solid var(--secondary); color: var(--secondary); }
 
-
-
-
-tr.provisional:hover {
-  background-color: rgba(39, 174, 96, 0.1);
-}
-
-.admin-tabs-desktop .admin-tab.provisional-active {
-  border-bottom: 3px solid var(--secondary); /* blue underline */
-  color: var(--secondary); /* blue text color */
-}
-
-/* Style for the blue dot indicator */
 .notification-dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    background-color: var(--secondary); /* Blue color for the dot */
-    border-radius: 50%;
-    margin-left: 5px; /* Space between text/icon and dot */
-    position: absolute;
-top: -4px;  /* Align dot above the icon */
-  right: -4px; /* Align dot to top-right of icon */
+    width: 8px; height: 8px; background-color: var(--secondary);
+    border-radius: 50%; position: absolute; top: -4px; right: -4px;
+}
+.no-results-message { text-align: center; color: var(--gray-dark); font-style: italic; padding: 2rem; }
+
+/* Styles for Sub-Filter buttons */
+.admin-sub-filters {
+  display: flex;
+  gap: 0.75rem;
+  margin: -0.5rem 0 1.5rem 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--gray-light);
+  flex-wrap: wrap;
+}
+
+.sub-filter-btn {
+  background-color: var(--gray-light);
+  color: var(--primary-light);
+  border: 1px solid var(--gray);
+  padding: 0.5rem 1rem;
+  border-radius: 50px; /* Pill shape */
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+.sub-filter-btn:hover { background-color: var(--gray); color: var(--primary); }
+.sub-filter-btn.active {
+  background-color: var(--primary); color: var(--white);
+  border-color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Rejection Modal Styles */
+.rejection-modal-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6); display: flex;
+  align-items: center; justify-content: center; z-index: 1000; padding: 1rem;
+}
+.rejection-modal-content {
+  background-color: var(--white); padding: 2rem; border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3); width: 100%;
+  max-width: 500px; animation: modal-fade-in 0.3s ease;
+}
+.rejection-modal-content h3 { margin-top: 0; color: var(--primary); }
+.rejection-modal-content p { color: var(--gray-dark); margin-bottom: 1.5rem; }
+.rejection-modal-content textarea {
+  width: 100%; padding: 0.75rem; border-radius: var(--border-radius);
+  border: 1px solid var(--gray); font-family: var(--font-main);
+  font-size: 1rem; resize: vertical; margin-bottom: 1.5rem;
+}
+.rejection-modal-actions { display: flex; justify-content: flex-end; gap: 1rem; }
+.btn-modal-cancel, .btn-modal-submit { padding: 0.65rem 1.25rem; border-radius: var(--border-radius); font-size: 0.9rem; }
+.btn-modal-cancel { background-color: var(--gray-light); color: var(--primary-light); border: 1px solid var(--gray); }
+.btn-modal-cancel:hover { background-color: var(--gray); }
+.btn-modal-submit { background-color: var(--danger); color: var(--white); border: 1px solid var(--danger); }
+.btn-modal-submit:hover { background-color: #c0392b; }
+
+@keyframes modal-fade-in {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 
-/* Style for the "No results" message */
-.no-results-message {
-    text-align: center;
-    color: var(--gray-dark);
-    font-style: italic;
-    padding: 2rem;
-}
-
-
-/* Media Queries (Mobile Styles - Adjusting based on single column for all sizes) */
+/* --- ALL MEDIA QUERIES --- */
 @media (max-width: 768px) {
-  .admin-panel {
-    padding: 1rem; /* Reduced padding on smaller screens */
-  }
+  .admin-panel { padding: 1rem; }
+  .admin-panel > h2 { display: none; }
+  .admin-tabs-desktop { display: none; }
+  .admin-filter-mobile { display: block; }
+  .admin-filter-mobile .notification-dot { top: 12px; right: 30px; }
 
-  /* Hide desktop title on mobile */
-  .admin-panel > h2 {
-      display: none;
-  }
-
-    /* Hide desktop tabs on mobile */
-   .admin-tabs-desktop {
-       display: none;
-   }
-
-   /* Show mobile filter dropdown on mobile */
-   .admin-filter-mobile {
-       display: block;
-   }
-
-    /* Adjust dot position for mobile dropdown */
-    .admin-filter-mobile .notification-dot {
-        top: 12px; /* Adjust position for dropdown */
-        right: 30px; /* Adjust position to not overlap with arrow */
-    }
-
-
-  /* Mobile Header (Back to List button) - Always shown when details are open */
   .mobile-details-header {
-      display: flex;
-      align-items: center;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid var(--gray-light);
-      margin-bottom: 1rem;
-       width: 100%;
+      display: flex; align-items: center; padding-bottom: 1rem;
+      border-bottom: 1px solid var(--gray-light); margin-bottom: 1rem; width: 100%;
   }
-
   .mobile-details-header .back-to-list-btn {
-      background: none;
-      border: none;
-      padding: 0.5rem 0.5rem 0.5rem 0;
-      margin-right: 1rem;
-      color: var(--primary);
-       font-size: 1rem;
-       display: flex;
-       align-items: center;
+      background: none; border: none; padding: 0.5rem 0.5rem 0.5rem 0; margin-right: 1rem;
+      color: var(--primary); font-size: 1rem; display: flex; align-items: center;
   }
-   .mobile-details-header .back-to-list-btn svg {
-       margin-right: 0.5rem;
-   }
+  .mobile-details-header .back-to-list-btn svg { margin-right: 0.5rem; }
+  .mobile-details-header .mobile-title { margin: 0; font-size: 1.2rem; flex-grow: 1; display: none; }
 
-  .mobile-details-header .mobile-title {
-      margin: 0;
-      font-size: 1.2rem;
-      flex-grow: 1;
-      display: none;
-  }
-
-
-  /* License List Container (Mobile) - Always visible UNLESS details are open */
   .license-list-container {
-      position: static;
-      width: 100%;
-      height: auto;
-      background-color: transparent;
-      z-index: auto;
-      transform: translateX(0);
-      transition: none;
-      overflow-y: visible;
-      overflow-x: auto; /* Added for horizontal scrolling on mobile */
-       padding: 0 1rem; /* Adjusted horizontal padding on mobile */
-      box-shadow: none;
-      min-height: auto; /* Reset min-height on mobile for better content flow */
+      position: static; width: 100%; height: auto; background-color: transparent; z-index: auto;
+      transform: translateX(0); transition: none; overflow-y: visible; overflow-x: auto;
+      padding: 0 1rem; box-shadow: none; min-height: auto;
   }
-   /* The rule to hide the list when details are present is now global */
 
-
-  /* Details View Container (Mobile) - Always visible IF a license is selected */
-   .license-details-container {
-       margin-top: 0;
-       padding: 0 1rem; /* Adjusted horizontal padding on mobile */
-       box-shadow: none;
-       background-color: transparent;
-         display: flex;
-         flex-direction: column;
-         align-items: center;
+  .license-details-container {
+       margin-top: 0; padding: 0 1rem; box-shadow: none; background-color: transparent;
+       display: flex; flex-direction: column; align-items: center;
    }
 
-   /* Mobile Actions Bar (Approve/Reject at Top of Details View) - Keep mobile specific */
    .mobile-details-actions {
-       display: flex;
-       justify-content: center;
-       gap: 1rem;
-       padding: 1rem;
-       background-color: var(--gray-light);
-       border-bottom: 1px solid var(--gray);
-       margin-bottom: 1rem;
-       border-radius: var(--border-radius);
-       width: 100%;
-        flex-shrink: 0;
+       display: flex; justify-content: center; gap: 1rem; padding: 1rem;
+       background-color: var(--gray-light); border-bottom: 1px solid var(--gray);
+       margin-bottom: 1rem; border-radius: var(--border-radius); width: 100%; flex-shrink: 0;
    }
-
-   /* Keep Actions column visible on mobile, rely on flex-wrap for layout */
-   /* Removed the display: none rule from the mobile media query */
-   /*
-   .license-table th:nth-child(5),
-   .license-table td:nth-child(5) {
-       display: none;
-   }
-   */
-
-  /* Standard Form View Adjustments (Mobile) - Keep existing */
   .standard-form-view {
-      padding: 1rem;
-       margin: 0 auto;
-       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-       border: 1px solid var(--gray);
-       background-color: var(--white);
-       width: 100%;
+      padding: 1rem; margin: 0 auto; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--gray); background-color: var(--white); width: 100%;
   }
-
-
-  .standard-form-view .dog-photo-section .dog-avatar {
-    max-width: 100px;
-    max-height: 100px;
-  }
-
-  .standard-form-view .section-header {
-      font-size: 0.9rem;
-  }
-
-   .standard-form-view .section-content {
-        padding: 0.75rem;
+  .standard-form-view .dog-photo-section .dog-avatar { max-width: 100px; max-height: 100px; }
+  .standard-form-view .section-header { font-size: 0.9rem; }
+  .standard-form-view .section-content { padding: 0.75rem; }
+  .standard-form-view .certificate-grid .grid-item {
+       font-size: 0.85rem; padding: 0.5rem; flex-direction: row; align-items: center;
    }
+   .standard-form-view .certificate-grid .grid-item strong { margin-bottom: 0; margin-right: 0.4rem; }
+   .standard-form-view .declaration-box, .standard-form-view .signature-section,
+   .standard-form-view .certificate-footer-elements, .standard-form-view .certificate-footer { display: none; }
 
-   .standard-form-view .certificate-grid .grid-item {
-       font-size: 0.85rem;
-       padding: 0.5rem;
-        flex-direction: row;
-        align-items: center;
-   }
-   .standard-form-view .certificate-grid .grid-item strong {
-        margin-bottom: 0;
-        margin-right: 0.4rem;
-   }
-
-
-   /* Hide certificate-specific elements on mobile standard view */
-   .standard-form-view .declaration-box,
-   .standard-form-view .signature-section,
-   .standard-form-view .certificate-footer-elements,
-   .standard-form-view .certificate-footer {
-       display: none;
-   }
-
-
-  /* Certificate View Adjustments (Mobile) - Keep existing */
   .certificate-mode {
-    padding: 1.5rem;
-     margin: 0 auto;
-     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-     border: 1px solid var(--gray);
-     background-color: var(--white);
-     width: 100%;
+    padding: 1.5rem; margin: 0 auto; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--gray); background-color: var(--white); width: 100%;
   }
+  .certificate-mode .certificate-section {
+      border: 1px solid var(--gray-light); background-color: var(--white);
+      box-shadow: 0 2px 5px var(--shadow); margin-bottom: 1.5rem;
+  }
+  .certificate-mode .certificate-section:last-child { margin-bottom: 0; }
+  .certificate-title { font-size: 1.4rem; }
+  .certificate-subtitle { font-size: 1rem; }
+  .certificate-mode .section-header { font-size: 1rem; padding: 0.75rem 1rem; }
+  .certificate-mode .section-content { padding: 1rem; }
+}
 
-    /* Ensure certificate sections still have borders/background on mobile */
-    .certificate-mode .certificate-section {
-        border: 1px solid var(--gray-light);
-        background-color: var(--white);
-        box-shadow: 0 2px 5px var(--shadow);
-        margin-bottom: 1.5rem;
-    }
-     .certificate-mode .certificate-section:last-child {
-         margin-bottom: 0;
-     }
+@media (max-width: 700px) {
+    .certificate-main-info { grid-template-columns: 1fr; gap: 1.5rem; }
+    .certificate-mode .certificate-grid .span-two { grid-column: auto; }
+}
 
-  /* Certificate header now handles stacking with its own media query */
-  /*
-  .certificate-header {
-      flex-direction: column;
-      align-items: flex-start;
-  }
+@media (max-width: 600px) {
+    .standard-form-view .owner-photo-group { grid-template-columns: 1fr; gap: 1rem; }
+    .standard-form-view .certificate-grid .span-two { grid-column: auto; }
+}
 
-  .date-container {
-      margin-top: 1rem;
-  }
-  */
+@media (max-width: 500px) {
+    .certificate-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .signature-section { flex-direction: column; gap: 1.5rem; }
+    .signature-box { width: 100%; }
+    .certificate-footer-elements { flex-direction: column; align-items: center; gap: 1.5rem; }
+}
 
-  .certificate-title {
-      font-size: 1.4rem;
-  }
-  .certificate-subtitle {
-      font-size: 1rem; /* Adjusted subtitle font size */
-  }
-
-  .certificate-mode .section-header {
-      font-size: 1rem;
-      padding: 0.75rem 1rem;
-  }
-
-  .certificate-mode .section-content {
-      padding: 1rem;
-  }
-
-    /* Certificate specific grid adjustments for smaller mobile screens */
-  @media (max-width: 400px) {
-      .certificate-mode .certificate-grid {
-          grid-template-columns: 1fr; /* Stack items on very small screens */
-      }
-       .certificate-mode .certificate-grid .span-two {
-           grid-column: auto;
-       }
-  }
+@media (max-width: 400px) {
+    .certificate-mode .certificate-grid { grid-template-columns: 1fr; }
+    .certificate-mode .certificate-grid .span-two { grid-column: auto; }
 }
