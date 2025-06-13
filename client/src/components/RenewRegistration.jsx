@@ -325,7 +325,7 @@ const RenewRegistration = ({ languageType = 'en' }) => {
   const [captchaSuccess, setCaptchaSuccess] = useState(""); // CAPTCHA success message in modal
 
 
-  const backendUrl = "http://localhost:5000"; // Or your relevant backend URL
+  const backendUrl = "https://dog-registration.onrender.com"; // Or your relevant backend URL
   const authToken = localStorage.getItem('token');
 
   const textContent = {

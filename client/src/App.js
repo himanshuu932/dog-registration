@@ -27,7 +27,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const backend = "http://localhost:5000";
+  const backend = "https://dog-registration.onrender.com";
 
   const handleLogin = (userData, token) => {
     localStorage.setItem("token", token);
