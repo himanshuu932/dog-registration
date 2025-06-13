@@ -91,7 +91,7 @@ const translations = {
   }
 };
 
-const API_DOG_REGISTRATION = "https://dog-registration.onrender.com/api";
+const API_DOG_REGISTRATION = "http://localhost:5000/api";
 // const API_KALYANMANDAPAM = "https://kalyanmandapam.onrender.com/api"; // This is the API from LoginPage.jsx, kept separate for clarity if needed.
 
 function LoginPage({ user, setUser, languageType }) {

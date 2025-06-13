@@ -325,7 +325,7 @@ const RenewRegistration = ({ languageType = 'en' }) => {
   const [captchaSuccess, setCaptchaSuccess] = useState(""); // CAPTCHA success message in modal
 
 
-  const backendUrl = "https://dog-registration.onrender.com"; // Or your relevant backend URL
+  const backendUrl = "http://localhost:5000"; // Or your relevant backend URL
   const authToken = localStorage.getItem('token');
 
   const textContent = {
@@ -535,70 +535,65 @@ const RenewRegistration = ({ languageType = 'en' }) => {
     setIsConfirmingRenewal(false); // Reset loading state of modal button
   };
 
-  const handleConfirmRenewalWithCaptcha = async () => {
-    if (!selectedLicenseForRenewal) return;
+const handleConfirmRenewalWithCaptcha = async () => {
+  if (!selectedLicenseForRenewal) return;
 
-    setIsConfirmingRenewal(true);
-    setCaptchaError("");
-    setCaptchaSuccess("");
-    setRenewalStates(prev => ({ ...prev, [selectedLicenseForRenewal.id]: 'loading' })); // For table button
+  setIsConfirmingRenewal(true);
+  setCaptchaError("");
+  setCaptchaSuccess("");
+  setRenewalStates(prev => ({ ...prev, [selectedLicenseForRenewal.id]: 'loading' }));
 
-    try {
-      // 1. Verify CAPTCHA
-      const captchaRes = await axios.post(`${backendUrl}/api/captcha/verify-captcha`, {
-        captchaInput,
-        captchaToken,
-      });
+  try {
+    // 1. Verify CAPTCHA
+    const captchaRes = await axios.post(`${backendUrl}/api/captcha/verify-captcha`, {
+      captchaInput,
+      captchaToken,
+    });
 
-      if (!captchaRes.data?.success) {
-        setCaptchaError(currentText.invalidCaptcha);
-        loadCaptcha(); // Refresh CAPTCHA on failure
-        setIsConfirmingRenewal(false);
-        setRenewalStates(prev => ({ ...prev, [selectedLicenseForRenewal.id]: null }));
-        return;
-      }
-
-      setCaptchaSuccess(currentText.captchaVerifiedProceeding);
-
-      // 2. If CAPTCHA is successful, proceed with renewal request
-      const response = await fetch(`${backendUrl}/api/license/renew-registration/request`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`
-        },
-        body: JSON.stringify({ licenseId: selectedLicenseForRenewal.id })
-      });
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Renewal request failed');
-      }
-
-      // Success
-      setRenewalStates(prev => ({ ...prev, [selectedLicenseForRenewal.id]: 'success' }));
-      // The main success message display will be triggered by isAnyRenewalSuccess
-      fetchUserLicenses(); // Refresh licenses list
-      setTimeout(() => { // Give time for success message to be read if needed, then close
-          handleCloseConfirmModal();
-      }, 1500);
-
-
-    } catch (err) {
-      console.error("Renewal/CAPTCHA error:", err.response || err.message);
-      // Prefer specific CAPTCHA error if that was the explicit failure point, else general
-      if (!captchaSuccess) { // if we didn't even get to "captcha verified"
-          setCaptchaError(err.message || currentText.captchaVerificationFailed);
-          loadCaptcha();
-      } else { // error happened during actual renewal POST
-          setError(err.message || 'Renewal request failed. Please try again.'); // Show general error
-      }
-      setRenewalStates(prev => ({ ...prev, [selectedLicenseForRenewal.id]: 'error' }));
+    if (!captchaRes.data?.success) {
+      setCaptchaError(currentText.invalidCaptcha);
+      loadCaptcha(); // Refresh CAPTCHA on failure
       setIsConfirmingRenewal(false);
-      // Don't close modal immediately on error, let user see error and retry CAPTCHA if applicable
+      setRenewalStates(prev => ({ ...prev, [selectedLicenseForRenewal.id]: null }));
+      return;
     }
-    // setIsConfirmingRenewal(false); // This is now set within try/catch paths
-  };
+
+    setCaptchaSuccess(currentText.captchaVerifiedProceeding);
+
+    // 2. If CAPTCHA is successful, proceed with renewal request
+    const response = await fetch(`${backendUrl}/api/license/renew-registration/request`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify({ licenseNumber: selectedLicenseForRenewal.number }) // Changed from licenseId to licenseNumber
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Renewal request failed');
+    }
+
+    // Success
+    setRenewalStates(prev => ({ ...prev, [selectedLicenseForRenewal.id]: 'success' }));
+    fetchUserLicenses(); // Refresh licenses list
+    setTimeout(() => {
+      handleCloseConfirmModal();
+    }, 1500);
+
+  } catch (err) {
+    console.error("Renewal/CAPTCHA error:", err.response || err.message);
+    if (!captchaSuccess) {
+      setCaptchaError(err.message || currentText.captchaVerificationFailed);
+      loadCaptcha();
+    } else {
+      setError(err.message || 'Renewal request failed. Please try again.');
+    }
+    setRenewalStates(prev => ({ ...prev, [selectedLicenseForRenewal.id]: 'error' }));
+    setIsConfirmingRenewal(false);
+  }
+};
 
 
   const toggleViewLicense = (id) => {
