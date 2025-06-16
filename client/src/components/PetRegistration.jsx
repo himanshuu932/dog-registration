@@ -79,7 +79,7 @@ const PetRegistrationForm = () => {
 
   const [formData, setFormData] = useState(initialFormData);
 
-  const backend = "https://dog-registration.onrender.com"; // Adjust this to your backend URL
+  const backend = "https://dog-registration-yl8x.onrender.com/"; // Adjust this to your backend URL
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -398,7 +398,33 @@ const PetRegistrationForm = () => {
       </div>
     )
   );
-  // --- END CAPTCHA ---
+  
+  /**
+   * Calls the backend to get a payment URL and opens it in a new tab.
+   * @param {number} amount - The total amount to be paid.
+   * @param {string} referenceNo - The unique reference number for the transaction.
+   */
+  const initiatePayment = async (amount, referenceNo) => {
+    toast.info("Redirecting to payment gateway...");
+    try {
+      const paymentResponse = await axios.post(`${backend}/api/payment/generate-url`, {
+        amount: amount,
+        referenceNo: referenceNo
+      });
+
+      const { url: eazypayUrl } = paymentResponse.data;
+      if (eazypayUrl) {
+        window.open(eazypayUrl, '_blank'); // Open payment page in a new tab
+      } else {
+        throw new Error("Failed to get payment URL from server.");
+      }
+    } catch (error) {
+      console.error("Payment initiation error:", error);
+      // Notify user that payment step failed but their application is saved
+      toast.error(error.response?.data?.message || "Could not redirect to payment. Please contact support with your reference number to complete the payment.");
+    }
+  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -409,7 +435,7 @@ const PetRegistrationForm = () => {
     }
 
     // --- CAPTCHA VERIFICATION ---
-    if (activeTab === 3) { // Ensure CAPTCHA is only for the final step submission
+    if (activeTab === 3) {
         if (!captchaInput.trim()) {
           toast.error("Please enter the CAPTCHA.");
           setCaptchaError("CAPTCHA is required.");
@@ -455,6 +481,10 @@ const PetRegistrationForm = () => {
         toast.error('You must be logged in to submit the form.');
         return;
       }
+      
+      // Generate 5-digit random reference number for the transaction
+      const referenceNo = String(Math.floor(10000 + Math.random() * 90000));
+
       const submissionData = {
         animalType: formData.animalType,
         fullName: formData.fullName,
@@ -465,7 +495,7 @@ const PetRegistrationForm = () => {
         city: formData.city,
         state: formData.state,
         totalHouseArea: formData.totalHouseArea,
-        numberOfAnimals: formData.numberOfDogs, // Corrected key
+        numberOfAnimals: formData.numberOfDogs,
         pet: {
           name: formData.petName,
           category: formData.petCategory,
@@ -485,20 +515,35 @@ const PetRegistrationForm = () => {
         fees: {
           total: totalFees,
           fine: fineFees
+        },
+        // Add payment details to the submission for tracking
+        paymentDetails: {
+            referenceNo: referenceNo,
+            status: 'Pending'
         }
       };
+
+      // First, submit the registration data to the server
       const res = await axios.post(`${backend}/api/license/apply`, submissionData, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-      toast.success('Form submitted successfully!');
+
+      // If data submission is successful, proceed to payment
+      toast.success('Registration data submitted successfully! Redirecting to payment...');
       console.log('Server response:', res.data);
+
+      // After successful submission, call the payment initiation function
+      await initiatePayment(totalFees, referenceNo);
+
+      // Finally, reset the form for the next user
       resetForm();
+
     } catch (err) {
       console.error('Error submitting form:', err);
       toast.error(err.response?.data?.message || 'Something went wrong. Please try again.');
-      if (activeTab === 3) loadCaptcha(); // Reload CAPTCHA on submission error if on final step
+      if (activeTab === 3) loadCaptcha(); // Reload CAPTCHA on submission error
     }
   };
 
@@ -891,8 +936,8 @@ const PetRegistrationForm = () => {
             >
               {isUploading ? 'Uploading Certificate...' :
                isUploadingAvatar ? 'Uploading Avatar...' :
-               (activeTab === 3 && !captchaToken && !captchaError && !captchaSvg) ? 'Loading CAPTCHA...' : // Added !captchaSvg here for clarity
-               'Submit'}
+               (activeTab === 3 && !captchaToken && !captchaError && !captchaSvg) ? 'Loading CAPTCHA...' :
+               'Submit & Pay'}
             </button>
           )}
         </div>

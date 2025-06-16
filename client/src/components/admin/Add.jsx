@@ -61,7 +61,7 @@ const AdminAddForm = () => {
 
   const [adminFormData, setAdminFormData] = useState(adminInitialFormData);
 
-  const backend = "https://dog-registration.onrender.com";
+  const backend = "https://dog-registration-yl8x.onrender.com/";
 
   const handleAdminChange = (e) => {
     const { name, value, type, checked } = e.target;

@@ -6,7 +6,7 @@ function Profile() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
-   const backend = "https://dog-registration.onrender.com";
+   const backend = "https://dog-registration-yl8x.onrender.com/";
 
   useEffect(() => {
     const fetchProfile = async () => {
