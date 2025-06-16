@@ -422,7 +422,7 @@ const DogLicenseDownload = ({ languageType = 'en' }) => {
   const filterDropdownRef = useRef(null);
 
 
-  const backend = "https://dog-registration-yl8x.onrender.com/";
+  const backend = "https://dog-registration-yl8x.onrender.com";
   const token = localStorage.getItem('token');
 
   const textContent = {

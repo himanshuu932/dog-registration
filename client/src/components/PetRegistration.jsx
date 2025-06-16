@@ -79,7 +79,7 @@ const PetRegistrationForm = () => {
 
   const [formData, setFormData] = useState(initialFormData);
 
-  const backend = "https://dog-registration-yl8x.onrender.com/"; // Adjust this to your backend URL
+  const backend = "https://dog-registration-yl8x.onrender.com"; // Adjust this to your backend URL
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
