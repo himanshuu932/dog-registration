@@ -747,10 +747,3 @@ const RenewRegistration = ({ languageType = 'en' }) => {
 };
 
 export default RenewRegistration;
-
-// Add these styles to your RenewRegistration.css or a general modal CSS file
-
-/*
-
-
-*/
