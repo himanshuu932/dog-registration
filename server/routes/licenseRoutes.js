@@ -12,5 +12,5 @@ router.get('/renew-registration', verifyToken, licenseController.getLicenseForRe
 router.post('/renew-registration/request', verifyToken, licenseController.requestLicenseRenewal);
 router.delete('/:id', licenseController.deleteLicense);
 
-  
+router.get('/calculate-new-fees',  licenseController.calculateNewFees);
 module.exports = router;

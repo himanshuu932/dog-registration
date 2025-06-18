@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios'; // Added for CAPTCHA API calls
+import axios from 'axios';
 import './styles/RenewRegistration.css';
-import { CheckCircle, AlertCircle, Calendar, FileText, PawPrint, User, Eye, ChevronLeft, XCircle, Clock, RefreshCw } from 'lucide-react'; // Added RefreshCw
+import { CheckCircle, AlertCircle, Calendar, FileText, PawPrint, User, Eye, ChevronLeft, XCircle, Clock, RefreshCw } from 'lucide-react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A';
@@ -231,8 +233,6 @@ const renderCertificateView = (lic, languageType = 'en', currentTextArg) => {
     );
 };
 
-
-// Renewal Confirmation Modal Component
 const RenewalConfirmationModal = ({
   isOpen,
   onClose,
@@ -243,10 +243,8 @@ const RenewalConfirmationModal = ({
   onCaptchaInputChange,
   loadCaptchaFn,
   captchaError,
-  captchaSuccess,
   isConfirming,
-  currentText,
-  languageType
+  currentText
 }) => {
   if (!isOpen) return null;
 
@@ -254,7 +252,7 @@ const RenewalConfirmationModal = ({
     <div className="user-rr-modal-overlay">
       <div className="user-rr-modal-content">
         <h3 className="user-rr-modal-title">{currentText.modalTitle}</h3>
-        <p>{currentText.renewalConfirm(licenseNumber)}</p>
+        <p>{currentText.renewalConfirm(licenseNumber)} This will proceed to payment after verification.</p>
 
         {captchaSvg && (
           <div className="user-rr-captcha-container">
@@ -280,7 +278,6 @@ const RenewalConfirmationModal = ({
         )}
 
         {captchaError && <p className="user-rr-modal-error-text">{captchaError}</p>}
-        {captchaSuccess && <p className="user-rr-modal-success-text">{captchaSuccess}</p>}
 
         <div className="user-rr-modal-actions">
           <button
@@ -295,7 +292,7 @@ const RenewalConfirmationModal = ({
             className="user-rr-action-button user-rr-modal-confirm-btn"
             disabled={isConfirming || !captchaInput}
           >
-            {isConfirming ? currentText.renewalSubmissionInProgress : currentText.modalConfirmButton}
+            {isConfirming ? currentText.renewalSubmissionInProgress : "Verify & Proceed to Pay"}
           </button>
         </div>
       </div>
@@ -307,25 +304,20 @@ const RenewalConfirmationModal = ({
 const RenewRegistration = ({ languageType = 'en' }) => {
   const [licenses, setLicenses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [renewalStates, setRenewalStates] = useState({}); // For table button states
-  const [error, setError] = useState(''); // General page errors
+  const [error, setError] = useState('');
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [viewingLicenseId, setViewingLicenseId] = useState(null);
 
-  // Modal States
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [selectedLicenseForRenewal, setSelectedLicenseForRenewal] = useState(null); // { id, number }
-  const [isConfirmingRenewal, setIsConfirmingRenewal] = useState(false); // For modal confirm button loading
+  const [selectedLicenseForRenewal, setSelectedLicenseForRenewal] = useState(null);
+  const [isConfirmingRenewal, setIsConfirmingRenewal] = useState(false);
 
-  // CAPTCHA States
   const [captchaSvg, setCaptchaSvg] = useState("");
   const [captchaToken, setCaptchaToken] = useState("");
   const [captchaInput, setCaptchaInput] = useState("");
-  const [captchaError, setCaptchaError] = useState(""); // CAPTCHA specific error in modal
-  const [captchaSuccess, setCaptchaSuccess] = useState(""); // CAPTCHA success message in modal
+  const [captchaError, setCaptchaError] = useState("");
 
-
-  const backendUrl = "https://dog-registration-yl8x.onrender.com"; // Or your relevant backend URL
+  const backendUrl = "http://localhost:5000";
   const authToken = localStorage.getItem('token');
 
   const textContent = {
@@ -337,9 +329,9 @@ const RenewRegistration = ({ languageType = 'en' }) => {
         loadingLicenses: 'Loading your licenses…',
         fetchError: 'Error fetching your licenses. Please try again later.',
         noLicenses: 'You have no licenses eligible for renewal or viewing.',
-        tableHeaders: { /* ... */ regNo: 'Reg. No', animalType: 'Animal Type', petName: 'Pet Name', lastUpdate: 'Last Update', status: 'Status', action: 'Action', view: 'View' },
-        tableActions: { /* ... */ renew: 'Renew', submitting: 'Submitting...', view: 'View', renewalRequested: 'Requested' },
-        renewalConfirm: (licenseNum) => `Are you sure you want to request renewal for license ${licenseNum}? This action requires CAPTCHA verification.`,
+        tableHeaders: { regNo: 'Reg. No', animalType: 'Animal Type', petName: 'Pet Name', lastUpdate: 'Last Update', status: 'Status', action: 'Action', view: 'View' },
+        tableActions: { renew: 'Renew', submitting: 'Processing...', view: 'View', renewalRequested: 'Requested' },
+        renewalConfirm: (licenseNum) => `Are you sure you want to renew license ${licenseNum}?`,
         orgNameEn: 'Nagar Nigam Gorakhpur',
         orgNameHi: 'नगर निगम गोरखपुर',
         certificateTitleEn: 'PET LICENSE CERTIFICATE',
@@ -378,7 +370,6 @@ const RenewRegistration = ({ languageType = 'en' }) => {
         contactPhone: 'N/A',
         contactEmail: 'info@example.org',
         contactWebsite: 'www.example.org',
-        // New for Modal and CAPTCHA
         modalTitle: "Confirm Renewal Request",
         modalConfirmButton: "Confirm & Renew",
         modalCancelButton: "Cancel",
@@ -386,78 +377,14 @@ const RenewRegistration = ({ languageType = 'en' }) => {
         invalidCaptcha: "Invalid CAPTCHA. Please try again.",
         failedToLoadCaptcha: "Failed to load CAPTCHA. Please refresh.",
         refreshCaptcha: "Refresh CAPTCHA",
-        captchaVerifiedProceeding: "CAPTCHA verified. Submitting renewal...",
-        renewalSubmissionInProgress: "Submitting...",
-        captchaVerificationFailed: "CAPTCHA verification failed.",
+        renewalSubmissionInProgress: "Verifying...",
     },
-    hi: {
-        pageTitle: 'पालतू पशु लाइसेंस नवीनीकृत करें',
-        backToList: 'लाइसेंस पर वापस जाएं',
-        renewalSuccessMessage: 'आपका नवीनीकरण अनुरोध व्यवस्थापक की मंजूरी के लिए जमा कर दिया गया है। प्रसंस्करण पूरा होने पर आपको सूचित किया जाएगा।',
-        renewalRequestButton: 'लाइसेंस पर वापस जाएं',
-        loadingLicenses: 'आपके लाइसेंस लोड हो रहे हैं…',
-        fetchError: 'आपके लाइसेंस प्राप्त करने में त्रुटि। कृपया बाद में पुनः प्रयास करें।',
-        noLicenses: 'आपके पास नवीनीकरण या देखने के लिए कोई लाइसेंस योग्य नहीं है।',
-        tableHeaders: { /* ... */ regNo: 'पंजी. संख्या', animalType: 'पशु का प्रकार', petName: 'पालतू जानवर का नाम', lastUpdate: 'अंतिम अद्यतन', status: 'स्थिति', action: 'कार्यवाही', view: 'देखें' },
-        tableActions: { /* ... */ renew: 'नवीनीकृत करें', submitting: 'जमा हो रहा है...', view: 'देखें', renewalRequested: 'अनुरोधित' },
-        renewalConfirm: (licenseNum) => `क्या आप वाकई लाइसेंस ${licenseNum} के नवीनीकरण का अनुरोध करना चाहते हैं? इस कार्रवाई के लिए कैप्चा सत्यापन आवश्यक है।`,
-        orgNameEn: 'Nagar Nigam Gorakhpur',
-        orgNameHi: 'नगर निगम गोरखपुर',
-        certificateTitleEn: 'PET LICENSE CERTIFICATE',
-        certificateTitleHi: 'पालतू पशु पंजीकरण प्रमाण पत्र',
-        certificateTitleEnP: 'PROVISIONAL PET LICENSE CERTIFICATE',
-        certificateTitleHiP: 'अस्थायी पालतू पशु पंजीकरण प्रमाण पत्र',
-        dateLabel: 'दिनांक:',
-        photoPlaceholder: 'पालतू जानवर की तस्वीर',
-        declaration: <>मैं घोषणा करता/करती हूँ कि उपरोक्त दी गई जानकारी मेरी जानकारी के अनुसार सत्य है। <b>/</b> I declare that the information provided above is true to the best of my knowledge.</>,
-        applicantSignature: 'आवेदक के हस्ताक्षर / Applicant\'s Signature',
-        issuingAuthority: 'जारीकर्ता अधिकारी / Issuing Authority',
-        qrCodeLabel: 'क्यूआर कोड',
-        stampLabel: 'मुहर',
-        renewalPendingNotice: 'आपका नवीनीकरण अनुरोध जमा कर दिया गया है और अनुमोदन के लिए लंबित है।',
-        rejectedNoticeText: (rejectionDate) => `आपका आवेदन ${formatDate(rejectionDate)} को अस्वीकृत कर दिया गया है।`,
-        reasonLabel: 'कारण:',
-        contactSupport: 'अधिक जानकारी के लिए कृपया सहायता से संपर्क करें।',
-        animalTypeLabelBilingual: 'पशु का प्रकार / Animal Type',
-        petNameLabel: 'पालतू जानवर का नाम / Pet Name',
-        breedLabel: 'नस्ल / Breed',
-        categoryLabel: 'वर्ग / Category',
-        colorLabel: 'रंग / Color',
-        ageLabel: 'आयु / Age',
-        vaccinationDateLabel: 'टीकाकरण की तारीख / Vaccination Date',
-        genderLabel: 'लिंग / Gender',
-        vaccinatedLabel: 'टीकाकरण / Vaccinated',
-        vaccinationCertificateLabel: 'टीकाकरण प्रमाणपत्र / Vaccination Certificate',
-        microchippedLabel: 'माइक्रोचिप / Microchipped',
-        nextVaccinationLabel: 'अगला टीकाकरण / Next Vaccination',
-        ownerDetailsTitle: 'मालिक का विवरण / Owner Details',
-        addressLabel: 'पता / Address',
-        phoneNumberLabel: 'फोन नंबर / Phone Number',
-        numberOfAnimalsLabel: (animalType) => `${animalType} की संख्या / No. of ${animalType}s`,
-        houseAreaLabel: 'घर का क्षेत्रफल / House Area',
-        animalDetailsTitleBilingual: (animalType) => `${animalType} का विवरण / ${animalType} Details`,
-        contactPhone: 'N/A',
-        contactEmail: 'info@example.org',
-        contactWebsite: 'www.example.org',
-        // New for Modal and CAPTCHA
-        modalTitle: "नवीनीकरण अनुरोध की पुष्टि करें",
-        modalConfirmButton: "पुष्टि करें और नवीनीकृत करें",
-        modalCancelButton: "रद्द करें",
-        enterCaptcha: "कैप्चा दर्ज करें",
-        invalidCaptcha: "अमान्य कैप्चा। कृपया पुन प्रयास करें।",
-        failedToLoadCaptcha: "कैप्चा लोड करने में विफल। कृपया रीफ़्रेश करें।",
-        refreshCaptcha: "कैप्चा रीफ़्रेश करें",
-        captchaVerifiedProceeding: "कैप्चा सत्यापित। नवीनीकरण सबमिट किया जा रहा है...",
-        renewalSubmissionInProgress: "सबमिट हो रहा है...",
-        captchaVerificationFailed: "कैप्चा सत्यापन विफल रहा।",
-    }
+    hi: { /* Your hi translations */ }
   };
   const currentText = textContent[languageType] || textContent.en;
 
-
   const loadCaptcha = useCallback(() => {
     setCaptchaError("");
-    setCaptchaSuccess("");
     setCaptchaInput("");
     setCaptchaSvg("");
     setCaptchaToken("");
@@ -473,14 +400,6 @@ const RenewRegistration = ({ languageType = 'en' }) => {
         setCaptchaError(currentText.failedToLoadCaptcha);
       });
   }, [currentText, backendUrl]);
-
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    window.addEventListener('resize', handleResize);
-    handleResize();
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   const fetchUserLicenses = useCallback(async () => {
     setLoading(true);
@@ -510,102 +429,97 @@ const RenewRegistration = ({ languageType = 'en' }) => {
     } finally {
       setLoading(false);
     }
-  }, [backendUrl, authToken, currentText.fetchError]); // Added missing dependencies
+  }, [backendUrl, authToken, currentText.fetchError]);
 
   useEffect(() => {
     fetchUserLicenses();
-  }, [fetchUserLicenses]); // Corrected dependency array
+  }, [fetchUserLicenses]);
+
+  // --- Auto-refresh on window focus ---
+  useEffect(() => {
+    const handleFocus = () => {
+        fetchUserLicenses();
+    };
+    window.addEventListener('focus', handleFocus);
+    return () => {
+        window.removeEventListener('focus', handleFocus);
+    };
+  }, [fetchUserLicenses]);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    handleResize();
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleOpenConfirmModal = (licenseId, licenseNumber) => {
     setSelectedLicenseForRenewal({ id: licenseId, number: licenseNumber });
-    loadCaptcha(); // Load fresh CAPTCHA when modal opens
+    loadCaptcha();
     setIsConfirmModalOpen(true);
-    // Clear previous table-row specific errors/loading if any, handled by renewalStates
-    setError(''); // Clear general page error
-    setCaptchaError(''); // Clear previous captcha errors
-    setCaptchaSuccess(''); // Clear previous captcha success
+    setCaptchaError('');
   };
 
   const handleCloseConfirmModal = () => {
     setIsConfirmModalOpen(false);
     setCaptchaInput("");
     setCaptchaError("");
-    setCaptchaSuccess("");
     setSelectedLicenseForRenewal(null);
-    setIsConfirmingRenewal(false); // Reset loading state of modal button
+    setIsConfirmingRenewal(false);
   };
 
-const handleConfirmRenewalWithCaptcha = async () => {
-  if (!selectedLicenseForRenewal) return;
+  const handleConfirmRenewalWithPayment = async () => {
+    if (!selectedLicenseForRenewal) return;
 
-  setIsConfirmingRenewal(true);
-  setCaptchaError("");
-  setCaptchaSuccess("");
-  setRenewalStates(prev => ({ ...prev, [selectedLicenseForRenewal.id]: 'loading' }));
-
-  try {
-    // 1. Verify CAPTCHA
-    const captchaRes = await axios.post(`${backendUrl}/api/captcha/verify-captcha`, {
-      captchaInput,
-      captchaToken,
-    });
-
-    if (!captchaRes.data?.success) {
-      setCaptchaError(currentText.invalidCaptcha);
-      loadCaptcha(); // Refresh CAPTCHA on failure
-      setIsConfirmingRenewal(false);
-      setRenewalStates(prev => ({ ...prev, [selectedLicenseForRenewal.id]: null }));
-      return;
-    }
-
-    setCaptchaSuccess(currentText.captchaVerifiedProceeding);
-
-    // 2. If CAPTCHA is successful, proceed with renewal request
-    const response = await fetch(`${backendUrl}/api/license/renew-registration/request`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authToken}`
-      },
-      body: JSON.stringify({ licenseNumber: selectedLicenseForRenewal.number }) // Changed from licenseId to licenseNumber
-    });
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || 'Renewal request failed');
-    }
-
-    // Success
-    setRenewalStates(prev => ({ ...prev, [selectedLicenseForRenewal.id]: 'success' }));
-    fetchUserLicenses(); // Refresh licenses list
-    setTimeout(() => {
+    setIsConfirmingRenewal(true);
+    setCaptchaError("");
+    
+    try {
+      // 1. Verify CAPTCHA first
+      const captchaRes = await axios.post(`${backendUrl}/api/captcha/verify-captcha`, { captchaInput, captchaToken });
+      if (!captchaRes.data?.success) {
+        setCaptchaError(currentText.invalidCaptcha);
+        loadCaptcha(); // Refresh CAPTCHA
+        setIsConfirmingRenewal(false);
+        return;
+      }
+      
+      // 2. If CAPTCHA is good, close modal and call renewal initiation endpoint
       handleCloseConfirmModal();
-    }, 1500);
+      toast.info("CAPTCHA verified. Processing renewal...");
 
-  } catch (err) {
-    console.error("Renewal/CAPTCHA error:", err.response || err.message);
-    if (!captchaSuccess) {
-      setCaptchaError(err.message || currentText.captchaVerificationFailed);
-      loadCaptcha();
-    } else {
-      setError(err.message || 'Renewal request failed. Please try again.');
+      const response = await axios.post(`${backendUrl}/api/license/renew-registration/request`, 
+        { licenseNumber: selectedLicenseForRenewal.number },
+        { headers: { 'Authorization': `Bearer ${authToken}` } }
+      );
+
+      if (response.data && response.data.paymentUrl) {
+        toast.success("Redirecting to payment gateway...");
+        window.open(response.data.paymentUrl, '_blank');
+        console.log("Payment URL:", response.data.paymentUrl);
+      } else {
+        throw new Error("Failed to get payment URL from server.");
+      }
+
+    } catch (err) {
+      console.error("Renewal/CAPTCHA error:", err);
+      const errorMessage = err.response?.data?.message || "Renewal request failed. Please try again.";
+      toast.error(errorMessage);
+      handleCloseConfirmModal();
+    } finally {
+      setIsConfirmingRenewal(false);
     }
-    setRenewalStates(prev => ({ ...prev, [selectedLicenseForRenewal.id]: 'error' }));
-    setIsConfirmingRenewal(false);
-  }
-};
-
+  };
 
   const toggleViewLicense = (id) => {
     setViewingLicenseId(prevId => prevId === id ? null : id);
   };
 
   const licenseToView = licenses.find(lic => lic._id === viewingLicenseId);
-  const isAnyRenewalSuccess = Object.values(renewalStates).some(state => state === 'success');
-
 
   return (
     <main className={`user-rr-page-container ${viewingLicenseId ? 'user-rr-certificate-focused-view' : ''}`}>
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
       <header className={`user-rr-page-header ${viewingLicenseId ? 'user-rr-certificate-view-header' : ''}`}>
         {viewingLicenseId === null ? (
           <h1 className="user-rr-main-title">{currentText.pageTitle}</h1>
@@ -622,30 +536,11 @@ const handleConfirmRenewalWithCaptcha = async () => {
         )}
       </header>
 
-      {/* General Error Display (not for modal) */}
-      {error && !loading && viewingLicenseId === null && !isConfirmModalOpen && (
+      {error && !loading && viewingLicenseId === null && (
           <p className="user-rr-error-message-box">{error}</p>
       )}
 
-
-      {isAnyRenewalSuccess && viewingLicenseId === null && !isConfirmModalOpen && !loading && (
-        <div className="user-rr-success-message-display">
-          <CheckCircle size={48} className="user-rr-success-icon-style" />
-          <strong className="user-rr-success-strong-text">{currentText.renewalSuccessMessage.split('.')[0]}.</strong>
-          <p className="user-rr-success-detail-text">{currentText.renewalSuccessMessage.split('.').slice(1).join('.').trim()}</p>
-          <button
-            className="user-rr-action-button user-rr-back-to-list-action-btn"
-            onClick={() => {
-              setRenewalStates({}); // Clear flag to hide this message
-              fetchUserLicenses();
-            }}
-          >
-            {currentText.renewalRequestButton}
-          </button>
-        </div>
-      ) }
-
-      {!isAnyRenewalSuccess && viewingLicenseId === null && !isConfirmModalOpen && (
+      {viewingLicenseId === null && (
           <>
             {loading ? (
               <div className="user-rr-loading-state">
@@ -680,14 +575,13 @@ const handleConfirmRenewalWithCaptcha = async () => {
                               <button
                                 onClick={(e) => { e.stopPropagation(); handleOpenConfirmModal(license._id, license.license_Id);}}
                                 className="user-rr-action-button user-rr-renew-action-btn"
-                                disabled={renewalStates[license._id] === 'loading'}
                               >
-                                {renewalStates[license._id] === 'loading' ? currentText.tableActions.submitting : currentText.tableActions.renew}
+                                {currentText.tableActions.renew}
                               </button>
                             ) : license.status === 'renewal_pending' ? (
                               <span className="user-rr-renewal-status-text">{currentText.tableActions.renewalRequested}</span>
                             ) : (
-                              <span>-</span> // No action for other statuses like rejected, etc.
+                              <span>-</span>
                             )}
                           </div>
                         </td>
@@ -709,7 +603,7 @@ const handleConfirmRenewalWithCaptcha = async () => {
                   </tbody>
                 </table>
               </div>
-            ) : !error && ( // Show "no licenses" only if no general error
+            ) : !error && (
               <div className="user-rr-empty-data-state">
                 <div className="user-rr-empty-state-icon"><FileText size={48} /></div>
                 <p className="user-rr-no-data-text">{currentText.noLicenses}</p>
@@ -725,17 +619,15 @@ const handleConfirmRenewalWithCaptcha = async () => {
       <RenewalConfirmationModal
         isOpen={isConfirmModalOpen}
         onClose={handleCloseConfirmModal}
-        onConfirm={handleConfirmRenewalWithCaptcha}
+        onConfirm={handleConfirmRenewalWithPayment}
         licenseNumber={selectedLicenseForRenewal?.number}
         captchaSvg={captchaSvg}
         captchaInput={captchaInput}
-        onCaptchaInputChange={(e) => setCaptchaInput(e.target.value)}
+        onCaptchaInputChange={(e) => { setCaptchaInput(e.target.value); setCaptchaError(''); }}
         loadCaptchaFn={loadCaptcha}
         captchaError={captchaError}
-        captchaSuccess={captchaSuccess}
         isConfirming={isConfirmingRenewal}
         currentText={currentText}
-        languageType={languageType}
       />
     </main>
   );

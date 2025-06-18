@@ -73,7 +73,7 @@
 
 .user-dl-filter-label-text {
   font-size: 0.95rem;
-  color: var(--user-dl-gray-dark);
+  color: #000000;
   margin-right: 0.5rem;
   white-space: nowrap;
 }
@@ -149,7 +149,7 @@
 
 .user-dl-dropdown-chevron {
   transition: transform 0.2s ease-in-out;
-  color: var(--user-dl-gray-dark);
+  color: #000000;
 }
 .user-dl-dropdown-chevron-open {
   transform: rotate(180deg);
@@ -243,7 +243,7 @@
 }
 .user-dl-loading-text {
   font-size: 1.15rem;
-  color: var(--user-dl-gray-dark);
+  color: #000000;
 }
 
 /* Empty Data State */
@@ -264,7 +264,7 @@
 }
 .user-dl-no-data-text {
   font-size: 1.15rem;
-  color: var(--user-dl-gray-dark);
+  color: #000000;
   margin-bottom: 1.5rem;
 }
 .user-dl-apply-new-button {
@@ -366,14 +366,14 @@
 .user-dl-status-pending { background-color: rgba(243, 156, 18, 0.15); color: var(--user-dl-warning); } /* Using warning for pending */
 .user-dl-status-provisional { background-color: var(--user-dl-provisional-bg); color: var(--user-dl-provisional-text); }
 .user-dl-status-rejected { background-color: rgba(192, 57, 43, 0.15); color: var(--user-dl-danger); }
-.user-dl-status-default { background-color: rgba(127, 140, 141, 0.15); color: var(--user-dl-gray-dark); }
+.user-dl-status-default { background-color: rgba(127, 140, 141, 0.15); color: #000000; }
 
 /* Ensure icon colors in UserStatusBadge are set via CSS for better control */
 .user-dl-status-badge.user-dl-status-approved svg { color: var(--user-dl-success); }
 .user-dl-status-badge.user-dl-status-pending svg,
 .user-dl-status-badge.user-dl-status-provisional svg { color: var(--user-dl-warning); }
 .user-dl-status-badge.user-dl-status-rejected svg { color: var(--user-dl-danger); }
-.user-dl-status-badge.user-dl-status-default svg { color: var(--user-dl-gray-dark); }
+.user-dl-status-badge.user-dl-status-default svg { color: #000000; }
 
 /* Table View Button */
 .user-dl-table-view-button {
@@ -501,7 +501,7 @@
 }
 .user-dl-pdf-info-block { flex: 1; margin-right: 15px; }
 .user-dl-pdf-info-row { display: flex; margin-bottom: 5px; font-size: 11px; }
-.user-dl-pdf-info-label { font-weight: bold; min-width: 170px; color: var(--user-dl-gray-dark); }
+.user-dl-pdf-info-label { font-weight: bold; min-width: 170px; color: #000000; }
 .user-dl-pdf-info-value { flex: 1; padding-left: 5px; color: var(--user-dl-black); }
 .user-dl-pdf-photo-box {
   width: 90mm; /* More proportional for an A4 */
@@ -539,7 +539,7 @@
 .user-dl-pdf-details-column-left, .user-dl-pdf-details-column-right { flex: 1; }
 
 .user-dl-pdf-details-row { display: flex; margin-bottom: 4px; font-size: 11px; }
-.user-dl-pdf-details-label { font-weight: bold; width: 170px; flex-shrink: 0; color: var(--user-dl-gray-dark); }
+.user-dl-pdf-details-label { font-weight: bold; width: 170px; flex-shrink: 0; color: #000000; }
 .user-dl-pdf-details-value { flex: 1; padding-left: 5px; word-break: break-word; color: var(--user-dl-black); }
 .user-dl-pdf-vaccine-link { color: var(--user-dl-secondary); text-decoration: underline; }
 
@@ -650,7 +650,7 @@
   right: 0;
   text-align: center;
   font-size: 9px;
-  color: var(--user-dl-gray-dark);
+  color: #000000;
   border-top: 1px solid var(--user-dl-gray-light);
   padding-top: 5px;
   background-color: var(--user-dl-white); /* Ensure it covers content behind */
@@ -702,7 +702,7 @@
   right: 0;
   text-align: center;
   font-size: 9px;
-  color: var(--user-dl-gray-dark);
+  color: #000000;
   border-top: 1px solid var(--user-dl-gray-light);
   padding-top: 5px;
   background-color: var(--user-dl-white);

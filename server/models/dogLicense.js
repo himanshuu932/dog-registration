@@ -1,17 +1,17 @@
+// models/dogLicense.js
+
 const mongoose = require("mongoose");
 
 const dogLicenseSchema = new mongoose.Schema(
   {
+    fees: {
+      total: { type: Number, default: 0 },
+      fine: { type: Number, default: 0 },
+      paid: { type: Boolean, default: false },
+      paymentDate: { type: Date, default: null }
+    },
 
-fees: {
-  total: { type: Number, default: 0 },
-  fine: { type: Number, default: 0 },
-  paid: { type: Boolean, default: false },
-  paymentDate: { type: Date, default: null }
-},
-
-
-        isProvisional: {
+    isProvisional: {
       type: Boolean,
       default: false
     },
@@ -21,8 +21,8 @@ fees: {
       enum: ['Dog', 'Cat', 'Rabbit'],
       required: true,
     },
-     
-    license_Id: { 
+
+    license_Id: {
       type: String,
       unique: true,
       required: true
@@ -46,27 +46,34 @@ fees: {
       color: String,
       age: String,
       sex: String,
-       isVaccinated: String,
+      isVaccinated: String,
       dateOfVaccination: Date,
       dueVaccination: Date,
       vaccinationProofUrl: String,
+      vaccinationProofPublicId: String, // Added this field from your original code
       avatarUrl: String,
     },
     expiryDate: Date,
+    renewalRequestDate: Date, // To track when a renewal process was started
     status: {
       type: String,
-      enum: ['pending', 'approved', 'rejected','renewal_pending'],
+      enum: ['pending', 'approved', 'rejected', 'renewal_pending', 'payment_processing', 'renewal_payment_processing'],
       default: 'pending',
     },
-     rejectionReason: String,  
-    rejectionDate: Date,     
+    rejectionReason: String,
+    rejectionDate: Date,
+
+    // Fields for payment details
+    paymentReferenceNo: { type: String, unique: true, sparse: true },
+    eazypayUniqueRefNo: String,
+    eazypayPaymentMode: String,
+    eazypayTransactionDate: String,
+    eazypayTransactionAmount: String,
+    eazypayTransactionId: String,
   },
   {
-    timestamps: true 
+    timestamps: true
   }
 );
-
-
-
 
 module.exports = mongoose.model("DogLicense", dogLicenseSchema);

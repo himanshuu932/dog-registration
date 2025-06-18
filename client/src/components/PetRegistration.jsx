@@ -4,6 +4,7 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify'; // Import ToastContainer and toast
 import 'react-toastify/dist/ReactToastify.css'; // Import toastify CSS
 import { RefreshCw } from 'lucide-react'; // For the refresh CAPTCHA button
+import { useNavigate } from 'react-router-dom'; // For navigation after payment
 
 const PetRegistrationForm = () => {
   const [activeTab, setActiveTab] = useState(1);
@@ -21,8 +22,15 @@ const PetRegistrationForm = () => {
     url: '',
     publicId: ''
   });
-  const [fineFees, setFineFees] = useState(0);
-  const [totalFees, setTotalFees] = useState(200); // Initial registration fee
+
+  // --- State for server-calculated fees ---
+  const [feesSummary, setFeesSummary] = useState({
+    registrationFee: 200,
+    fine: 0,
+    total: 200
+  });
+  const [isFetchingFees, setIsFetchingFees] = useState(false);
+
 
   // CAPTCHA States
   const [captchaSvg, setCaptchaSvg] = useState('');
@@ -79,7 +87,8 @@ const PetRegistrationForm = () => {
 
   const [formData, setFormData] = useState(initialFormData);
 
-  const backend = "https://dog-registration-yl8x.onrender.com"; // Adjust this to your backend URL
+  const backend = "http://localhost:5000"; // Adjust this to your backend URL
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -108,32 +117,6 @@ const PetRegistrationForm = () => {
       setFileName('No file chosen');
       setVaccinationProof({ url: '', publicId: '' });
     }
-  };
-
-  const calculateFineFees = () => {
-    const registrationDate = new Date();
-    const financialYearEnd = new Date(registrationDate.getFullYear(), 2, 31);
-    let fees = 0;
-    if (registrationDate > financialYearEnd) {
-      const currentMonth = registrationDate.getMonth();
-      const currentDay = registrationDate.getDate();
-      if (currentMonth === 3) {
-        fees = 0;
-      } else if (currentMonth === 4) {
-        fees = 100;
-      } else if (currentMonth > 4) {
-        fees = 100;
-        let daysForDailyFine = 0;
-        for (let i = 5; i < currentMonth; i++) {
-          const year = registrationDate.getFullYear();
-          daysForDailyFine += new Date(year, i + 1, 0).getDate();
-        }
-        daysForDailyFine += currentDay;
-        fees += daysForDailyFine * 50;
-      }
-    }
-    setFineFees(fees);
-    setTotalFees(200 + fees);
   };
 
   const validateStep = () => {
@@ -172,9 +155,6 @@ const PetRegistrationForm = () => {
 
   const handleNext = () => {
     if (validateStep()) {
-      if (activeTab === 2) {
-        calculateFineFees();
-      }
       setActiveTab((prev) => prev + 1);
     } else {
       toast.error('Please fill in all required fields.');
@@ -214,7 +194,7 @@ const PetRegistrationForm = () => {
     try {
       setIsUploading(true);
       setUploadProgress(0);
-      const fd = new FormData(); // Renamed to fd to avoid conflict if formData is in scope
+      const fd = new FormData();
       fd.append('file', file);
       const token = localStorage.getItem('token');
       const response = await axios.post(`${backend}/api/license/upload`, fd, {
@@ -268,7 +248,7 @@ const PetRegistrationForm = () => {
     try {
       setIsUploadingAvatar(true);
       setAvatarUploadProgress(0);
-      const fd = new FormData(); // Renamed to fd
+      const fd = new FormData();
       fd.append('file', avatarFile);
       const token = localStorage.getItem('token');
       const response = await axios.post(`${backend}/api/license/upload`, fd, {
@@ -305,16 +285,13 @@ const PetRegistrationForm = () => {
     setIsUploadingAvatar(false);
     setAvatarUploadProgress(0);
     setVaccinationProof({ url: '', publicId: '' });
-    setFineFees(0);
-    setTotalFees(200);
-    // Reset CAPTCHA fields
+    setFeesSummary({ registrationFee: 200, fine: 0, total: 200 });
     setCaptchaSvg('');
     setCaptchaToken('');
     setCaptchaInput('');
     setCaptchaError('');
   };
 
-  // --- CAPTCHA Functions ---
   const loadCaptcha = useCallback(async () => {
     setCaptchaInput('');
     setCaptchaError('');
@@ -336,11 +313,154 @@ const PetRegistrationForm = () => {
     }
   }, [backend]);
 
+  // --- Fetch fees from backend and load CAPTCHA when moving to preview tab ---
   useEffect(() => {
+    const fetchFees = async () => {
+        setIsFetchingFees(true);
+        try {
+            const res = await axios.get(`${backend}/api/license/calculate-new-fees`);
+            setFeesSummary(res.data);
+        } catch (error) {
+            toast.error("Could not calculate fees. Please try again.");
+            console.error("Fee calculation error:", error);
+        } finally {
+            setIsFetchingFees(false);
+        }
+    };
+
     if (activeTab === 3) {
+      fetchFees();
       loadCaptcha();
     }
-  }, [activeTab, loadCaptcha]);
+  }, [activeTab, backend, loadCaptcha]);
+
+
+  const initiatePayment = async (paymentUrl) => {
+    toast.info("Redirecting to payment gateway...");
+    try {
+      const  eazypayUrl  = paymentUrl;
+      if (eazypayUrl) {
+        window.open(eazypayUrl, '_blank'); 
+      } else {
+        throw new Error("Failed to get payment URL from server.");
+      }
+      navigate('/download-license');
+    } catch (error) {
+      console.error("Payment initiation error:", error);
+      toast.error(error.response?.data?.message || "Could not redirect to payment. Please contact support.");
+    }
+  };
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!formData.declaration1 || !formData.declaration2 || !formData.declaration3 || !formData.declaration4) {
+      toast.error('Please accept all declarations before submitting.');
+      return;
+    }
+
+    // --- CAPTCHA VERIFICATION ---
+    if (activeTab === 3) {
+        if (!captchaInput.trim()) {
+          toast.error("Please enter the CAPTCHA.");
+          setCaptchaError("CAPTCHA is required.");
+          return;
+        }
+        if (!captchaToken) {
+          toast.error("CAPTCHA not loaded. Please refresh.");
+          setCaptchaError("CAPTCHA not loaded. Please refresh.");
+          loadCaptcha();
+          return;
+        }
+        try {
+          const captchaRes = await axios.post(`${backend}/api/captcha/verify-captcha`, {
+            captchaInput,
+            captchaToken,
+          });
+          if (!captchaRes.data?.success) {
+            toast.error("Invalid CAPTCHA. Please try again.");
+            setCaptchaError("Invalid CAPTCHA. Please try again.");
+            loadCaptcha();
+            return;
+          }
+          setCaptchaError('');
+        } catch (captchaErr) {
+          console.error("CAPTCHA verification error:", captchaErr);
+          const errorMessage = captchaErr.response?.data?.message || "Failed to verify CAPTCHA. An error occurred.";
+          toast.error(errorMessage);
+          setCaptchaError(errorMessage);
+          loadCaptcha();
+          return;
+        }
+    }
+    // --- END CAPTCHA VERIFICATION ---
+
+    if (formData.isVaccinated === 'Yes' && file && !vaccinationProof.url) {
+      const uploadSuccess = await uploadFile();
+      if (!uploadSuccess) return;
+    }
+    
+    //await handleAvatarUpload();
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('You must be logged in to submit the form.');
+        return;
+      }
+      
+      const submissionData = {
+        animalType: formData.animalType,
+        fullName: formData.fullName,
+        phoneNumber: formData.phoneNumber,
+        gender: formData.gender,
+        streetName: formData.streetName,
+        pinCode: formData.pinCode,
+        city: formData.city,
+        state: formData.state,
+        totalHouseArea: formData.totalHouseArea,
+        numberOfAnimals: formData.numberOfDogs,
+        pet: {
+          name: formData.petName,
+          category: formData.petCategory,
+          breed: formData.petBreed,
+          color: formData.petColor,
+          age: formData.petAge,
+          sex: formData.petSex,
+          isVaccinated: formData.isVaccinated,
+          ...(formData.isVaccinated === 'Yes' && {
+            dateOfVaccination: formData.dateOfVaccination,
+            dueVaccination: formData.dueVaccination,
+            vaccinationProofUrl: vaccinationProof.url,
+            vaccinationProofPublicId: vaccinationProof.publicId,
+          }),
+          avatarUrl: avatarUrl
+        },
+        // ** NO fees object is sent from the frontend **
+      };
+
+      const res = await axios.post(`${backend}/api/license/apply`, submissionData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      toast.success('Registration data submitted successfully! Redirecting to payment...');
+      
+      await initiatePayment(res.data.paymentUrl);
+
+      resetForm();
+
+    } catch (err) {
+      console.error('Error submitting form:', err);
+      toast.error(err.response?.data?.message || 'Something went wrong. Please try again.');
+      if (activeTab === 3) loadCaptcha();
+    }
+  };
+  
+  const renderError = (field) =>
+    errors[field] && <span className="error-text">{errors[field]}</span>;
 
   const renderCaptchaFields = () => (
     activeTab === 3 && (
@@ -398,157 +518,6 @@ const PetRegistrationForm = () => {
       </div>
     )
   );
-  
-  /**
-   * Calls the backend to get a payment URL and opens it in a new tab.
-   * @param {number} amount - The total amount to be paid.
-   * @param {string} referenceNo - The unique reference number for the transaction.
-   */
-  const initiatePayment = async (amount, referenceNo) => {
-    toast.info("Redirecting to payment gateway...");
-    try {
-      const paymentResponse = await axios.post(`${backend}/api/payment/generate-url`, {
-        amount: amount,
-        referenceNo: referenceNo
-      });
-
-      const { url: eazypayUrl } = paymentResponse.data;
-      if (eazypayUrl) {
-        window.open(eazypayUrl, '_blank'); // Open payment page in a new tab
-      } else {
-        throw new Error("Failed to get payment URL from server.");
-      }
-    } catch (error) {
-      console.error("Payment initiation error:", error);
-      // Notify user that payment step failed but their application is saved
-      toast.error(error.response?.data?.message || "Could not redirect to payment. Please contact support with your reference number to complete the payment.");
-    }
-  };
-
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!formData.declaration1 || !formData.declaration2 || !formData.declaration3 || !formData.declaration4) {
-      toast.error('Please accept all declarations before submitting.');
-      return;
-    }
-
-    // --- CAPTCHA VERIFICATION ---
-    if (activeTab === 3) {
-        if (!captchaInput.trim()) {
-          toast.error("Please enter the CAPTCHA.");
-          setCaptchaError("CAPTCHA is required.");
-          return;
-        }
-        if (!captchaToken) {
-          toast.error("CAPTCHA not loaded. Please refresh.");
-          setCaptchaError("CAPTCHA not loaded. Please refresh.");
-          loadCaptcha();
-          return;
-        }
-        try {
-          const captchaRes = await axios.post(`${backend}/api/captcha/verify-captcha`, {
-            captchaInput,
-            captchaToken,
-          });
-          if (!captchaRes.data?.success) {
-            toast.error("Invalid CAPTCHA. Please try again.");
-            setCaptchaError("Invalid CAPTCHA. Please try again.");
-            loadCaptcha();
-            return;
-          }
-          setCaptchaError('');
-        } catch (captchaErr) {
-          console.error("CAPTCHA verification error:", captchaErr);
-          const errorMessage = captchaErr.response?.data?.message || "Failed to verify CAPTCHA. An error occurred.";
-          toast.error(errorMessage);
-          setCaptchaError(errorMessage);
-          loadCaptcha();
-          return;
-        }
-    }
-    // --- END CAPTCHA VERIFICATION ---
-
-    if (formData.isVaccinated === 'Yes' && file && !vaccinationProof.url) {
-      const uploadSuccess = await uploadFile();
-      if (!uploadSuccess) return;
-    }
-
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        toast.error('You must be logged in to submit the form.');
-        return;
-      }
-      
-      // Generate 5-digit random reference number for the transaction
-      const referenceNo = String(Math.floor(10000 + Math.random() * 90000));
-
-      const submissionData = {
-        animalType: formData.animalType,
-        fullName: formData.fullName,
-        phoneNumber: formData.phoneNumber,
-        gender: formData.gender,
-        streetName: formData.streetName,
-        pinCode: formData.pinCode,
-        city: formData.city,
-        state: formData.state,
-        totalHouseArea: formData.totalHouseArea,
-        numberOfAnimals: formData.numberOfDogs,
-        pet: {
-          name: formData.petName,
-          category: formData.petCategory,
-          breed: formData.petBreed,
-          color: formData.petColor,
-          age: formData.petAge,
-          sex: formData.petSex,
-          isVaccinated: formData.isVaccinated,
-          ...(formData.isVaccinated === 'Yes' && {
-            dateOfVaccination: formData.dateOfVaccination,
-            dueVaccination: formData.dueVaccination,
-            vaccinationProofUrl: vaccinationProof.url,
-            vaccinationProofPublicId: vaccinationProof.publicId,
-          }),
-          avatarUrl: avatarUrl
-        },
-        fees: {
-          total: totalFees,
-          fine: fineFees
-        },
-        // Add payment details to the submission for tracking
-        paymentDetails: {
-            referenceNo: referenceNo,
-            status: 'Pending'
-        }
-      };
-
-      // First, submit the registration data to the server
-      const res = await axios.post(`${backend}/api/license/apply`, submissionData, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      // If data submission is successful, proceed to payment
-      toast.success('Registration data submitted successfully! Redirecting to payment...');
-      console.log('Server response:', res.data);
-
-      // After successful submission, call the payment initiation function
-      await initiatePayment(totalFees, referenceNo);
-
-      // Finally, reset the form for the next user
-      resetForm();
-
-    } catch (err) {
-      console.error('Error submitting form:', err);
-      toast.error(err.response?.data?.message || 'Something went wrong. Please try again.');
-      if (activeTab === 3) loadCaptcha(); // Reload CAPTCHA on submission error
-    }
-  };
-
-  const renderError = (field) =>
-    errors[field] && <span className="error-text">{errors[field]}</span>;
 
   const isPetBreedRequired = !(formData.animalType === 'Dog' && formData.petCategory === 'Indian/Desi');
 
@@ -556,7 +525,6 @@ const PetRegistrationForm = () => {
     <div className="pet-registration-container">
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
       <div className="tabs-container">
-        {/* Tabs */}
         <div className={`tab ${activeTab === 1 ? 'active' : ''}`}>
           <div className="tab-number">1</div>
           <div className="tab-content">
@@ -584,7 +552,6 @@ const PetRegistrationForm = () => {
         {activeTab === 1 && (
           <div className="form-step">
             <h2 className="section-title">Pet Owner Information</h2>
-            {/* Step 1 Fields (Owner Info) */}
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="animalType">Animal Type<span className="required">*</span></label>
@@ -661,7 +628,6 @@ const PetRegistrationForm = () => {
 
         {activeTab === 2 && (
           <div className="form-step">
-            {/* Step 2 Fields (Pet Info) */}
             <div className="pet-info-section">
               <h2 className="section-title">{formData.animalType} 1</h2>
               <p className="section-subtitle">Enter {formData.animalType} 1</p>
@@ -813,10 +779,8 @@ const PetRegistrationForm = () => {
 
         {activeTab === 3 && (
           <div className="form-step">
-            {/* Step 3 Preview */}
             <h2 className="section-title">Pet Owner's Details</h2>
             <div className="preview-section">
-              {/* Preview Rows for Owner */}
               <div className="preview-row">
                 <div className="preview-item"><span className="preview-label">Owner Name :</span><span className="preview-value">{formData.fullName || 'Not provided'}</span></div>
                 <div className="preview-item"><span className="preview-label">Phone Number :</span><span className="preview-value">{formData.phoneNumber || 'Not provided'}</span></div>
@@ -838,7 +802,6 @@ const PetRegistrationForm = () => {
 
             <h2 className="section-title">{formData.animalType} Details 1</h2>
             <div className="preview-section">
-              {/* Preview Rows for Pet */}
               <div className="preview-row">
                 <div className="preview-item"><span className="preview-label">{formData.animalType} Name:</span><span className="preview-value">{formData.petName || 'Not provided'}</span></div>
                 <div className="preview-item"><span className="preview-label">{formData.animalType} Category:</span><span className="preview-value">{formData.petCategory || 'Not provided'}</span></div>
@@ -879,15 +842,20 @@ const PetRegistrationForm = () => {
 
             <h2 className="section-title">Fees Summary</h2>
             <div className="fees-summary-section">
-              <div className="preview-row"><div className="preview-item"><span className="preview-label">Registration Fees:</span><span className="preview-value">Rs. 200</span></div></div>
-              <div className="preview-row"><div className="preview-item"><span className="preview-label">Fine Fees:</span><span className="preview-value">Rs. {fineFees}</span></div></div>
-              <div className="preview-row total-fees-row"><div className="preview-item"><span className="preview-label">Total Fees:</span><span className="preview-value">Rs. {totalFees}</span></div></div>
+              {isFetchingFees ? (
+                <p>Calculating fees...</p>
+              ) : (
+                <>
+                  <div className="preview-row"><div className="preview-item"><span className="preview-label">Registration Fees:</span><span className="preview-value">Rs. {feesSummary.registrationFee}</span></div></div>
+                  <div className="preview-row"><div className="preview-item"><span className="preview-label">Fine Fees:</span><span className="preview-value">Rs. {feesSummary.fine}</span></div></div>
+                  <div className="preview-row total-fees-row"><div className="preview-item"><span className="preview-label">Total Fees:</span><span className="preview-value">Rs. {feesSummary.total}</span></div></div>
+                </>
+              )}
             </div>
 
             {formData.isVaccinated === 'No' && (
               <div className="vet-info-section">
                 <h3 className="section-subtitle">Approved Veterinary Clinic Information</h3>
-                {/* Vet Details */}
                 <div className="preview-row">
                     <div className="preview-item"><span className="preview-label">Clinic Name:</span><span className="preview-value">{VET_DETAILS.clinic}</span></div>
                     <div className="preview-item"><span className="preview-label">Veterinarian:</span><span className="preview-value">{VET_DETAILS.name}</span></div>
@@ -902,18 +870,15 @@ const PetRegistrationForm = () => {
 
             <h2 className="section-title">Declaration</h2>
             <div className="declaration-section">
-              {/* Declaration Checkboxes */}
               <div className="declaration-item"><input type="checkbox" id="declaration1" name="declaration1" checked={formData.declaration1} onChange={handleChange} required /><label htmlFor="declaration1">I hereby declare that the entries made by me in the Application Form are complete and true to the best of my knowledge, belief and information.</label></div>
               <div className="declaration-item"><input type="checkbox" id="declaration2" name="declaration2" checked={formData.declaration2} onChange={handleChange} required /><label htmlFor="declaration2">I hereby undertake to present the original documents for verification immediately upon demand by the concerned authorities.</label></div>
               <div className="declaration-item"><input type="checkbox" id="declaration3" name="declaration3" checked={formData.declaration3} onChange={handleChange} required /><label htmlFor="declaration3">If in any case, concerned authorities encountered any fault then they would take action against me and anytime like cancellation of the license by the authorized authority.</label></div>
               <div className="declaration-item"><input type="checkbox" id="declaration4" name="declaration4" checked={formData.declaration4} onChange={handleChange} required /><label htmlFor="declaration4">I hereby assure the Municipal Corporation, Gorakhpur that, I am not using my pet for any breeding purpose and will follow all the rules and regulation (<a href="./Rules.pdf" target='_blank' className="link">View PDF</a>) issued by Municipal Corporation, Gorakhpur from time to time.</label></div>
             </div>
+            
+            {renderCaptchaFields()}
           </div>
         )}
-
-            {/* --- CAPTCHA SECTION --- */}
-            {renderCaptchaFields()}
-            {/* --- END CAPTCHA SECTION --- */}
 
         <div className="form-buttons">
           {activeTab > 1 && <button type="button" className="back-btn" onClick={handleBack}>Back</button>}
@@ -928,14 +893,16 @@ const PetRegistrationForm = () => {
                 !formData.declaration2 ||
                 !formData.declaration3 ||
                 !formData.declaration4 ||
-                (formData.isVaccinated === 'Yes' && file && !vaccinationProof.url && isUploading) ||
+                isUploading ||
                 isUploadingAvatar ||
-                (activeTab === 3 && !captchaToken && !!captchaError) || // CAPTCHA load failed
-                (activeTab === 3 && !captchaToken && !captchaError)     // CAPTCHA loading
+                isFetchingFees ||
+                (activeTab === 3 && !captchaToken && !!captchaError) ||
+                (activeTab === 3 && !captchaToken && !captchaError)
               }
             >
               {isUploading ? 'Uploading Certificate...' :
                isUploadingAvatar ? 'Uploading Avatar...' :
+               isFetchingFees ? 'Calculating Fees...' :
                (activeTab === 3 && !captchaToken && !captchaError && !captchaSvg) ? 'Loading CAPTCHA...' :
                'Submit & Pay'}
             </button>

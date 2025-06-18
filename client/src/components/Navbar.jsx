@@ -58,7 +58,7 @@ const textContent = {
   }
 };
 
-const backend = "https://dog-registration-yl8x.onrender.com";
+const backend = "http://localhost:5000";
 
 // Added setUser to the props destructuring
 function Navbar({ languageType = 'en', user, notifications = [], onLogout, setLanguageType, setUser }) {
