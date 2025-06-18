@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const DogLicense = require("../models/dogLicense"); // Import the DogLicense model
 const { request } = require('http');
 
-const refNoStore = new Map(); 
+const refNoStore = new Map();
 
 const ERROR_CODE_MAP = {
     E000: 'Transaction successful',
@@ -61,6 +61,30 @@ exports.generatePaymentURL = (params) => {
     return `${BASE}?${parts.join('&')}`;
 };
 
+// Helper function to fetch and populate transaction details from Eazypay Verify API
+async function fetchAndPopulateTransactionDetails(pgreferenceno) {
+    console.log(`Fetching transaction details for reference: ${pgreferenceno}`);
+    const params = new URLSearchParams({
+        merchantid: process.env.EAZYPAY_MERCHANT_ID,
+        pgreferenceno,
+        dstatus: 'Y',
+    });
+    const VERIFY_BASE_URL = 'https://eazypayuat.icicibank.com/EazyPGVerify';
+    const verifyUrl = `${VERIFY_BASE_URL}?${params.toString()}`;
+
+    const response = await fetch(verifyUrl);
+    if (!response.ok) {
+        throw new Error(`Eazypay verification failed with status ${response.status}`);
+    }
+    const text = await response.text();
+    const result = {};
+    new URLSearchParams(text).forEach((value, key) => {
+        result[key] = value;
+    });
+    return result;
+}
+
+
 // --- Modified eazypayReturn to handle both New and Renewal payments ---
 exports.eazypayReturn = async (req, res) => {
     console.log('\n📥 Payment callback received:');
@@ -74,11 +98,11 @@ exports.eazypayReturn = async (req, res) => {
     console.log(`Signature Match: ${signatureMatches}, Response Code: ${code} (${message})`);
 
     const respondToUser = (status) => {
-        const title = status === 'success' ? 'Payment Complete' : 'Payment Failed';	
-        const bodyText = status === 'success' 
-            ? 'Payment successful. You can close this window.' 
+        const title = status === 'success' ? 'Payment Complete' : 'Payment Failed';
+        const bodyText = status === 'success'
+            ? 'Payment successful. You can close this window.'
             : 'Payment failed. Please try again. You may close this window.';
-        
+
         res.send(`
             <!DOCTYPE html><html><head><title>${title}</title></head>
             <body>
@@ -102,7 +126,9 @@ exports.eazypayReturn = async (req, res) => {
         return respondToUser('failure');
     }
 
-    if (code === 'E000') { 
+    const isRenewal = !!license.renewalRequestDate; // Determine if it's a renewal
+
+    if (code === 'E000') {
         console.log('🎉 SUCCESS:', message);
         try {
             license.fees.paid = true;
@@ -112,14 +138,16 @@ exports.eazypayReturn = async (req, res) => {
             license.eazypayTransactionDate = req.body['Transaction Date'];
             license.eazypayTransactionAmount = req.body['Transaction Amount'];
             license.eazypayTransactionId = req.body['Unique Ref Number'];
+            license.lastpaymentReferenceNo = license.paymentReferenceNo; // Copy current ref to last ref
 
             if (license.status === 'payment_processing') {
                 license.status = 'pending'; // New application moves to pending review
                 console.log(`New License ${license.license_Id} updated to 'pending'.`);
             } else if (license.status === 'renewal_payment_processing') {
                 license.status = 'renewal_pending'; // Renewal moves to pending approval
+                console.log(`Renewal License ${license.license_Id} updated to 'renewal_pending'.`);
             }
-            
+
             await license.save();
             respondToUser('success');
         } catch (updateError) {
@@ -136,8 +164,24 @@ exports.eazypayReturn = async (req, res) => {
                 console.log(`New License ${license.license_Id} marked as 'rejected'.`);
             } else if (license.status === 'renewal_payment_processing') {
                 license.status = 'approved'; // Revert to approved status on renewal failure
-                license.rejectionReason = `Renewal payment failed: ${message}`; // Can be shown to user later
+                license.rejectionReason = `Renewal payment failed: ${message}`;
+                license.lastpaymentReferenceNo = license.paymentReferenceNo; // Copy current ref to last ref
                 console.log(`Renewing License ${license.license_Id} reverted to 'approved'.`);
+
+                // If payment failed for renewal, try to fetch last transaction details
+                if (license.lastpaymentReferenceNo) {
+                    try {
+                        const lastTransactionDetails = await fetchAndPopulateTransactionDetails(license.lastpaymentReferenceNo);
+                        license.eazypayUniqueRefNo = lastTransactionDetails.ezpaytranid || license.eazypayUniqueRefNo;
+                        license.eazypayPaymentMode = lastTransactionDetails.PaymentMode || license.eazypayPaymentMode;
+                        license.eazypayTransactionDate = lastTransactionDetails.trandate || license.eazypayTransactionDate;
+                        license.eazypayTransactionAmount = lastTransactionDetails.amount || license.eazypayTransactionAmount;
+                        license.eazypayTransactionId = lastTransactionDetails.ezpaytranid || license.eazypayTransactionId;
+                        console.log(`Fetched and updated last transaction details for ${license.license_Id}.`);
+                    } catch (fetchError) {
+                        console.error(`Error fetching last transaction details for ${license.license_Id}:`, fetchError);
+                    }
+                }
             }
 
             await license.save();
@@ -150,27 +194,90 @@ exports.eazypayReturn = async (req, res) => {
 };
 
 exports.verifyEazypayPayment = async (req, res) => {
+  try {
     const { pgreferenceno } = req.query;
-
     if (!pgreferenceno) {
-        return res.status(400).json({ error: 'Invalid or unknown reference number' });
+      return res.status(400).json({ error: 'Invalid or missing reference number' });
     }
 
-    const VERIFY_BASE_URL = 'https://eazypayuat.icicibank.com/EazyPGVerify';
-    const query = new URLSearchParams({
-        merchantid: process.env.EAZYPAY_MERCHANT_ID, // Use env var
-        pgreferenceno,
-        dstatus: 'Y'
-    });
+    // 1) Call ICICI Verify endpoint
+    const result = await fetchAndPopulateTransactionDetails(pgreferenceno);
+    console.log('Parsed verification result:', result);
 
-    const verifyUrl = `${VERIFY_BASE_URL}?${query.toString()}`;
-
-    try {
-        res.send(verifyUrl);
-    } catch (error) {
-        console.error('Verification error:', error);
-        res.status(500).send('Verification failed');
+    // 2) Determine simple state
+    let paymentState;
+    if (result.status === 'Success') {
+      paymentState = 'success';
+    } else if (result.status === 'RIP' || result.status === 'SIP') {
+      paymentState = 'processing';
+    } else {
+      paymentState = 'failed';
     }
+
+    // 3) Fetch the license record
+    const license = await DogLicense.findOne({ paymentReferenceNo: pgreferenceno });
+    if (!license) {
+      return res.status(404).json({ error: 'License not found for that reference' });
+    }
+
+    // 4) Are we handling a renewal?
+    const isRenewal = !!license.renewalRequestDate;
+
+    switch (paymentState) {
+      case 'success':
+        license.fees.paid = true;
+        license.fees.paymentDate = new Date();
+        license.eazypayUniqueRefNo = result.ezpaytranid;
+        license.eazypayPaymentMode = result.PaymentMode;
+        license.eazypayTransactionDate = result.trandate;
+        license.eazypayTransactionAmount = result.amount;
+        license.eazypayTransactionId = result.ezpaytranid;
+        license.lastpaymentReferenceNo = license.paymentReferenceNo; // Copy current ref to last ref
+
+        license.status = isRenewal ? 'renewal_pending' : 'pending';
+        console.log(`License ${license.license_Id} updated to '${license.status}' after successful verification.`);
+        break;
+
+      case 'processing':
+        license.status = isRenewal
+          ? 'renewal_payment_processing'
+          : 'payment_processing';
+        console.log(`License ${license.license_Id} updated to '${license.status}' after processing verification.`);
+        break;
+
+      case 'failed':
+      default:
+        license.status = isRenewal ? 'approved' : 'rejected'; // Revert to approved for failed renewal
+        license.rejectionDate = new Date();
+        license.rejectionReason = `Payment verification failed: ${result.status}`;
+        console.log(`License ${license.license_Id} updated to '${license.status}' after failed verification.`);
+        license.paymentReferenceNo = license.lastpaymentReferenceNo; 
+        if (isRenewal && license.lastpaymentReferenceNo) {
+             try {
+                const lastTransactionDetails = await fetchAndPopulateTransactionDetails(license.lastpaymentReferenceNo);
+                console.log('Fetched last transaction details:', lastTransactionDetails);
+                license.eazypayUniqueRefNo = lastTransactionDetails.ezpaytranid || license.eazypayUniqueRefNo;
+                license.eazypayPaymentMode = lastTransactionDetails.PaymentMode || license.eazypayPaymentMode;
+                license.eazypayTransactionDate = lastTransactionDetails.trandate || license.eazypayTransactionDate;
+                license.eazypayTransactionAmount = lastTransactionDetails.amount || license.eazypayTransactionAmount;
+                license.eazypayTransactionId = lastTransactionDetails.ezpaytranid || license.eazypayTransactionId;
+                console.log(`Fetched and updated last transaction details for ${license.license_Id} on failed renewal verification.`);
+            } catch (fetchError) {
+                console.error(`Error fetching last transaction details for ${license.license_Id} on failed renewal verification:`, fetchError);
+            }
+        }
+        break;
+    }
+     console.log('License status before saving:', license);
+    await license.save();
+    console.log(isRenewal ? 'Renewal' : 'New', 'License status updated:', license.status);
+    console.log(`License ${license.license_Id} updated to '${license.status}' after verification.`);
+    // 6) Return only the high‑level state
+    return res.json({ state: paymentState });
+  } catch (err) {
+    console.error('Verification error:', err);
+    return res.status(500).json({ error: 'Verification failed', details: err.message });
+  }
 };
 exports.generateEazypayUrl = (req, res) => {
     try {

@@ -166,6 +166,7 @@ exports.applyLicense = async (req, res) => {
         paymentDate: null
       },
       paymentReferenceNo: uniqueRefNo,
+      lastpaymentReferenceNo:null
     });
     const savedLicense = await newLicense.save({ session });
 

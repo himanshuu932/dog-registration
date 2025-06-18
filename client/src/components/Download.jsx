@@ -15,7 +15,8 @@ import {
   Eye,
   ChevronLeft,
   ChevronDown, // For dropdown indicator
-  Filter // For mobile filter button
+  Filter, // For mobile filter button
+  RefreshCcw // For refresh/re-check payment status
 } from 'lucide-react';
 
 const formatDate = (dateString) => {
@@ -32,7 +33,8 @@ const UserStatusBadge = ({ status, isMobile, languageType = 'en' }) => {
       rejected: 'Rejected',
       provisional: 'Provisional',
       'provisional approved': 'Provisional Approved',
-      'provisional pending': 'Provisional Pending'
+      'provisional pending': 'Provisional Pending',
+      'payment_processing': 'Payment Processing' // Added for payment status
     },
     hi: {
       approved: 'स्वीकृत',
@@ -40,7 +42,8 @@ const UserStatusBadge = ({ status, isMobile, languageType = 'en' }) => {
       rejected: 'अस्वीकृत',
       provisional: 'अस्थायी',
       'provisional approved': 'अस्थायी स्वीकृत',
-      'provisional pending': 'अस्थायी लंबित'
+      'provisional pending': 'अस्थायी लंबित',
+      'payment_processing': 'भुगतान प्रक्रियाधीन' // Added for payment status
     }
   };
 
@@ -74,6 +77,10 @@ const UserStatusBadge = ({ status, isMobile, languageType = 'en' }) => {
     case 'provisional pending':
         badgeClass += " user-dl-status-pending";
         Icon = Clock;
+        break;
+    case 'payment_processing': // New case for payment processing
+        badgeClass += " user-dl-status-payment-processing";
+        Icon = Clock; // Or a specific payment icon if available
         break;
     default:
       badgeClass += " user-dl-status-default";
@@ -110,10 +117,10 @@ const VET_DETAILS = {
 };
 
 const renderCertificateView = (lic, downloadPDF, languageType = 'en') => {
-  const currentDateOnCertificate = new Date().toLocaleDateString('en-GB'); 
-  
-  const expiryDate = lic.isProvisional ? 
-    formatDate(lic.provisionalExpiryDate) : 
+  const currentDateOnCertificate = new Date().toLocaleDateString('en-GB');
+
+  const expiryDate = lic.isProvisional ?
+    formatDate(lic.provisionalExpiryDate) :
     lic.pet?.dateOfVaccination ?
       new Date(new Date(lic.pet.dateOfVaccination).setFullYear(
         new Date(lic.pet.dateOfVaccination).getFullYear() + 1
@@ -159,7 +166,8 @@ const renderCertificateView = (lic, downloadPDF, languageType = 'en') => {
         'Keeping exotic or wild animals without proper authorization is prohibited. / उचित प्राधिकरण के बिना विदेशी या जंगली जानवरों को रखना प्रतिबंधित है।',
         'Cruelty to animals is strictly prohibited and punishable by law. / जानवरों के प्रति क्रूरता सख्त वर्जित है और कानून द्वारा दंडनीय है।',
         'Noise pollution caused by pets, especially barking, must be controlled. / पालतू जानवरों द्वारा उत्पन्न ध्वनि प्रदूषण, विशेष रूप से भौंकना, नियंत्रित किया जाना चाहिए।',
-      ]
+      ],
+      paymentReferenceNoLabel: 'Payment Reference No. / भुगतान संदर्भ संख्या' // Added translation
     },
     hi: {
       orgNameEn: 'Nagar Nigam Gorakhpur',
@@ -199,8 +207,9 @@ const renderCertificateView = (lic, downloadPDF, languageType = 'en') => {
         'स्वामित्व या पते में कोई भी बदलाव प्राधिकरण को सूचित किया जाना चाहिए। / Any change in ownership or address must be reported to the authority.',
         'उचित प्राधिकरण के बिना विदेशी या जंगली जानवरों को रखना प्रतिबंधित है। / Keeping exotic or wild animals without proper authorization is prohibited.',
         'जानवरों के प्रति क्रूरता सख्त वर्जित है और कानून द्वारा दंडनीय है। / Cruelty to animals is strictly prohibited and punishable by law.',
-        'पालतू जानवरों द्वारा उत्पन्न ध्वनि प्रदूषण, विशेष रूप से भौंकना, नियंत्रित किया जाना चाहिए। / Noise pollution caused by pets, especially barking, must be controlled.',
-      ]
+        'पालतू जानवरों द्वारा उत्पन्न ध्वनि प्रदूषण, विशेष रूप से भौंकना, नियंत्रित किया जाना चाहिए। / Noise pollution caused by pets, especially barking, controlled.',
+      ],
+      paymentReferenceNoLabel: 'भुगतान संदर्भ संख्या / Payment Reference No.' // Added translation
     }
   };
 
@@ -210,7 +219,7 @@ const renderCertificateView = (lic, downloadPDF, languageType = 'en') => {
   const certTitleHi = lic.isProvisional ? currentCertText.provisionalCertificateTitleHi : currentCertText.certificateTitleHi;
 
   return (
-    <div className="user-dl-certificate-display-area"> 
+    <div className="user-dl-certificate-display-area">
       <div id={`pdf-${lic._id}`} className="user-dl-pdf-layout">
         <div className="user-dl-outer-pdf-border">
           <div className="user-dl-pdf-border">
@@ -235,7 +244,7 @@ const renderCertificateView = (lic, downloadPDF, languageType = 'en') => {
               <h2>{certTitleEn}</h2>
               <h3>{certTitleHi}</h3>
             </div>
-            
+
             <div className="user-dl-pdf-body">
               <div className="user-dl-pdf-photo-section">
                 <div className="user-dl-pdf-info-block">
@@ -301,6 +310,11 @@ const renderCertificateView = (lic, downloadPDF, languageType = 'en') => {
                   <div className="user-dl-pdf-details-row"><div className="user-dl-pdf-details-label">फोन नंबर / Phone Number</div><div className="user-dl-pdf-details-value">: {lic.phoneNumber || "N/A"}</div></div>
                   <div className="user-dl-pdf-details-row"><div className="user-dl-pdf-details-label">{`जानवरों की संख्या / No. of ${getAnimalLabel(lic.animalType)}s`}</div><div className="user-dl-pdf-details-value">:{lic.numberOfAnimals || "N/A"}</div></div>
                   <div className="user-dl-pdf-details-row"><div className="user-dl-pdf-details-label">घर का क्षेत्रफल / House Area</div><div className="user-dl-pdf-details-value">: {lic.totalHouseArea ? `${lic.totalHouseArea} sq meter` : "N/A"}</div></div>
+                  {/* Added Payment Reference Number field */}
+                  <div className="user-dl-pdf-details-row">
+                    <div className="user-dl-pdf-details-label">{currentCertText.paymentReferenceNoLabel}</div>
+                    <div className="user-dl-pdf-details-value">: {lic.paymentReferenceNo || "N/A"}</div>
+                  </div>
                 </div>
               </div>
 
@@ -325,7 +339,7 @@ const renderCertificateView = (lic, downloadPDF, languageType = 'en') => {
               </div>
               {lic.isProvisional && (
               <div className="user-dl-pdf-provisional-notice-banner">
-                <AlertCircle size={14} /> 
+                <AlertCircle size={14} />
                 <span>{currentCertText.provisionalNoticeBanner}</span>
               </div>
             )}
@@ -336,8 +350,8 @@ const renderCertificateView = (lic, downloadPDF, languageType = 'en') => {
             <div className="user-dl-pdf-contact-footer">
              <span>{currentCertText.dateLabel} {currentDateOnCertificate}</span>
             </div>
-          </div> 
-        </div> 
+          </div>
+        </div>
 
         {/* New section for Rules and Regulations - Second Page */}
         <div className="user-dl-outer-pdf-border user-dl-pdf-rules-page">
@@ -371,7 +385,7 @@ const renderCertificateView = (lic, downloadPDF, languageType = 'en') => {
             </div>
           </div>
         </div>
-      </div> 
+      </div>
 
       {(lic.status === 'approved' || lic.isProvisional) && (
         <button
@@ -407,7 +421,7 @@ const renderCertificateView = (lic, downloadPDF, languageType = 'en') => {
           </div>
         </div>
       )}
-    </div> 
+    </div>
   );
 };
 
@@ -430,27 +444,29 @@ const DogLicenseDownload = ({ languageType = 'en' }) => {
       pageTitle: 'My Pet License Applications',
       filterLabel: 'Filter by:',
       filterDropdownLabel: 'Filter Status',
-      filterButtons: { all: 'All', approved: 'Approved', pending: 'Pending', rejected: 'Rejected', provisional: 'Provisional' },
+      filterButtons: { all: 'All', approved: 'Approved', pending: 'Pending', rejected: 'Rejected', provisional: 'Provisional', payment_processing: 'Payment Processing' }, // Added payment_processing
       backToList: 'Back to Applications List',
       loadingData: 'Loading license data…',
-      tableHeaders: { regNo: 'Reg. No', owner: 'Owner', petName: 'Pet Name', animalType: 'Animal Type', status: 'Status', appliedDate: 'Applied Date', view: 'View/Download' },
-      emptyState: { noApplications: 'You have not applied for any licenses yet.', noFiltered: (status) => `No "${status}" licenses found.`, applyButton: 'Apply for a New License' }
+      tableHeaders: { regNo: 'Reg. No', owner: 'Owner', petName: 'Pet Name', animalType: 'Animal Type', payRefNo: 'Pay Ref No.', status: 'Status', appliedDate: 'Applied Date', view: 'View/Download' }, // Added payRefNo
+      emptyState: { noApplications: 'You have not applied for any licenses yet.', noFiltered: (status) => `No "${status}" licenses found.`, applyButton: 'Apply for a New License' },
+      verifyPaymentButton: 'Verify Payment Status' // Added translation for the button
     },
     hi: {
       pageTitle: 'मेरे पालतू पशु लाइसेंस आवेदन',
       filterLabel: 'फ़िल्टर करें:',
       filterDropdownLabel: 'फ़िल्टर स्थिति',
-      filterButtons: { all: 'सभी', approved: 'स्वीकृत', pending: 'लंबित', rejected: 'अस्वीकृत', provisional: 'अस्थायी' },
+      filterButtons: { all: 'सभी', approved: 'स्वीकृत', pending: 'लंबित', rejected: 'अस्वीकृत', provisional: 'अस्थायी', payment_processing: 'भुगतान प्रक्रियाधीन' }, // Added payment_processing
       backToList: 'आवेदन सूची पर वापस जाएं',
       loadingData: 'लाइसेंस डेटा लोड हो रहा है…',
-      tableHeaders: { regNo: 'पंजीकरण संख्या', owner: 'मालिक', petName: 'पशु का नाम', animalType: 'पशु का प्रकार', status: 'स्थिति', appliedDate: 'आवेदन की तिथि', view: 'देखें/डाउनलोड करें' },
-      emptyState: { noApplications: 'आपने अभी तक किसी भी लाइसेंस के लिए आवेदन नहीं किया है।', noFiltered: (status) => `कोई भी "${status}" लाइसेंस नहीं मिला।`, applyButton: 'नए लाइसेंस के लिए आवेदन करें' }
+      tableHeaders: { regNo: 'पंजीकरण संख्या', owner: 'मालिक', petName: 'पशु का नाम', animalType: 'पशु का प्रकार', payRefNo: 'भुगतान संदर्भ संख्या', status: 'स्थिति', appliedDate: 'आवेदन की तिथि', view: 'देखें/डाउनलोड करें' }, // Added payRefNo
+      emptyState: { noApplications: 'आपने अभी तक किसी भी लाइसेंस के लिए आवेदन नहीं किया है।', noFiltered: (status) => `कोई भी "${status}" लाइसेंस नहीं मिला।`, applyButton: 'नए लाइसेंस के लिए आवेदन करें' },
+      verifyPaymentButton: 'भुगतान स्थिति सत्यापित करें' // Added translation for the button
     }
   };
   const currentText = textContent[languageType] || textContent.en;
 
   const getFilterButtonText = (statusKey) => currentText.filterButtons[statusKey] || statusKey;
-  
+
   const getTranslatedFilterStatus = (englishStatus) => {
     const statusKey = Object.keys(textContent.en.filterButtons).find(key => textContent.en.filterButtons[key] === englishStatus);
     if (statusKey) {
@@ -479,7 +495,7 @@ const DogLicenseDownload = ({ languageType = 'en' }) => {
   }, [filterDropdownRef]);
 
 
-  useEffect(() => {
+  const fetchLicenses = () => {
     setLoading(true);
     fetch(`${backend}/api/license/user`, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => res.ok ? res.json() : res.json().then(err => { throw new Error(err.message || 'Failed to fetch licenses'); }))
@@ -492,6 +508,10 @@ const DogLicenseDownload = ({ languageType = 'en' }) => {
         setLicenses([]);
       })
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchLicenses();
   }, [backend, token]);
 
   const toggleExpanded = (id) => setExpandedLicenseId(prevId => (prevId === id ? null : id));
@@ -509,7 +529,7 @@ const DogLicenseDownload = ({ languageType = 'en' }) => {
       margin: 0,
       filename: `${getAnimalLabel(animalTypeForName)}_License_${petName.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`,
       image: { type: 'jpeg', quality: 0.95 },
-      html2canvas: { 
+      html2canvas: {
         scale: 2,
         useCORS: true,
         backgroundColor: '#ffffff',
@@ -522,7 +542,44 @@ const DogLicenseDownload = ({ languageType = 'en' }) => {
         .catch(error => console.error("PDF generation failed:", error));
     }, 100);
   };
-  
+
+  const handleVerifyPayment = async (licenseId, paymentReferenceNo) => {
+    if (!paymentReferenceNo) {
+      alert(languageType === 'en' ? 'Payment reference number is not available.' : 'भुगतान संदर्भ संख्या उपलब्ध नहीं है।');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      // Construct the URL with pgreferenceno as a query parameter
+      const verificationUrl = `${backend}/verify-eazypay-payment?pgreferenceno=${paymentReferenceNo}`;
+
+      const response = await fetch(verificationUrl, {
+        method: 'GET', // Changed to GET
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        // Removed body as it's a GET request
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert(languageType === 'en' ? data.message || 'Payment verification successful!' : data.message || 'भुगतान सत्यापन सफल रहा!');
+        console.log("Payment verification successful:", data);
+        fetchLicenses(); // Refresh the list to show updated status
+      } else {
+        alert(languageType === 'en' ? data.message || 'Payment verification failed.' : data.message || 'भुगतान सत्यापन विफल रहा।');
+      }
+    } catch (error) {
+      console.error("Error verifying payment:", error);
+      alert(languageType === 'en' ? 'An error occurred during payment verification.' : 'भुगतान सत्यापन के दौरान एक त्रुटि हुई।');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const selectedLicense = licenses.find(lic => lic._id === expandedLicenseId);
 
   const filteredLicenses = licenses.filter(license => {
@@ -544,7 +601,7 @@ const DogLicenseDownload = ({ languageType = 'en' }) => {
       </main>
     );
   }
-  
+
   if (selectedLicense) {
     return (
       <main className="user-dl-page-container user-dl-certificate-focused-view">
@@ -568,11 +625,11 @@ const DogLicenseDownload = ({ languageType = 'en' }) => {
     <main className="user-dl-page-container">
       <header className="user-dl-page-header">
         <h1 className="user-dl-main-title">{currentText.pageTitle}</h1>
-        
+
         {isMobile ? (
           <div className="user-dl-filter-dropdown-container" ref={filterDropdownRef}>
-            <button 
-              className="user-dl-filter-dropdown-button" 
+            <button
+              className="user-dl-filter-dropdown-button"
               onClick={() => setShowFilterDropdown(!showFilterDropdown)}
             >
               <Filter size={18} />
@@ -582,8 +639,8 @@ const DogLicenseDownload = ({ languageType = 'en' }) => {
             {showFilterDropdown && (
               <ul className="user-dl-filter-dropdown-list">
                 {Object.keys(currentText.filterButtons).map(key => (
-                  <li 
-                    key={key} 
+                  <li
+                    key={key}
                     onClick={() => {
                       setFilterStatus(textContent.en.filterButtons[key]);
                       setShowFilterDropdown(false);
@@ -623,6 +680,7 @@ const DogLicenseDownload = ({ languageType = 'en' }) => {
                 <th>{currentText.tableHeaders.owner}</th>
                 {!isMobile && <th>{currentText.tableHeaders.petName}</th>}
                 {!isMobile && <th>{currentText.tableHeaders.animalType}</th>}
+                <th>{currentText.tableHeaders.payRefNo}</th> {/* Updated table header */}
                 <th>{currentText.tableHeaders.status}</th>
                 {!isMobile && <th>{currentText.tableHeaders.appliedDate}</th>}
                 {!isMobile && <th>{currentText.tableHeaders.view}</th>}
@@ -635,15 +693,34 @@ const DogLicenseDownload = ({ languageType = 'en' }) => {
                   <td><div className="user-dl-table-cell-content">{!isMobile && <User size={16} className="user-dl-cell-icon-style" />} {license.fullName}</div></td>
                   {!isMobile && <td><div className="user-dl-table-cell-content"><Dog size={16} className="user-dl-cell-icon-style" /> {license.pet?.name || "N/A"}</div></td>}
                   {!isMobile && <td><div className="user-dl-table-cell-content">{getAnimalLabel(license.animalType) || "N/A"}</div></td>}
+                  <td>
+                    <div className="user-dl-table-cell-content">
+                      {license.paymentReferenceNo || "N/A"}
+                      {/* Button for payment_processing status */}
+                      {license.status === 'payment_processing' && license.paymentReferenceNo && (
+                        <button
+                          className="user-dl-verify-payment-button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleVerifyPayment(license._id, license.paymentReferenceNo);
+                          }}
+                          title={currentText.verifyPaymentButton}
+                        >
+                          <RefreshCcw size={14} />
+                          {isMobile ? '' : <span>{currentText.verifyPaymentButton}</span>}
+                        </button>
+                      )}
+                    </div>
+                  </td>
                   <td><div className="user-dl-table-cell-content"><UserStatusBadge status={license.isProvisional ? `provisional ${license.status}` : license.status} isMobile={isMobile} languageType={languageType} /></div></td>
-                  {!isMobile && <td><div className="user-dl-table-cell-content"><Calendar size={16} className="user-dl-cell-icon-style" /> {formatDate(license.createdAt)}</div></td>}
+                {!isMobile && <td><div className="user-dl-table-cell-content"><Calendar size={16} className="user-dl-cell-icon-style" /> {formatDate(license.createdAt)}</div></td>}
                   {!isMobile && (
                     <td>
                       <button
                         className="user-dl-table-view-button"
                         onClick={(e) => { e.stopPropagation(); toggleExpanded(license._id); }}
                       >
-                        <Eye size={16} className="user-dl-button-icon-style" /> 
+                        <Eye size={16} className="user-dl-button-icon-style" />
                          <span>{currentText.tableHeaders.view.split('/')[0]}</span>
                       </button>
                     </td>

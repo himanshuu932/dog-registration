@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './styles/RenewRegistration.css';
-import { CheckCircle, AlertCircle, Calendar, FileText, PawPrint, User, Eye, ChevronLeft, XCircle, Clock, RefreshCw } from 'lucide-react';
+import { CheckCircle, AlertCircle, Calendar, FileText, PawPrint, User, Eye, ChevronLeft, XCircle, Clock, RefreshCw, RefreshCcw } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -17,13 +17,15 @@ const StatusBadge = ({ status, isMobile, languageType = 'en' }) => {
       approved: 'Approved',
       renewal_pending: 'Renewal Requested',
       pending: 'Pending Review',
-      rejected: 'Rejected'
+      rejected: 'Rejected',
+      payment_processing: 'Payment Processing'
     },
     hi: {
       approved: 'स्वीकृत',
       renewal_pending: 'नवीनीकरण अनुरोधित',
       pending: 'समीक्षाधीन',
-      rejected: 'अस्वीकृत'
+      rejected: 'अस्वीकृत',
+      payment_processing: 'भुगतान प्रक्रियाधीन'
     }
   };
 
@@ -55,6 +57,11 @@ const StatusBadge = ({ status, isMobile, languageType = 'en' }) => {
       Icon = XCircle;
       iconColor = 'var(--user-rr-danger-text)';
       break;
+    case 'payment_processing':
+        badgeClass += " user-rr-status-payment-processing";
+        Icon = Clock;
+        iconColor = 'var(--user-rr-info-text)'; // Or another suitable color
+        break;
     default:
       badgeClass += " user-rr-status-default";
       iconColor = 'var(--user-rr-gray-dark)';
@@ -329,7 +336,7 @@ const RenewRegistration = ({ languageType = 'en' }) => {
         loadingLicenses: 'Loading your licenses…',
         fetchError: 'Error fetching your licenses. Please try again later.',
         noLicenses: 'You have no licenses eligible for renewal or viewing.',
-        tableHeaders: { regNo: 'Reg. No', animalType: 'Animal Type', petName: 'Pet Name', lastUpdate: 'Last Update', status: 'Status', action: 'Action', view: 'View' },
+        tableHeaders: { regNo: 'Reg. No', animalType: 'Animal Type', petName: 'Pet Name', lastUpdate: 'Last Update', payRef: 'Payment Ref No', status: 'Status', action: 'Action', view: 'View' },
         tableActions: { renew: 'Renew', submitting: 'Processing...', view: 'View', renewalRequested: 'Requested' },
         renewalConfirm: (licenseNum) => `Are you sure you want to renew license ${licenseNum}?`,
         orgNameEn: 'Nagar Nigam Gorakhpur',
@@ -346,7 +353,7 @@ const RenewRegistration = ({ languageType = 'en' }) => {
         qrCodeLabel: 'QR Code',
         stampLabel: 'STAMP',
         renewalPendingNotice: 'Your renewal request has been submitted and is pending approval.',
-        rejectedNoticeText: (rejectionDate) => `Your application has been rejected on ${formatDate(rejectionDate)}.`,
+        rejectedNoticeText: (rejectionDate) => `Your application was rejected on ${formatDate(rejectionDate)}.`,
         reasonLabel: 'Reason:',
         contactSupport: 'Please contact support for more information.',
         animalTypeLabelBilingual: 'Animal Type / पशु का प्रकार',
@@ -378,8 +385,70 @@ const RenewRegistration = ({ languageType = 'en' }) => {
         failedToLoadCaptcha: "Failed to load CAPTCHA. Please refresh.",
         refreshCaptcha: "Refresh CAPTCHA",
         renewalSubmissionInProgress: "Verifying...",
+        verifyPaymentButton: 'Verify Payment Status'
     },
-    hi: { /* Your hi translations */ }
+    hi: {
+        pageTitle: 'पालतू पशु लाइसेंस नवीनीकृत करें',
+        backToList: 'लाइसेंस पर वापस जाएं',
+        renewalSuccessMessage: 'आपका नवीनीकरण अनुरोध व्यवस्थापक की मंजूरी के लिए जमा कर दिया गया है। प्रसंस्करण पूरा होने पर आपको सूचित किया जाएगा।',
+        renewalRequestButton: 'लाइसेंस पर वापस जाएं',
+        loadingLicenses: 'आपके लाइसेंस लोड हो रहे हैं…',
+        fetchError: 'आपके लाइसेंस प्राप्त करने में त्रुटि। कृपया बाद में पुनः प्रयास करें।',
+        noLicenses: 'आपके पास नवीनीकरण या देखने के लिए कोई लाइसेंस योग्य नहीं है।',
+        tableHeaders: { regNo: 'पंजी. संख्या', animalType: 'पशु का प्रकार', petName: 'पालतू जानवर का नाम', lastUpdate: 'अंतिम अद्यतन', payRef: 'भुगतान संदर्भ संख्या', status: 'स्थिति', action: 'कार्यवाही', view: 'देखें' },
+        tableActions: { renew: 'नवीनीकृत करें', submitting: 'जमा हो रहा है...', view: 'देखें', renewalRequested: 'अनुरोधित' },
+        renewalConfirm: (licenseNum) => `क्या आप वाकई लाइसेंस ${licenseNum} के नवीनीकरण का अनुरोध करना चाहते हैं? इस कार्रवाई के लिए कैप्चा सत्यापन आवश्यक है।`,
+        orgNameEn: 'Nagar Nigam Gorakhpur',
+        orgNameHi: 'नगर निगम गोरखपुर',
+        certificateTitleEn: 'PET LICENSE CERTIFICATE',
+        certificateTitleHi: 'पालतू पशु पंजीकरण प्रमाण पत्र',
+        certificateTitleEnP: 'PROVISIONAL PET LICENSE CERTIFICATE',
+        certificateTitleHiP: 'अस्थायी पालतू पशु पंजीकरण प्रमाण पत्र',
+        dateLabel: 'दिनांक:',
+        photoPlaceholder: 'पालतू जानवर की तस्वीर',
+        declaration: <>मैं घोषणा करता/करती हूँ कि उपरोक्त दी गई जानकारी मेरी जानकारी के अनुसार सत्य है। <b>/</b> I declare that the information provided above is true to the best of my knowledge.</>,
+        applicantSignature: 'आवेदक के हस्ताक्षर / Applicant\'s Signature',
+        issuingAuthority: 'जारीकर्ता अधिकारी / Issuing Authority',
+        qrCodeLabel: 'क्यूआर कोड',
+        stampLabel: 'मुहर',
+        renewalPendingNotice: 'आपका नवीनीकरण अनुरोध जमा कर दिया गया है और अनुमोदन के लिए लंबित है।',
+        rejectedNoticeText: (rejectionDate) => `आपका आवेदन ${formatDate(rejectionDate)} को अस्वीकृत कर दिया गया है।`,
+        reasonLabel: 'कारण:',
+        contactSupport: 'अधिक जानकारी के लिए कृपया सहायता से संपर्क करें।',
+        animalTypeLabelBilingual: 'पशु का प्रकार / Animal Type',
+        petNameLabel: 'पालतू जानवर का नाम / Pet Name',
+        breedLabel: 'नस्ल / Breed',
+        categoryLabel: 'वर्ग / Category',
+        colorLabel: 'रंग / Color',
+        ageLabel: 'आयु / Age',
+        vaccinationDateLabel: 'टीकाकरण की तारीख / Vaccination Date',
+        genderLabel: 'लिंग / Gender',
+        vaccinatedLabel: 'टीकाकरण / Vaccinated',
+        vaccinationCertificateLabel: 'टीकाकरण प्रमाणपत्र / Vaccination Certificate',
+        microchippedLabel: 'माइक्रोचिप / माइक्रोचिप',
+        nextVaccinationLabel: 'अगला टीकाकरण / Next Vaccination',
+        ownerDetailsTitle: 'मालिक का विवरण / Owner Details',
+        addressLabel: 'पता / Address',
+        phoneNumberLabel: 'फोन नंबर / फोन नंबर',
+        numberOfAnimalsLabel: (animalType) => `${animalType} की संख्या / No. of ${animalType}s`,
+        houseAreaLabel: 'घर का क्षेत्रफल / House Area',
+        animalDetailsTitleBilingual: (animalType) => `${animalType} का विवरण / ${animalType} Details`,
+        contactPhone: 'N/A',
+        contactEmail: 'info@example.org',
+        contactWebsite: 'www.example.org',
+        // New for Modal and CAPTCHA
+        modalTitle: "नवीनीकरण अनुरोध की पुष्टि करें",
+        modalConfirmButton: "पुष्टि करें और नवीनीकृत करें",
+        modalCancelButton: "रद्द करें",
+        enterCaptcha: "कैप्चा दर्ज करें",
+        invalidCaptcha: "अमान्य कैप्चा। कृपया पुन प्रयास करें।",
+        failedToLoadCaptcha: "कैप्चा लोड करने में विफल। कृपया रीफ़्रेश करें।",
+        refreshCaptcha: "कैप्चा रीफ़्रेश करें",
+        captchaVerifiedProceeding: "कैप्चा सत्यापित। नवीनीकरण सबमिट किया जा रहा है...",
+        renewalSubmissionInProgress: "सबमिट हो रहा है...",
+        captchaVerificationFailed: "कैप्चा सत्यापन विफल रहा।",
+        verifyPaymentButton: 'भुगतान स्थिति सत्यापित करें'
+    }
   };
   const currentText = textContent[languageType] || textContent.en;
 
@@ -473,7 +542,7 @@ const RenewRegistration = ({ languageType = 'en' }) => {
 
     setIsConfirmingRenewal(true);
     setCaptchaError("");
-    
+
     try {
       // 1. Verify CAPTCHA first
       const captchaRes = await axios.post(`${backendUrl}/api/captcha/verify-captcha`, { captchaInput, captchaToken });
@@ -483,12 +552,12 @@ const RenewRegistration = ({ languageType = 'en' }) => {
         setIsConfirmingRenewal(false);
         return;
       }
-      
+
       // 2. If CAPTCHA is good, close modal and call renewal initiation endpoint
       handleCloseConfirmModal();
       toast.info("CAPTCHA verified. Processing renewal...");
 
-      const response = await axios.post(`${backendUrl}/api/license/renew-registration/request`, 
+      const response = await axios.post(`${backendUrl}/api/license/renew-registration/request`,
         { licenseNumber: selectedLicenseForRenewal.number },
         { headers: { 'Authorization': `Bearer ${authToken}` } }
       );
@@ -510,6 +579,42 @@ const RenewRegistration = ({ languageType = 'en' }) => {
       setIsConfirmingRenewal(false);
     }
   };
+
+  const handleVerifyPayment = async (licenseId, paymentReferenceNo) => {
+    if (!paymentReferenceNo) {
+      alert(languageType === 'en' ? 'Payment reference number is not available.' : 'भुगतान संदर्भ संख्या उपलब्ध नहीं है।');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      // Construct the URL with pgreferenceno as a query parameter
+      const verificationUrl = `${backendUrl}/verify-eazypay-payment?pgreferenceno=${paymentReferenceNo}`;
+
+      const response = await fetch(verificationUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authToken}`
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success(languageType === 'en' ? data.message || 'Payment verification successful!' : data.message || 'भुगतान सत्यापन सफल रहा!');
+        fetchUserLicenses(); // Refresh the list to show updated status
+      } else {
+        toast.error(languageType === 'en' ? data.message || 'Payment verification failed.' : data.message || 'भुगतान सत्यापन विफल रहा।');
+      }
+    } catch (error) {
+      console.error("Error verifying payment:", error);
+      toast.error(languageType === 'en' ? 'An error occurred during payment verification.' : 'भुगतान सत्यापन के दौरान एक त्रुटि हुई।');
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const toggleViewLicense = (id) => {
     setViewingLicenseId(prevId => prevId === id ? null : id);
@@ -556,6 +661,7 @@ const RenewRegistration = ({ languageType = 'en' }) => {
                       {!isMobile && <th>{currentText.tableHeaders.animalType}</th>}
                       {!isMobile && <th>{currentText.tableHeaders.petName}</th>}
                       {!isMobile && <th>{currentText.tableHeaders.lastUpdate}</th>}
+                      <th>{currentText.tableHeaders.payRef}</th>
                       <th>{currentText.tableHeaders.status}</th>
                       <th>{currentText.tableHeaders.action}</th>
                       {!isMobile && <th>{currentText.tableHeaders.view}</th>}
@@ -568,6 +674,25 @@ const RenewRegistration = ({ languageType = 'en' }) => {
                         {!isMobile && <td><div className="user-rr-table-cell-content">{getAnimalLabel(license.animalType) || "N/A"}</div></td>}
                         {!isMobile && <td><div className="user-rr-table-cell-content"><PawPrint size={16} className="user-rr-cell-icon-style" /> {license.pet?.name || "N/A"}</div></td>}
                         {!isMobile && <td><div className="user-rr-table-cell-content"><Calendar size={16} className="user-rr-cell-icon-style" /> {formatDate(license.updatedAt || license.createdAt)}</div></td>}
+                         <td>
+                            <div className="user-rr-table-cell-content">
+                                {license.paymentReferenceNo || "N/A"}
+                                {/* Button for payment_processing status */}
+                                {(license.status === 'renewal_payment_processing') && license.paymentReferenceNo && (
+                                    <button
+                                        className="user-rr-verify-payment-button"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleVerifyPayment(license._id, license.paymentReferenceNo);
+                                        }}
+                                        title={currentText.verifyPaymentButton}
+                                    >
+                                        <RefreshCcw size={14} />
+                                        {isMobile ? '' : <span>{currentText.verifyPaymentButton}</span>}
+                                    </button>
+                                )}
+                            </div>
+                        </td>
                         <td><div className="user-rr-table-cell-content"><StatusBadge status={license.status} isMobile={isMobile} languageType={languageType} /></div></td>
                         <td>
                           <div className="user-rr-table-cell-content">

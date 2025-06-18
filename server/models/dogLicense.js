@@ -65,6 +65,7 @@ const dogLicenseSchema = new mongoose.Schema(
 
     // Fields for payment details
     paymentReferenceNo: { type: String, unique: true, sparse: true },
+    lastpaymentReferenceNo: { type: String, unique: true, sparse: true },
     eazypayUniqueRefNo: String,
     eazypayPaymentMode: String,
     eazypayTransactionDate: String,

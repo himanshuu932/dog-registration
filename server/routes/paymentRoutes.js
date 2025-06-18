@@ -5,7 +5,7 @@ const paymentController = require('../controllers/paymentController'); // Import
 
 // Define Eazypay related routes
 router.get('/generate-eazypay-url', paymentController.generateEazypayUrl); //
-router.post('/eazypay-return', paymentController.eazypayReturn); //
+router.post('/eazypay-return6', paymentController.eazypayReturn); //
 router.get('/verify-eazypay-payment', paymentController.verifyEazypayPayment); //
 
 module.exports = router; //
