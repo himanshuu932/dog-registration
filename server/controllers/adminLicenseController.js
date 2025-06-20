@@ -1,6 +1,7 @@
 // controllers/adminLicenseController.js
 const DogLicense = require("../models/dogLicense");
 const LicenseID = require("../models/licenseId");
+const User = require("../models/user"); 
 
 exports.getAllLicenses = async (req, res) => {
   try {
@@ -55,25 +56,40 @@ exports.approveLicense = async (req, res) => {
 };
 
 
+
 exports.rejectLicense = async (req, res) => {
   try {
-    const { reason } = req.body; // Get reason from request body
+    const { reason } = req.body;
+
     const license = await DogLicense.findByIdAndUpdate(
-      req.params.id, 
-      { 
+      req.params.id,
+      {
         status: "rejected",
         rejectionReason: reason,
         rejectionDate: new Date()
-      }, 
+      },
       { new: true }
     );
+
     if (!license) return res.status(404).json({ message: "License not found" });
+
+    // ➕ Add credit refund logic
+    if (license.fees?.paid && license.owner) {
+      const user = await User.findById(license.owner);
+      if (user) {
+        user.credits = (user.credits || 0) + Number(license.fees.total || 0);
+        await user.save();
+        console.log(`✅ Rs.${license.fees.total} credited back to user ${user._id}`);
+      }
+    }
+
     res.json({ message: "License rejected", license });
   } catch (error) {
     console.error("Reject error:", error);
     res.status(500).json({ message: "Failed to reject license" });
   }
 };
+
 
 
 exports.createLicenseByAdmin = async (req, res) => {
@@ -190,41 +206,35 @@ exports.approveRenewal = async (req, res) => {
 exports.rejectRenewal = async (req, res) => {
   try {
     const { licenseId, reason } = req.body;
-    
+
     if (!licenseId) {
       return res.status(400).json({ message: "License ID is required" });
     }
 
-    // Check if user is admin
-    // if (!req.user.isAdmin) {
-    //   return res.status(403).json({ message: "Not authorized" });
-    // }
-
     const license = await DogLicense.findById(licenseId);
-
-    if (!license) {
-      return res.status(404).json({ message: "License not found" });
-    }
+    if (!license) return res.status(404).json({ message: "License not found" });
 
     if (license.status !== 'renewal_pending') {
       return res.status(400).json({ message: "No pending renewal for this license" });
     }
 
-    // Update the license status to rejected
-    const updatedLicense = await DogLicense.findByIdAndUpdate(
-      license._id,
-      { 
-        status: 'rejected',
-        rejectionReason: reason,
-        rejectionDate: new Date()
-      },
-      { new: true }
-    );
+    // ❌ Update license status
+    license.status = 'rejected';
+    license.rejectionReason = reason;
+    license.rejectionDate = new Date();
 
-    res.json({ 
-      message: "License renewal rejected",
-      license: updatedLicense
-    });
+    // ➕ Refund fee to user credit
+    if (license.fees?.paid && license.owner) {
+      const user = await User.findById(license.owner);
+      if (user) {
+        user.credits = (user.credits || 0) + Number(license.fees.total || 0);
+        await user.save();
+        console.log(`✅ Renewal fee Rs.${license.fees.total} credited to user ${user._id}`);
+      }
+    }
+
+    await license.save();
+    res.json({ message: "License renewal rejected", license });
   } catch (error) {
     console.error("License renewal rejection error:", error);
     res.status(500).json({ message: "Failed to reject renewal" });

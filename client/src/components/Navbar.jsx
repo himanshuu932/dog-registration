@@ -58,10 +58,10 @@ const textContent = {
   }
 };
 
-const backend = "http://localhost:5000";
+const backend = "https://dog-registration.onrender.com";
 
 // Added setUser to the props destructuring
-function Navbar({ languageType = 'en', user, notifications = [], onLogout, setLanguageType, setUser }) {
+function Navbar({ languageType = 'en', user, notifications = [], onLogout, setLanguageType, setUser, userCredit }) {
   const [showMenu, setShowMenu] = useState(false);
   const [showNotif, setShowNotif] = useState(false);
   const [showProfilePopover, setShowProfilePopover] = useState(false);
@@ -79,6 +79,8 @@ function Navbar({ languageType = 'en', user, notifications = [], onLogout, setLa
   const currentNavItems = user?.role === 'admin' ? adminNavItems : userNavItems;
   const label = (item) => languageType === 'hi' ? item.hi : item.en;
   const currentText = textContent[languageType] || textContent.en;
+
+
 
   useEffect(() => {
     if (user) {
@@ -265,6 +267,8 @@ function Navbar({ languageType = 'en', user, notifications = [], onLogout, setLa
                             <p><strong>{currentText.nameLabel}:</strong> {user.username}</p>
                             <p><strong>{currentText.email}:</strong> {user.email || 'N/A'} <small>{currentText.fieldCannotBeChanged}</small></p>
                             <p><strong>{currentText.phone}:</strong> {user.phone || 'N/A'} <small>{currentText.fieldCannotBeChanged}</small></p>
+                            <p><strong>Available Credit:</strong> ₹{userCredit || 0}</p>
+
                           </div>
                           <button className="btn btn--sm btn--profile-action" onClick={handleEditProfile}>
                             <Edit3 size={16} /> {currentText.editProfile}
@@ -345,7 +349,10 @@ function Navbar({ languageType = 'en', user, notifications = [], onLogout, setLa
                             </div>
                             <p><strong>{currentText.email}:</strong> {user.email || 'N/A'} <small>{currentText.fieldCannotBeChanged}</small></p>
                             <p><strong>{currentText.phone}:</strong> {user.phone || 'N/A'} <small>{currentText.fieldCannotBeChanged}</small></p>
+                              
                             <p><strong>{currentText.role}:</strong> {user.role} <small>{currentText.fieldCannotBeChanged}</small></p>
+                            <p><strong>Available Credit:</strong> ₹{userCredit || 0}</p>
+                           
                             <div className="profile-edit-actions">
                             <button className="btn btn--sm btn--primary" onClick={handleSaveProfile}>
                                 <Save size={16} /> {currentText.save}

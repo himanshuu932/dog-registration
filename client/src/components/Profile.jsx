@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-function Profile() {
+function Profile({ languageType, userCredit }) {
+ 
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
-   const backend = "http://localhost:5000";
+  const backend = "https://dog-registration.onrender.com";
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -44,6 +45,8 @@ function Profile() {
       <p><strong>Username:</strong> {user?.username}</p>
       <p><strong>Email:</strong> {user?.email || "N/A"}</p>
       <p><strong>Phone:</strong> {user?.phone || "N/A"}</p>
+      <p><strong>Available Credit:</strong> ₹{userCredit}</p>
+      
     </div>
   );
 }

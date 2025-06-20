@@ -1,6 +1,7 @@
 // controllers/paymentController.js
 const crypto = require('crypto');
-const DogLicense = require("../models/dogLicense"); // Import the DogLicense model
+const DogLicense = require("../models/dogLicense");
+const User = require('../models/user'); // Import the DogLicense model
 const { request } = require('http');
 
 const refNoStore = new Map();

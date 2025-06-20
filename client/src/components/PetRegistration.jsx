@@ -6,7 +6,7 @@ import 'react-toastify/dist/ReactToastify.css'; // Import toastify CSS
 import { RefreshCw } from 'lucide-react'; // For the refresh CAPTCHA button
 import { useNavigate } from 'react-router-dom'; // For navigation after payment
 
-const PetRegistrationForm = () => {
+const PetRegistrationForm = ({ languageType, userCredit, setUserCredit }) => {
   const [activeTab, setActiveTab] = useState(1);
   const [errors, setErrors] = useState({});
   const [file, setFile] = useState(null);
@@ -87,7 +87,7 @@ const PetRegistrationForm = () => {
 
   const [formData, setFormData] = useState(initialFormData);
 
-  const backend = "http://localhost:5000"; // Adjust this to your backend URL
+  const backend = "https://dog-registration.onrender.com"; // Adjust this to your backend URL
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -446,11 +446,31 @@ const PetRegistrationForm = () => {
         }
       });
 
-      toast.success('Registration data submitted successfully! Redirecting to payment...');
-      
-      await initiatePayment(res.data.paymentUrl);
+    if (userCredit >= feesSummary.total) {
+  try {
+    const creditRes = await axios.post(`${backend}/api/auth/use-credit`, {
+      licenseId: res.data.licenseId,
+      amount: feesSummary.total
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
 
-      resetForm();
+    toast.success('Submitted using your available credit! License under review.');
+    setUserCredit((prev) => prev - feesSummary.total); // update in UI
+    navigate('/download-license');
+    resetForm();
+  } catch (creditErr) {
+    console.error('Credit deduction failed:', creditErr);
+    toast.error('Failed to use credit. Please try again.');
+  }
+} else {
+  toast.success('Registration data submitted successfully! Redirecting to payment...');
+  await initiatePayment(res.data.paymentUrl);
+  resetForm();
+}
+
 
     } catch (err) {
       console.error('Error submitting form:', err);
@@ -849,6 +869,19 @@ const PetRegistrationForm = () => {
                   <div className="preview-row"><div className="preview-item"><span className="preview-label">Registration Fees:</span><span className="preview-value">Rs. {feesSummary.registrationFee}</span></div></div>
                   <div className="preview-row"><div className="preview-item"><span className="preview-label">Fine Fees:</span><span className="preview-value">Rs. {feesSummary.fine}</span></div></div>
                   <div className="preview-row total-fees-row"><div className="preview-item"><span className="preview-label">Total Fees:</span><span className="preview-value">Rs. {feesSummary.total}</span></div></div>
+                  <div className="preview-row">
+  <div className="preview-item">
+    <span className="preview-label">Your Available Credit:</span>
+    <span className="preview-value">Rs. {userCredit}</span>
+  </div>
+</div>
+
+{userCredit >= feesSummary.total && (
+  <div style={{ marginTop: '10px', color: 'green', fontWeight: 'bold' }}>
+    ✅ You have enough credit to skip payment. It will be used directly.
+  </div>
+)}
+
                 </>
               )}
             </div>

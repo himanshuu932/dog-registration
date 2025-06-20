@@ -24,10 +24,12 @@ import Verify from "./components/admin/Verify";
 function App() {
   const [languageType, setLanguageType] = useState("en");
   const [user, setUser] = useState(null);
+  const [userCredit, setUserCredit] = useState(0);
+
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const backend = "http://localhost:5000";
+  const backend = "https://dog-registration.onrender.com";
 
   const handleLogin = (userData, token) => {
     localStorage.setItem("token", token);
@@ -49,33 +51,55 @@ function App() {
     const MINIMUM_LOAD_TIME = 500; 
     const startTime = Date.now();
 
-    const fetchUser = async () => {
-      const token = localStorage.getItem("token");
+   // Update the fetchUser function in your useEffect
+const fetchUser = async () => {
+  const token = localStorage.getItem("token");
 
-      if (!token)   {
-        const elapsed = Date.now() - startTime;
-        const delay = Math.max(0, MINIMUM_LOAD_TIME - elapsed);
-        setTimeout(() => setLoading(false), delay);
-        return;
-      }
+  if (!token) {
+    const elapsed = Date.now() - startTime;
+    const delay = Math.max(0, MINIMUM_LOAD_TIME - elapsed);
+    setTimeout(() => setLoading(false), delay);
+    return;
+  }
 
-      try {
-        const res = await axios.get(`${backend}/api/auth/profile`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setUser(res.data.user);
-      } catch (err) {
-        console.error("Failed to fetch user profile", err);
-        localStorage.removeItem("token");
-      } finally {
-        const elapsed = Date.now() - startTime;
-        const delay = Math.max(0, MINIMUM_LOAD_TIME - elapsed);
-        setTimeout(() => setLoading(false), delay);
-      }
-    };
+  try {
+    // Fetch user profile
+    const res = await axios.get(`${backend}/api/auth/profile`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setUser(res.data.user);
+
+    // Fetch user credits separately with proper error handling
+    await fetchUserCredits(token);
+  } catch (err) {
+    console.error("Failed to fetch user profile", err);
+    localStorage.removeItem("token");
+  } finally {
+    const elapsed = Date.now() - startTime;
+    const delay = Math.max(0, MINIMUM_LOAD_TIME - elapsed);
+    setTimeout(() => setLoading(false), delay);
+  }
+};
+
+// Add this new function to handle credit fetching
+const fetchUserCredits = async (token) => {
+  try {
+    const creditRes = await axios.get(`${backend}/api/auth/credit`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const newCredits = creditRes.data.credits || 0;
+    setUserCredit(newCredits);
+    
+  } catch (error) {
+    console.error("Error fetching credits:", error);
+    setUserCredit(0);
+  }
+};
 
     fetchUser();
   }, []);
+
+
 
   if (loading) return <RunningDogLoader />;
 
@@ -88,6 +112,7 @@ function App() {
         onLogin={handleLogin}
         onLogout={handleLogout}
        setLanguageType={setLanguageType}
+       userCredit={userCredit}
       />
 
       <Routes>
@@ -99,9 +124,10 @@ function App() {
         <Route path="/home" element={<PetHome languageType={languageType}/>} />
         <Route path="/download-license" element={user ? <DownloadLicense languageType={languageType}/> : <Navigate to="/login" />} />
         <Route path="/feedback" element={user ? <QueryFeedback languageType={languageType}/> : <Navigate to="/login" />} />
-        <Route path="/pet-register" element={user ? <PetRegistration languageType={languageType}/> : <Navigate to="/login" />} />
-        <Route path="/renew-register" element={user ? <RenewRegistration languageType={languageType}/> : <Navigate to="/login" />} />
-        <Route path="/profile" element={user ? <Profile languageType={languageType}/> : <Navigate to="/login" />} />
+        <Route path="/pet-register" element={user ? <PetRegistration languageType={languageType} userCredit={userCredit} setUserCredit={setUserCredit}/> : <Navigate to="/login" />} />
+        <Route path="/renew-register" element={user ? <RenewRegistration languageType={languageType} userCredit={userCredit} setUserCredit={setUserCredit}/> : <Navigate to="/login" />} />
+
+        <Route path="/profile" element={user ? <Profile languageType={languageType} userCredit={userCredit}/> : <Navigate to="/login" />} />
         <Route path="/admin/license" element={user && user.role === "admin" ? <AdminPanel languageType={languageType} /> : <Navigate to="/login" />} />
         <Route path="/admin/add-license" element={user && user.role === "admin" ? <AdminAddForm languageType={languageType} /> : <Navigate to="/login" />} />
         <Route path="/admin/verify-license" element={user && user.role === "admin" ? <Verify languageType={languageType} /> : <Navigate to="/login" />} />
