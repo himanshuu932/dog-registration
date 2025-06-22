@@ -335,14 +335,20 @@ const PetRegistrationForm = () => {
   }, [activeTab, backend, loadCaptcha]);
 
 
-  const initiatePayment = async (paymentUrl) => {
+  const initiatePayment = async (data) => {
     toast.info("Redirecting to payment gateway...");
     try {
-      const  eazypayUrl  = paymentUrl;
+      const  eazypayUrl  = data.paymentUrl;
       if (eazypayUrl) {
         window.open(eazypayUrl, '_blank'); 
       } else {
-        throw new Error("Failed to get payment URL from server.");
+        if (!data.paymentUrl) {
+          if(!data.message ==="License applied successfully")
+            throw new Error("Failed to get payment URL from server.");
+        }
+        toast.success("License applied successfully");
+        
+
       }
       navigate('/download-license');
     } catch (error) {
@@ -448,7 +454,7 @@ const PetRegistrationForm = () => {
 
       toast.success('Registration data submitted successfully! Redirecting to payment...');
       
-      await initiatePayment(res.data.paymentUrl);
+      await initiatePayment(res.data);
 
       resetForm();
 

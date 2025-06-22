@@ -135,6 +135,7 @@ exports.getProfile = async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET); //
     const user = await User.findById(decoded.userId); //
     if (!user) return res.status(404).json({ message: "User not found" }); //
+    console.log("User profile fetched successfully:", user.credits.amt); //
     res.json({ //
       user: { //
         _id: user._id,
@@ -142,7 +143,10 @@ exports.getProfile = async (req, res) => {
         // 'name' alias removed
         email: user.email, //
         phone: user.phone, //
-        role: user.role //
+        role: user.role, //
+        credits: user.credits.amt,
+        ref: user.credits.paymentReferenceNo, // Include payment reference number
+         //
       }
     });
   } catch (err) {

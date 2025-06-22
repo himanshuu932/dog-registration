@@ -2,7 +2,7 @@
 const crypto = require('crypto');
 const DogLicense = require("../models/dogLicense"); // Import the DogLicense model
 const { request } = require('http');
-
+const User = require("../models/user"); // Import the User model
 const refNoStore = new Map();
 
 const ERROR_CODE_MAP = {
@@ -138,7 +138,16 @@ exports.eazypayReturn = async (req, res) => {
             license.eazypayTransactionDate = req.body['Transaction Date'];
             license.eazypayTransactionAmount = req.body['Transaction Amount'];
             license.eazypayTransactionId = req.body['Unique Ref Number'];
-            license.lastpaymentReferenceNo = license.paymentReferenceNo; // Copy current ref to last ref
+            license.lastpaymentReferenceNo = license.paymentReferenceNo; 
+            if(license.fees.creditsUsed)
+            {
+                const user = await User.findById(license.owner);
+                if (user) {
+                    user.credits.amt -= license.fees.cPaid;
+                    await user.save();
+                    console.log(`Credits deducted from user ${user.username} for license ${license.license_Id}.`);
+                }
+            }
 
             if (license.status === 'payment_processing') {
                 license.status = 'pending'; // New application moves to pending review
@@ -193,6 +202,7 @@ exports.eazypayReturn = async (req, res) => {
     }
 };
 
+
 exports.verifyEazypayPayment = async (req, res) => {
   try {
     const { pgreferenceno } = req.query;
@@ -232,8 +242,16 @@ exports.verifyEazypayPayment = async (req, res) => {
         license.eazypayTransactionDate = result.trandate;
         license.eazypayTransactionAmount = result.amount;
         license.eazypayTransactionId = result.ezpaytranid;
-        license.lastpaymentReferenceNo = license.paymentReferenceNo; // Copy current ref to last ref
-
+        license.lastpaymentReferenceNo = license.paymentReferenceNo; 
+        if (license.fees.creditsUsed) {
+          const user = await User.findById(license.owner);
+            if (user) {
+                user.credits.amt -= license.fees.cPaid;
+                await user.save();
+                console.log(`Credits deducted from user ${user.username} for license ${license.license_Id
+}.`);
+            }   
+        }
         license.status = isRenewal ? 'renewal_pending' : 'pending';
         console.log(`License ${license.license_Id} updated to '${license.status}' after successful verification.`);
         break;
@@ -272,13 +290,14 @@ exports.verifyEazypayPayment = async (req, res) => {
     await license.save();
     console.log(isRenewal ? 'Renewal' : 'New', 'License status updated:', license.status);
     console.log(`License ${license.license_Id} updated to '${license.status}' after verification.`);
-    // 6) Return only the high‑level state
+  
     return res.json({ state: paymentState });
   } catch (err) {
     console.error('Verification error:', err);
     return res.status(500).json({ error: 'Verification failed', details: err.message });
   }
 };
+
 exports.generateEazypayUrl = (req, res) => {
     try {
         const uniqueRefNo = `REF${Date.now()}`;

@@ -8,7 +8,9 @@ const dogLicenseSchema = new mongoose.Schema(
       total: { type: Number, default: 0 },
       fine: { type: Number, default: 0 },
       paid: { type: Boolean, default: false },
-      paymentDate: { type: Date, default: null }
+      paymentDate: { type: Date, default: null },
+      creditsUsed: { type: Boolean, default: false },
+      cPaid: { type: Number, default: 0 }
     },
 
     isProvisional: {
@@ -63,9 +65,9 @@ const dogLicenseSchema = new mongoose.Schema(
     rejectionReason: String,
     rejectionDate: Date,
 
-    // Fields for payment details
-    paymentReferenceNo: { type: String, unique: true, sparse: true },
-    lastpaymentReferenceNo: { type: String, unique: true, sparse: true },
+
+    paymentReferenceNo: { type: String  },
+    lastpaymentReferenceNo: { type: String},
     eazypayUniqueRefNo: String,
     eazypayPaymentMode: String,
     eazypayTransactionDate: String,

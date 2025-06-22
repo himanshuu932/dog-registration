@@ -1,7 +1,7 @@
 // controllers/adminLicenseController.js
 const DogLicense = require("../models/dogLicense");
 const LicenseID = require("../models/licenseId");
-
+const User = require("../models/user");
 exports.getAllLicenses = async (req, res) => {
   try {
     const licenses = await DogLicense.find().populate("owner", "username email");
@@ -68,6 +68,16 @@ exports.rejectLicense = async (req, res) => {
       { new: true }
     );
     if (!license) return res.status(404).json({ message: "License not found" });
+    
+     const user = await User.findById(license.owner);
+    if (user) { 
+      user.credits.amt=user.credits.amt+license.fees.total;
+      await user.save();
+    }
+
+     
+
+
     res.json({ message: "License rejected", license });
   } catch (error) {
     console.error("Reject error:", error);

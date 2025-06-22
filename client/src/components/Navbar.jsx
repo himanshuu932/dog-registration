@@ -35,6 +35,8 @@ const textContent = {
     email: 'Email',
     role: 'Role',
     phone: 'Phone',
+    credits: 'Credits',
+    ref: 'Reference No',
     updateSuccess: 'Profile updated successfully!',
     updateError: 'Failed to update profile.',
     fieldCannotBeChanged: '(cannot be changed)',
@@ -52,6 +54,8 @@ const textContent = {
     email: 'ईमेल',
     role: 'भूमिका',
     phone: 'फ़ोन',
+    credits: 'क्रेडिट',
+    ref: 'संदर्भ संख्या',
     updateSuccess: 'प्रोफ़ाइल सफलतापूर्वक अपडेट की गई!',
     updateError: 'प्रोफ़ाइल अपडेट करने में विफल।',
     fieldCannotBeChanged: '(बदला नहीं जा सकता)',
@@ -263,9 +267,12 @@ function Navbar({ languageType = 'en', user, notifications = [], onLogout, setLa
                         <>
                           <div className="profile-details">
                             <p><strong>{currentText.nameLabel}:</strong> {user.username}</p>
-                            <p><strong>{currentText.email}:</strong> {user.email || 'N/A'} <small>{currentText.fieldCannotBeChanged}</small></p>
-                            <p><strong>{currentText.phone}:</strong> {user.phone || 'N/A'} <small>{currentText.fieldCannotBeChanged}</small></p>
-                          </div>
+                            <p><strong>{currentText.email}:</strong> {user.email || 'N/A'} </p>
+                            <p><strong>{currentText.phone}:</strong> {user.phone || 'N/A'} </p>
+                            <p><strong>{currentText.credits}:</strong> {user.credits || 'N/A'} </p>
+                            <p><strong>{currentText.ref}:</strong> {user.ref || 'N/A'} </p>
+                            
+                            </div>
                           <button className="btn btn--sm btn--profile-action" onClick={handleEditProfile}>
                             <Edit3 size={16} /> {currentText.editProfile}
                           </button>
@@ -284,6 +291,9 @@ function Navbar({ languageType = 'en', user, notifications = [], onLogout, setLa
                           <p><strong>{currentText.email}:</strong> {user.email || 'N/A'} <small>{currentText.fieldCannotBeChanged}</small></p>
                           <p><strong>{currentText.phone}:</strong> {user.phone || 'N/A'} <small>{currentText.fieldCannotBeChanged}</small></p>
                           <p><strong>{currentText.role}:</strong> {user.role} <small>{currentText.fieldCannotBeChanged}</small></p>
+                            <p><strong>{currentText.credits}:</strong> {user.credits || 'N/A'} <small>{currentText.fieldCannotBeChanged}</small></p>
+                           <p><strong>{currentText.ref}:</strong> {user.ref || 'N/A'} <small>{currentText.fieldCannotBeChanged}</small></p>
+                            
                           <div className="profile-edit-actions">
                             <button className="btn btn--sm btn--primary" onClick={handleSaveProfile}>
                               <Save size={16} /> {currentText.save}

@@ -7,7 +7,7 @@ const fs = require('fs');
 const { promisify } = require('util');
 const mongoose = require('mongoose');
 const { generatePaymentURL } = require('./paymentController');
-
+const User = require('../models/user');
 // Configure Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -167,29 +167,85 @@ exports.applyLicense = async (req, res) => {
       },
       paymentReferenceNo: uniqueRefNo,
       lastpaymentReferenceNo:null
-    });
-    const savedLicense = await newLicense.save({ session });
+    })
+    const owner= await User.findById(req.user.userId);
+    console.log("Owner:", owner);
+    if (!owner) { 
 
+      return res.status(404).json({ message: "Owner not found" });
+    }
+   
+    console.log("credists:",owner.credits.amt);
+    const ownerCredits = owner.credits.amt || 0;
+    const updatedCredits = ownerCredits - totalFees;
+    console.log("Updated Credits:", updatedCredits);
+     
+    //const savedLicense = await newLicense.save({ session });  
+    var payAmt=0;
+    if(updatedCredits < 0) {
+      payAmt = updatedCredits * -1; 
+      
+    }
+    else {
+      payAmt = 0; 
+    }
+    console.log("Pay Amount:", payAmt);
+    if (payAmt > 0) {
+
+        newLicense.fees.creditsUsed = ownerCredits>0?true:false; 
+        newLicense.fees.cPaid=totalFees - payAmt; // Credits used for payment
+        console.log("Payment required, proceeding with payment flow");
+        const savedLicense = await newLicense.save({ session });
     const paymentParams = {
       merchantid: process.env.EAZYPAY_MERCHANT_ID,
-      'mandatory fields': `${uniqueRefNo}|45|${totalFees}|${savedLicense._id}|${fullName}|${phoneNumber}`,
+      'mandatory fields': `${uniqueRefNo}|45|${payAmt}|${savedLicense._id}|${fullName}|${phoneNumber}`,
       'optional fields': '',
       returnurl: process.env.EAZYPAY_RETURN_URL,
       'Reference No': uniqueRefNo,
       submerchantid: '45',
-      'transaction amount': String(totalFees),
+      'transaction amount': String(payAmt),
       paymode: '9'
     };
     const eazypayUrl = generatePaymentURL(paymentParams);
     
     await session.commitTransaction();
-
+  
     res.status(201).json({
       message: "License application initiated, redirecting to payment",
       licenseId: savedLicense._id,
       paymentUrl: eazypayUrl
     });
+  }
+    else {
+     
+      console.log("No payment required, saving license directly");
+          
+       newLicense.fees.creditsUsed = ownerCredits>0?true:false; 
+       newLicense.fees.cPaid=ownerCredits>0?totalFees:0;
 
+       
+
+
+      owner.credits.amt = updatedCredits<0 ? 0 : updatedCredits; 
+      
+      newLicense.paymentReferenceNo = "Credit Pay";
+      newLicense.lastpaymentReferenceNo = owner.credits.paymentReferenceNo; 
+     
+      await owner.save({ session });
+      newLicense.status='pending'; 
+
+      newLicense.fees.paid = true; 
+      newLicense.fees.paymentDate = new Date(); 
+  
+      const savedLicense = await newLicense.save({ session });
+      await session.commitTransaction(); 
+      console.log("License saved without payment:", savedLicense);
+      res.status(201).json({
+        message: "License applied successfully",
+         licenseId: savedLicense._id,
+         paymentUrl: null
+      });
+    }
   } catch (error) {
     await session.abortTransaction();
     console.error("❌ License apply error:", error);
