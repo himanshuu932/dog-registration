@@ -8,22 +8,25 @@ const {
   rejectLicense,
   approveRenewal,
   rejectRenewal,
-  getLicenseById, // New import
+  getLicenseById,
   createLicenseByAdmin,
-  // getPendingRenewals, // Commented out as it's not used in the provided snippet
+  updateProvisionalToFull,
+  getFeeConfig,      // New import
+  updateFeeConfig,   // New import
 } = require("../controllers/adminLicenseController");
 
+// Fee management routes
+router.get("/fees", verifyToken, isAdmin, getFeeConfig);
+router.post("/fees", verifyToken, isAdmin, updateFeeConfig);
+
+// License management routes
 router.get("/all", verifyToken, isAdmin, getAllLicenses);
 router.patch("/approve/:id", verifyToken, isAdmin, approveLicense);
-// Change to:
-router.patch("/reject/:id", verifyToken, isAdmin, rejectLicense); // This line was already present in the previous snippet, ensuring it's a POST for reject.
-// router.get('/renewals/pending', verifyToken, isAdmin, getPendingRenewals);
+router.patch("/reject/:id", verifyToken, isAdmin, rejectLicense);
 router.post('/renew-registration/approve', verifyToken, isAdmin, approveRenewal);
 router.post('/renew-registration/reject', verifyToken, isAdmin, rejectRenewal);
-
 router.post("/add-license", verifyToken, isAdmin, createLicenseByAdmin);
-
-// New route to fetch a license by ID
+router.patch("/update-provisional", verifyToken, isAdmin, updateProvisionalToFull);
 router.get("/:id", verifyToken, isAdmin, getLicenseById);
 
 module.exports = router;

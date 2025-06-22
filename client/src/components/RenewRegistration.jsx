@@ -470,35 +470,39 @@ const RenewRegistration = ({ languageType = 'en' }) => {
       });
   }, [currentText, backendUrl]);
 
-  const fetchUserLicenses = useCallback(async () => {
-    setLoading(true);
-    setError('');
-    if (!authToken) {
-        setError("User not authenticated. Please log in.");
-        setLoading(false);
-        setLicenses([]);
-        return;
-    }
-    try {
-      const response = await fetch(`${backendUrl}/api/license/user`, {
-        headers: { Authorization: `Bearer ${authToken}` }
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to fetch licenses');
-      }
-      const data = await response.json();
-      const sortedLicenses = (data || []).sort((a, b) =>
-        new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt)
-      );
-      setLicenses(sortedLicenses);
-    } catch (err) {
-      setError(err.message || currentText.fetchError);
-      setLicenses([]);
-    } finally {
+const fetchUserLicenses = useCallback(async () => {
+  setLoading(true);
+  setError('');
+  if (!authToken) {
+      setError("User not authenticated. Please log in.");
       setLoading(false);
+      setLicenses([]);
+      return;
+  }
+  try {
+    const response = await fetch(`${backendUrl}/api/license/user`, {
+      headers: { Authorization: `Bearer ${authToken}` }
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to fetch licenses');
     }
-  }, [backendUrl, authToken, currentText.fetchError]);
+    const data = await response.json();
+    // Filter licenses: only 'approved' status and not 'isProvisional'
+    const filteredLicenses = (data || []).filter(
+      (license) => license.status === 'approved' && license.isProvisional === false
+    );
+    const sortedLicenses = filteredLicenses.sort((a, b) =>
+      new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt)
+    );
+    setLicenses(sortedLicenses);
+  } catch (err) {
+    setError(err.message || currentText.fetchError);
+    setLicenses([]);
+  } finally {
+    setLoading(false);
+  }
+}, [backendUrl, authToken, currentText.fetchError]);
 
   useEffect(() => {
     fetchUserLicenses();
@@ -547,15 +551,15 @@ const RenewRegistration = ({ languageType = 'en' }) => {
       // 1. Verify CAPTCHA first
       const captchaRes = await axios.post(`${backendUrl}/api/captcha/verify-captcha`, { captchaInput, captchaToken });
       if (!captchaRes.data?.success) {
-        setCaptchaError(currentText.invalidCaptcha);
+        toast.error(currentText.invalidCaptcha);
         loadCaptcha(); // Refresh CAPTCHA
         setIsConfirmingRenewal(false);
         return;
       }
 
       // 2. If CAPTCHA is good, close modal and call renewal initiation endpoint
-      handleCloseConfirmModal();
       toast.info("CAPTCHA verified. Processing renewal...");
+      handleCloseConfirmModal();
 
       const response = await axios.post(`${backendUrl}/api/license/renew-registration/request`,
         { licenseNumber: selectedLicenseForRenewal.number },
@@ -567,14 +571,14 @@ const RenewRegistration = ({ languageType = 'en' }) => {
         window.open(response.data.paymentUrl, '_blank');
         console.log("Payment URL:", response.data.paymentUrl);
       } else {
-        throw new Error("Failed to get payment URL from server.");
+        toast.success(response.data.message || "License renewed successfully using credits!");
+        fetchUserLicenses(); // Refresh list after credit payment
       }
 
     } catch (err) {
       console.error("Renewal/CAPTCHA error:", err);
       const errorMessage = err.response?.data?.message || "Renewal request failed. Please try again.";
       toast.error(errorMessage);
-      handleCloseConfirmModal();
     } finally {
       setIsConfirmingRenewal(false);
     }

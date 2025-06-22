@@ -1,0 +1,169 @@
+:root {
+  --primary: #2c3e50;
+  --primary-light: #34495e;
+  --secondary: #3498db;
+  --secondary-light: #5dade2;
+  --accent: #1abc9c;
+  --success: #23814a; 
+  --danger: #d84e3f;
+  --warning: #f39c12;
+  --pending: #f1c40f;
+  --gray-light: #ecf0f1;
+  --gray: #bdc3c7;
+  --gray-dark: #7f8c8d;
+  --white: #ffffff;
+  --black: #2c3e50;
+  --shadow: rgba(0, 0, 0, 0.1);
+  --border-radius: 4px;
+  --font-main: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Oxygen', 'Ubuntu', sans-serif;
+}
+
+.update-provisional-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem;
+  background-color: var(--gray-light);
+  min-height: 100vh;
+  font-family: var(--font-main);
+}
+
+.update-provisional-card {
+  background: var(--white);
+  padding: 2.5rem;
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 15px var(--shadow);
+  width: 100%;
+  max-width: 550px;
+  border-top: 5px solid var(--secondary);
+}
+
+.update-provisional-title {
+  color: var(--primary);
+  text-align: center;
+  margin-bottom: 0.5rem;
+  font-size: 2rem;
+  font-weight: 500;
+}
+
+.update-provisional-subtitle {
+  text-align: center;
+  color: var(--gray-dark);
+  margin-bottom: 2rem;
+  font-size: 1rem;
+}
+
+.update-provisional-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.update-provisional-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--primary-light);
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.update-provisional-form .form-control {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--gray);
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  color: var(--black);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  text-transform: uppercase;
+}
+
+.update-provisional-form .form-control::placeholder {
+    text-transform: none;
+}
+
+
+.update-provisional-form .form-control:focus {
+  outline: none;
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+.btn-submit {
+  display: block;
+  width: 100%;
+  padding: 0.8rem 1rem;
+  background-color: var(--secondary);
+  color: var(--white);
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  margin-top: 1rem;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background-color: var(--secondary-light);
+}
+
+.btn-submit:disabled {
+  background-color: var(--gray);
+  cursor: not-allowed;
+}
+
+.message {
+  padding: 1rem;
+  margin-top: 1.5rem;
+  border-radius: var(--border-radius);
+  text-align: center;
+  font-weight: 500;
+}
+
+.message.success {
+  background-color: #d4edda;
+  color: var(--success);
+  border: 1px solid #c3e6cb;
+}
+
+.message.error {
+  background-color: #f8d7da;
+  color: var(--danger);
+  border: 1px solid #f5c6cb;
+}
+
+.updated-license-details {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    border: 1px solid var(--gray);
+    border-top: 3px solid var(--success);
+    border-radius: var(--border-radius);
+    background-color: #f9f9f9;
+    text-align: center;
+}
+
+.updated-license-details h3 {
+    color: var(--success);
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+.updated-license-details p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+    color: var(--primary-light);
+}
+
+.updated-license-details p strong {
+    color: var(--primary);
+}
+
+.status-approved {
+    color: var(--success);
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+.success-icon {
+    color: var(--success);
+    margin-bottom: 1rem;
+}

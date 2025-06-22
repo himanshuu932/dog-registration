@@ -20,6 +20,8 @@ import Footer from './components/Footer';
 import RunningDogLoader from "./components/loader";
 import AdminAddForm from "./components/admin/Add";
 import Verify from "./components/admin/Verify";
+import FeeSetup from "./components/admin/Fee";
+import UpdateProvisional from "./components/admin/UpdateProvisional";
 
 function App() {
   const [languageType, setLanguageType] = useState("en");
@@ -105,6 +107,8 @@ function App() {
         <Route path="/admin/license" element={user && user.role === "admin" ? <AdminPanel languageType={languageType} /> : <Navigate to="/login" />} />
         <Route path="/admin/add-license" element={user && user.role === "admin" ? <AdminAddForm languageType={languageType} /> : <Navigate to="/login" />} />
         <Route path="/admin/verify-license" element={user && user.role === "admin" ? <Verify languageType={languageType} /> : <Navigate to="/login" />} />
+        <Route path="/admin/fee-setup" element={user && user.role === "admin" ? <FeeSetup /> : <Navigate to="/login" />} />
+        <Route path="/admin/update-provisional" element={user && user.role === "admin" ? <UpdateProvisional/> : <Navigate to="/login" />} />
       </Routes>
          
       <Footer languageType={languageType}/>

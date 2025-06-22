@@ -1,5 +1,4 @@
 // controllers/licenseController.js
-
 const DogLicense = require("../models/dogLicense.js");
 const LicenseID = require('../models/licenseId');
 const cloudinary = require('cloudinary').v2;
@@ -8,6 +7,7 @@ const { promisify } = require('util');
 const mongoose = require('mongoose');
 const { generatePaymentURL } = require('./paymentController');
 const User = require('../models/user');
+const FeeConfig = require('../models/feeConfig'); // Import FeeConfig
 // Configure Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -20,59 +20,44 @@ const unlinkAsync = promisify(fs.unlink);
 // --- 1. Centralized Fine Calculation Function ---
 const calculateFine = (referenceDate, type) => {
   const today = new Date();
-  // Ensure referenceDate is a Date object
   const refDate = new Date(referenceDate);
-
   let fine = 0;
-
   if (type === 'new') {
-    // Fine logic for new registration based on financial year (starts April 1)
-    const financialYearStart = new Date(today.getFullYear(), 3, 1); // April 1st
-    if (today < financialYearStart) {
-        // If registering before April 1st for the next FY, no fine.
-        return 0;
-    }
-    
-    const currentMonth = today.getMonth(); // 0-indexed (April is 3)
-    
-    if (currentMonth === 3) { // April
-      fine = 0;
-    } else if (currentMonth === 4) { // May
+    const financialYearStart = new Date(today.getFullYear(), 3, 1);
+    if (today < financialYearStart) { return 0; }
+    const currentMonth = today.getMonth();
+    if (currentMonth === 3) { fine = 0; }
+    else if (currentMonth === 4) { fine = 100; }
+    else if (currentMonth > 4) {
       fine = 100;
-    } else if (currentMonth > 4) { // June onwards
-      fine = 100;
-      // Calculate days passed since May 31st for daily fine
       const may31st = new Date(today.getFullYear(), 5, 0);
       const diffTime = Math.abs(today - may31st);
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       fine += diffDays * 50;
     }
-
   } else if (type === 'renewal') {
-    // Fine logic for renewal based on license expiry date
-    if (today <= refDate) {
-      return 0; // No fine if renewed on or before expiry
-    }
-    
-    const timeDiff = today.getTime() - refDate.getTime();
-    const daysLate = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-    if (daysLate > 0 && daysLate <= 30) {
-      fine = 100; // Flat fine for the first 30 days of delay
-    } else if (daysLate > 30) {
-      fine = 100 + (daysLate - 30) * 10; // Rs 100 + Rs 10 for each day after 30 days
+     const financialYearStart = new Date(today.getFullYear(), 3, 1);
+    if (today < financialYearStart) { return 0; }
+    const currentMonth = today.getMonth();
+    if (currentMonth === 3) { fine = 0; }
+    else if (currentMonth === 4) { fine = 100; }
+    else if (currentMonth > 4) {
+      fine = 100;
+      const may31st = new Date(today.getFullYear(), 5, 0);
+      const diffTime = Math.abs(today - may31st);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      fine += diffDays * 50;
     }
   }
-
   return fine;
 };
 
-
-// --- 2. New Endpoint for Frontend to Preview Fees ---
-exports.calculateNewFees = (req, res) => {
+// --- 2. Endpoint for Frontend to Preview Fees ---
+exports.calculateNewFees = async (req, res) => {
     try {
+        const feeConfig = await FeeConfig.getFees(); // Fetch dynamic fees
         const fine = calculateFine(new Date(), 'new');
-        const registrationFee = 200;
+        const registrationFee = feeConfig.newRegistrationFee;
         const total = registrationFee + fine;
         res.status(200).json({ registrationFee, fine, total });
     } catch (error) {
@@ -266,7 +251,7 @@ exports.applyLicense = async (req, res) => {
 };
 
 
-// --- 4. New Endpoint to Initiate Renewal with Payment ---
+// --- 4. Modified Endpoint to Initiate Renewal with Payment ---
 exports.requestLicenseRenewal = async (req, res) => {
     const { licenseNumber } = req.body;
     if (!licenseNumber) {
@@ -294,11 +279,31 @@ exports.requestLicenseRenewal = async (req, res) => {
 
         // Server-side fee calculation for renewal
         const fine = calculateFine(license.expiryDate, 'renewal');
-        const totalRenewalFee = 100 + fine; // Rs. 100 renewal fee + fine
+        const renewalFee = 100; // Base renewal fee
+        const totalRenewalFee = renewalFee + fine;
+        console.log(`Calculated renewal fee for license ${licenseNumber}: Rs. ${totalRenewalFee} (Fine: Rs. ${fine})`);
+        const owner = await User.findById(req.user.userId).session(session);
+        if (!owner) {
+            await session.abortTransaction();
+            return res.status(404).json({ message: "Owner not found." });
+        }
+
+        const ownerCredits = owner.credits?.amt || 0;
+        let amountToPayOnline = totalRenewalFee;
+        let creditsToUse = 0;
+
+        // Determine how much to pay online vs using credits
+        if (ownerCredits >= totalRenewalFee) {
+            amountToPayOnline = 0;
+            creditsToUse = totalRenewalFee;
+        } else { // ownerCredits < totalRenewalFee
+            amountToPayOnline = totalRenewalFee - ownerCredits;
+            creditsToUse = ownerCredits;
+        }
 
         const uniqueRefNo = `REN${Date.now()}`;
 
-        // Update license for renewal payment
+        // Update license for renewal
         license.status = 'renewal_payment_processing';
         license.renewalRequestDate = new Date();
         license.paymentReferenceNo = uniqueRefNo;
@@ -306,30 +311,60 @@ exports.requestLicenseRenewal = async (req, res) => {
             total: totalRenewalFee,
             fine: fine,
             paid: false,
-            paymentDate: null
+            paymentDate: null,
+            creditsUsed: creditsToUse > 0,
+            cPaid: creditsToUse
         };
-        
-        await license.save({ session });
-        
-        const paymentParams = {
-            merchantid: process.env.EAZYPAY_MERCHANT_ID,
-            'mandatory fields': `${uniqueRefNo}|45|${totalRenewalFee}|${license._id}|${license.fullName}|${license.phoneNumber}`,
-             'optional fields': '',
-            returnurl: process.env.EAZYPAY_RETURN_URL,
-            'Reference No': uniqueRefNo,
-            submerchantid: '45',
-            'transaction amount': String(totalRenewalFee),
-            paymode: '9'
-        };
-        const eazypayUrl = generatePaymentURL(paymentParams);
 
-        await session.commitTransaction();
+        if (amountToPayOnline <= 0) {
+            // --- Full payment with credits ---
+            console.log("Sufficient credits. Processing renewal directly.");
 
-        res.status(200).json({
-            message: "Renewal process initiated. Redirecting to payment.",
-            paymentUrl: eazypayUrl
-        }); 
-        console.log(`Renewal initiated for license ${licenseNumber}. Payment URL: ${eazypayUrl}`);
+            owner.credits.amt = ownerCredits - creditsToUse;
+            license.fees.paid = true;
+            license.fees.paymentDate = new Date();
+            license.status = 'renewal_pending'; // Move to pending approval
+            license.paymentReferenceNo = "Credit Pay"; // Indicate credit payment
+            license.lastpaymentReferenceNo = owner.credits.paymentReferenceNo;
+
+
+            await owner.save({ session });
+            await license.save({ session });
+
+            await session.commitTransaction();
+
+            res.status(200).json({
+                message: "License renewal successful using credits. Awaiting admin approval.",
+                paymentUrl: null // No payment URL needed
+            });
+            console.log(`Renewal for license ${licenseNumber} processed using ${creditsToUse} credits.`);
+
+        } else {
+            // --- Partial or no credit payment, proceed to gateway ---
+            console.log(`Partial/No credits. Proceeding to payment for Rs. ${amountToPayOnline}.`);
+
+            await license.save({ session });
+
+            const paymentParams = {
+                merchantid: process.env.EAZYPAY_MERCHANT_ID,
+                'mandatory fields': `${uniqueRefNo}|45|${amountToPayOnline}|${license._id}|${license.fullName}|${license.phoneNumber}`,
+                 'optional fields': '',
+                returnurl: process.env.EAZYPAY_RETURN_URL,
+                'Reference No': uniqueRefNo,
+                submerchantid: '45',
+                'transaction amount': String(amountToPayOnline),
+                paymode: '9'
+            };
+            const eazypayUrl = generatePaymentURL(paymentParams);
+
+            await session.commitTransaction();
+
+            res.status(200).json({
+                message: "Renewal process initiated. Redirecting to payment.",
+                paymentUrl: eazypayUrl
+            });
+            console.log(`Renewal initiated for license ${licenseNumber}. Payment URL: ${eazypayUrl}`);
+        }
 
     } catch (error) {
         await session.abortTransaction();
@@ -400,46 +435,3 @@ exports.getLicenseForRenewal = async (req, res) => {
     res.status(500).json({ message: "Failed to retrieve license" });
   }
 };
-
-
-// User submits renewal request
-// exports.requestLicenseRenewal = async (req, res) => {
-//   try {
-//     const { licenseNumber } = req.body;
-
-//     if (!licenseNumber) {
-//       return res.status(400).json({ message: "License number is required" });
-//     }
-
-//     const license = await DogLicense.findOne({
-//       license_Id: licenseNumber,
-
-//     });
-
-//     if (!license) {
-//       return res.status(404).json({ message: "License not found" });
-//     }
-
-//     // Check if license is already approved for renewal
-//     if (license.status === 'renewal_pending') {
-//       return res.status(400).json({ message: "Renewal request already submitted" });
-//     }
-
-//     // Update the license status to 'renewal_pending'
-//     await DogLicense.findByIdAndUpdate(
-//       license._id,
-//       {
-//         status: 'renewal_pending',
-//         renewalRequestDate: new Date() // Track when renewal was requested
-//       }
-//     );
-
-//     res.json({
-//       message: "Renewal request submitted for admin approval",
-//       status: 'renewal_pending'
-//     });
-//   } catch (error) {
-//     console.error("License renewal request error:", error);
-//     res.status(500).json({ message: "Failed to submit renewal request" });
-//   }
-// };

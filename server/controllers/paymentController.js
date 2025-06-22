@@ -163,7 +163,7 @@ exports.eazypayReturn = async (req, res) => {
             console.error("Error updating license after successful payment:", updateError);
             respondToUser('failure');
         }
-    } else { // Failed Payment
+    } else { 
         console.warn('❌ FAILURE:', message);
         try {
             if (license.status === 'payment_processing') {
@@ -172,12 +172,12 @@ exports.eazypayReturn = async (req, res) => {
                 license.rejectionDate = new Date();
                 console.log(`New License ${license.license_Id} marked as 'rejected'.`);
             } else if (license.status === 'renewal_payment_processing') {
-                license.status = 'approved'; // Revert to approved status on renewal failure
+                license.status = 'approved'; 
                 license.rejectionReason = `Renewal payment failed: ${message}`;
                 license.lastpaymentReferenceNo = license.paymentReferenceNo; // Copy current ref to last ref
                 console.log(`Renewing License ${license.license_Id} reverted to 'approved'.`);
 
-                // If payment failed for renewal, try to fetch last transaction details
+                
                 if (license.lastpaymentReferenceNo) {
                     try {
                         const lastTransactionDetails = await fetchAndPopulateTransactionDetails(license.lastpaymentReferenceNo);

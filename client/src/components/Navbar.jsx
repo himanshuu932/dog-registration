@@ -18,6 +18,8 @@ const adminNavItems = [
   { hi: 'लाइसेंस', en: 'Licenses', path: '/admin/license' },
   { hi: 'लाइसेंस जोड़ें', en: 'Add License', path: '/admin/add-license' },
   { hi: 'लाइसेंस सत्यापित करें', en: 'Verify License', path: '/admin/verify-license' },
+  { hi: 'शुल्क सेटअप', en: 'Fee Setup', path: '/admin/fee-setup' },
+  { hi: 'अनंतिम अद्यतन करें', en: 'Update Provisional', path: '/admin/update-provisional' },
 ];
 
 // Text content for other parts of the navbar
