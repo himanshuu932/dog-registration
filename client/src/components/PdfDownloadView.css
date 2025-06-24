@@ -1,0 +1,317 @@
+/* PdfDownloadView.css */
+
+/* Root Variables (replicated from original for consistency, but only used here) */
+:root {
+    --pdf-download-primary: #2c3e50;
+    --pdf-download-primary-light: #34495e;
+    --pdf-download-secondary: #3498db;
+    --pdf-download-accent: #1abc9c;
+    --pdf-download-success: #23814a;
+    --pdf-download-danger: #c0392b;
+    --pdf-download-warning: #f39c12;
+    --pdf-download-pending: #f1c40f;
+    --pdf-download-provisional-bg: #fff8e1;
+    --pdf-download-provisional-text: #b48b0b;
+    --pdf-download-payment-bg: #eaf5ff;
+    --pdf-download-payment-text: #2980b9;
+
+    --pdf-download-gray-lightest: #f8f9fa;
+    --pdf-download-gray-light: #ecf0f1;
+    --pdf-download-gray: #bdc3c7;
+    --pdf-download-gray-dark: #7f8c8d;
+    --pdf-download-white: #ffffff;
+    --pdf-download-black: #2c3e50;
+    --pdf-download-shadow: rgba(0, 0, 0, 0.1);
+    --pdf-download-border-radius: 6px;
+    --pdf-download-font-main: 'Times New Roman', Times, serif; /* Adjusted for print */
+
+    --pdf-download-pdf-border-color: #0a0a0a;
+    --pdf-download-pdf-gov-maroon: #8b0000;
+    --pdf-download-pdf-gov-blue: #005ea5;
+}
+
+/* PDF Layout (A4 Sized Element) - FIXED VERSION */
+.pdf-download-layout {
+    width: 210mm;
+    min-height: 297mm;
+    background-color: var(--pdf-download-white);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    overflow: hidden;
+    box-sizing: border-box;
+    position: relative;
+    margin: 0 auto; /* Center for display, but for PDF it's just the content */
+}
+
+.pdf-download-outer-border {
+    border: 2px solid var(--pdf-download-pdf-border-color);
+    padding: 1mm;
+    width: 100%;
+    height: 287mm; /* Fixed height for A4 */
+    box-sizing: border-box;
+}
+
+.pdf-download-border {
+    border: 1px solid var(--pdf-download-pdf-border-color);
+    padding: 8mm;
+    width: 100%;
+    height: 100%; /* Take full height of outer border */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    font-family: var(--pdf-download-font-main);
+    position: relative; /* For absolute positioning of footer if needed */
+}
+
+/* New: Page break for the rules section */
+.pdf-download-rules-page {
+    page-break-before: always; /* Forces a new page */
+    margin-top: 20px; /* Space between pages in display, not in PDF */
+}
+
+.pdf-download-rules-page .pdf-download-outer-border {
+    height: 297mm; /* Ensure rules page also has fixed height */
+}
+
+/* PDF Header */
+.pdf-download-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--pdf-download-pdf-border-color);
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+.pdf-download-header-left { display: flex; align-items: center; }
+.pdf-download-logo-icon { height: 45px; width: 45px; margin-right: 10px; }
+.pdf-download-logo-icon img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.pdf-download-org-name h3 { font-size: 24px; color: var(--pdf-download-pdf-gov-blue); margin: 0 0 2px 0; font-weight: bold;}
+.pdf-download-org-name h4 { font-size: 20px; font-weight: 500; margin: 0; }
+.pdf-download-header-right { text-align: right; }
+
+/* PDF Certificate Title */
+.pdf-download-certificate-title {
+    text-align: center;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+.pdf-download-certificate-title h2 { font-size: 18px; font-weight: bold; margin: 0 0 4px 0; color: var(--pdf-download-black); }
+.pdf-download-certificate-title h3 { font-size: 16px; font-weight: bold; margin-bottom: 8px; text-decoration: underline; color: var(--pdf-download-pdf-gov-maroon); letter-spacing: 0.5px; }
+
+/* PDF Body - Modified to allow proper flex growth */
+.pdf-download-body {
+    font-size: 11px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: flex-start;
+    line-height: 1.5;
+    min-height: 0;
+    margin-bottom: 20mm; /* Reserve space for absolutely positioned footer */
+}
+
+/* PDF Photo Section */
+.pdf-download-photo-section {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    align-items: flex-start;
+    flex-shrink: 0;
+}
+.pdf-download-info-block { flex: 1; margin-right: 15px; }
+.pdf-download-info-row { display: flex; margin-bottom: 5px; font-size: 11px; }
+.pdf-download-info-label { font-weight: bold; min-width: 190px; color: #000000; font-size: larger;}
+.pdf-download-info-value { flex: 1; padding-left: 5px; color: var(--pdf-download-black); font-size: larger;}
+.pdf-download-photo-box {
+    width: 90mm;
+    max-width: 100px;
+    height: 110mm;
+    max-height: 120px;
+    border: 1.5px solid var(--pdf-download-pdf-border-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-color: var(--pdf-download-gray-lightest);
+}
+.pdf-download-photo { width: 100%; height: 100%; object-fit: cover; }
+.pdf-download-photo-placeholder { text-align: center; font-size: 10px; color: var(--pdf-download-gray); padding: 5px; }
+
+/* PDF Details Sections */
+.pdf-download-details-section {
+    margin-bottom: 8px;
+    flex-shrink: 0;
+}
+.pdf-download-section-title {
+    font-weight: bold;
+    font-size: 13px;
+    border-bottom: 1px solid var(--pdf-download-pdf-border-color);
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    color: var(--pdf-download-pdf-gov-blue);
+    background-color: var(--pdf-download-gray-lightest);
+    padding: 4px 8px;
+    border-left: 3px solid var(--pdf-download-pdf-gov-maroon);
+}
+.pdf-download-details-columns { display: flex; gap: 20px; }
+.pdf-download-details-column-left, .pdf-download-details-column-right { flex: 1; }
+
+.pdf-download-details-row { display: flex; margin-bottom: 4px; font-size: 11px; }
+.pdf-download-details-label { font-weight: bold; width: 170px; flex-shrink: 0; color: #000000;font-size: larger; }
+.pdf-download-details-value { flex: 1; padding-left: 5px; word-break: break-word; color: var(--pdf-download-black); font-size: larger; }
+.pdf-download-vaccine-link { color: var(--pdf-download-secondary); text-decoration: underline; }
+
+.pdf-download-owner-details-table .pdf-download-details-label { width: 250px; }
+
+.pdf-download-provisional-instructions {
+    background-color: var(--pdf-download-provisional-bg);
+    border: 1px solid #ffe0b2;
+    padding: 8px 10px;
+    font-size: 10px;
+    margin-top: 10px;
+    border-radius: var(--pdf-download-border-radius);
+    text-align: center;
+    line-height: 1.4;
+    color: var(--pdf-download-provisional-text);
+}
+.pdf-download-provisional-instructions p { margin: 0; }
+
+/* PDF Declaration */
+.pdf-download-declaration {
+    margin: 10px 0;
+    font-size: 10px;
+    text-align: left;
+    border: 1px solid var(--pdf-download-gray-light);
+    background-color: var(--pdf-download-gray-lightest);
+    border-radius: var(--pdf-download-border-radius);
+    padding: 8px 10px;
+    line-height: 1.4;
+    flex-shrink: 0;
+}
+.pdf-download-declaration p { margin: 0; }
+
+/* PDF Signatures (Removed as per original design, not present) */
+
+/* PDF Footer Bottom - Always at bottom */
+.pdf-download-footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-top: 10px;
+    border-top: 1px solid var(--pdf-download-gray-light);
+    min-height: 80px;
+    position: absolute;
+    bottom: 20mm;
+    left: 10mm;
+    right: 10mm;
+    background-color: var(--pdf-download-white);
+}
+
+/* PDF Provisional Notice Banner (inside PDF) */
+.pdf-download-provisional-notice-banner {
+    background-color: var(--pdf-download-provisional-bg);
+    border: 1px solid #ffe0b2;
+    border-radius: var(--pdf-download-border-radius);
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 5px auto 10px auto;
+    color: var(--pdf-download-provisional-text);
+    font-size: 9px;
+    font-weight: 500;
+    text-align: center;
+    max-width: 70%;
+}
+.pdf-download-provisional-notice-banner svg { flex-shrink: 0; }
+
+.pdf-download-qr-code-area { width: 70px; text-align: center; }
+.pdf-download-qr-placeholder { width: 50px; height: 50px; border: 1px solid var(--pdf-download-pdf-border-color); margin: 0 auto 5px; background-color: var(--pdf-download-gray-lightest); }
+.pdf-download-qr-code-area p { font-size: 9px; margin:0; }
+
+.pdf-download-stamp-area { text-align: center; }
+.pdf-download-stamp-placeholder {
+    width: 65px; height: 65px;
+    border: 1.5px dashed var(--pdf-download-pdf-gov-maroon);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    color: var(--pdf-download-pdf-gov-maroon);
+    font-weight: bold;
+    font-size: 9px;
+    transform: rotate(-12deg);
+    text-transform: uppercase;
+}
+.pdf-download-stamp-placeholder p { margin:0; }
+
+/* PDF Contact Footer - Absolute positioning at very bottom */
+.pdf-download-contact-footer {
+    position: absolute;
+    bottom: 5mm;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 9px;
+    color: #000000;
+    border-top: 1px solid var(--pdf-download-gray-light);
+    padding-top: 5px;
+    background-color: var(--pdf-download-white);
+}
+
+/* Specific styling for the rules section */
+.pdf-download-rules-box {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    font-size: 11px;
+    line-height: 1.6;
+    margin-top: 15mm;
+    border: 1px solid var(--pdf-download-gray-light);
+    padding: 10mm;
+    background-color: var(--pdf-download-gray-lightest);
+    border-radius: var(--pdf-download-border-radius);
+    margin-bottom: 25mm;
+}
+
+.pdf-download-rules-title {
+    font-size: 26px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+    color: var(--pdf-download-pdf-gov-maroon);
+    text-decoration: underline;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--pdf-download-gray);
+}
+
+.pdf-download-rules-list {
+    list-style-type: decimal;
+    padding-left: 20px;
+    font-size: 16px;
+    margin: 0;
+}
+
+.pdf-download-rules-list li {
+    margin-bottom: 8px;
+}
+
+/* Position rules footer at the bottom of the rules page */
+.pdf-download-rules-footer {
+    position: absolute;
+    bottom: 5mm;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 9px;
+    color: #000000;
+    border-top: 1px solid var(--pdf-download-gray-light);
+    padding-top: 5px;
+    background-color: var(--pdf-download-white);
+}
+
+/* Ensure no responsive adjustments or UI elements from original Download.css */
+/* Remove or override any mobile-specific styles found in Download.css if they conflict */

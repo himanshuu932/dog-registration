@@ -199,4 +199,13 @@ body {
     padding: 8px 10px;
     font-size: 12px;
   }
+  .captcha-wrapper{
+flex-direction: column;
+}
+}
+.captcha-wrapper{
+display: "flex";
+flex-direction: row;
+align-items: "center";
+gap: "10px"
 }

@@ -343,7 +343,7 @@ function LoginPage({ user, setUser, languageType }) {
 
   const renderCaptchaFields = () => (
     captchaSvg && ( // Only render if captchaSvg is available
-      <div className="captcha-wrapper" style={{ display: "flex", alignItems: "center", gap: "10px" }}> {/* Main container for CAPTCHA elements */}
+      <div className="captcha-wrapper" > {/* Main container for CAPTCHA elements */}
         <div className="captcha-top-row" style={{ display: "flex", alignItems: "center", flexDirection: "row", gap: "10px" }}> {/* Container for image and refresh button */}
           <div className="captcha-svg-container" dangerouslySetInnerHTML={{ __html: captchaSvg }} />
           <button

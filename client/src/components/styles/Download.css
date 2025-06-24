@@ -1,3 +1,6 @@
+/* Download.css (Original - Responsive view) */
+/* No significant changes here, it retains its responsiveness */
+
 /* Root Variables */
 :root {
   --user-dl-primary: #2c3e50;
@@ -10,6 +13,8 @@
   --user-dl-pending: #f1c40f; /* Maintained for consistency with badge logic */
   --user-dl-provisional-bg: #fff8e1; /* Light yellow for provisional items */
   --user-dl-provisional-text: #b48b0b; /* Darker yellow text for provisional */
+  --user-dl-payment-bg: #eaf5ff; /* Light blue for payment status */
+  --user-dl-payment-text: #2980b9; /* Darker blue for payment status */
 
   --user-dl-gray-lightest: #f8f9fa;
   --user-dl-gray-light: #ecf0f1;
@@ -51,7 +56,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
   border-bottom: 1px solid var(--user-dl-gray-light);
   flex-wrap: wrap;
 }
@@ -116,6 +122,11 @@
 .user-dl-filter-button.user-dl-filter-style-rejected.user-dl-filter-active {
   background-color: var(--user-dl-danger);
   border-color: var(--user-dl-danger);
+}
+.user-dl-filter-button.user-dl-filter-style-payment_processing.user-dl-filter-active {
+  background-color: var(--user-dl-payment-text);
+  border-color: var(--user-dl-payment-text);
+  color: var(--user-dl-white);
 }
 
 /* Filter Dropdown - Mobile */
@@ -363,37 +374,55 @@
   flex-shrink: 0;
 }
 .user-dl-status-approved { background-color: rgba(39, 174, 96, 0.15); color: var(--user-dl-success); }
-.user-dl-status-pending { background-color: rgba(243, 156, 18, 0.15); color: var(--user-dl-warning); } /* Using warning for pending */
+.user-dl-status-pending { background-color: rgba(243, 156, 18, 0.15); color: var(--user-dl-warning); }
 .user-dl-status-provisional { background-color: var(--user-dl-provisional-bg); color: var(--user-dl-provisional-text); }
 .user-dl-status-rejected { background-color: rgba(192, 57, 43, 0.15); color: var(--user-dl-danger); }
+.user-dl-status-payment-processing { background-color: var(--user-dl-payment-bg); color: var(--user-dl-payment-text); }
 .user-dl-status-default { background-color: rgba(127, 140, 141, 0.15); color: #000000; }
 
-/* Ensure icon colors in UserStatusBadge are set via CSS for better control */
 .user-dl-status-badge.user-dl-status-approved svg { color: var(--user-dl-success); }
 .user-dl-status-badge.user-dl-status-pending svg,
 .user-dl-status-badge.user-dl-status-provisional svg { color: var(--user-dl-warning); }
 .user-dl-status-badge.user-dl-status-rejected svg { color: var(--user-dl-danger); }
+.user-dl-status-badge.user-dl-status-payment-processing svg { color: var(--user-dl-payment-text); }
 .user-dl-status-badge.user-dl-status-default svg { color: #000000; }
 
-/* Table View Button */
-.user-dl-table-view-button {
+/* Table Buttons */
+.user-dl-table-view-button, .user-dl-verify-payment-button {
   padding: 0.5rem 0.9rem;
   border-radius: var(--user-dl-border-radius);
   font-size: 0.85rem;
-  background-color: var(--user-dl-primary-light);
-  color: var(--user-dl-white);
   border: none;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, transform 0.2s ease;
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.5rem;
   white-space: nowrap;
   text-decoration: none;
+  margin-left: 0.5rem;
+}
+.user-dl-table-view-button:hover, .user-dl-verify-payment-button:hover {
+  transform: translateY(-1px);
+}
+
+.user-dl-table-view-button {
+  background-color: var(--user-dl-primary-light);
+  color: var(--user-dl-white);
 }
 .user-dl-table-view-button:hover {
   background-color: var(--user-dl-primary);
 }
+
+.user-dl-verify-payment-button {
+  background-color: var(--user-dl-warning);
+  color: var(--user-dl-black);
+}
+.user-dl-verify-payment-button:hover {
+  background-color: #e08e0b;
+}
+
+
 .user-dl-button-icon-style {
   flex-shrink: 0;
 }
@@ -411,7 +440,7 @@
   margin-top: 1rem;
 }
 
-/* PDF Layout (A4 Sized Element) - FIXED VERSION */
+/* PDF Layout (A4 Sized Element) - FIXED VERSION - These styles are for the responsive display, the actual PDF download view uses PdfDownloadView.css */
 .user-dl-pdf-layout {
   width: 210mm;
   min-height: 297mm;
@@ -466,8 +495,8 @@
 .user-dl-pdf-header-left { display: flex; align-items: center; }
 .user-dl-pdf-logo-icon { height: 45px; width: 45px; margin-right: 10px; }
 .user-dl-pdf-logo-icon img { max-width: 100%; max-height: 100%; object-fit: contain; }
-.user-dl-pdf-org-name h3 { font-size: 14px; color: var(--user-dl-pdf-gov-blue); margin: 0 0 2px 0; font-weight: bold;}
-.user-dl-pdf-org-name h4 { font-size: 12px; font-weight: 500; margin: 0; }
+.user-dl-pdf-org-name h3 { font-size: 24px; color: var(--user-dl-pdf-gov-blue); margin: 0 0 2px 0; font-weight: bold;}
+.user-dl-pdf-org-name h4 { font-size: 20px; font-weight: 500; margin: 0; }
 .user-dl-pdf-header-right { text-align: right; }
 
 /* PDF Certificate Title */
@@ -501,8 +530,8 @@
 }
 .user-dl-pdf-info-block { flex: 1; margin-right: 15px; }
 .user-dl-pdf-info-row { display: flex; margin-bottom: 5px; font-size: 11px; }
-.user-dl-pdf-info-label { font-weight: bold; min-width: 170px; color: #000000; }
-.user-dl-pdf-info-value { flex: 1; padding-left: 5px; color: var(--user-dl-black); }
+.user-dl-pdf-info-label { font-weight: bold; min-width: 190px; color: #000000; font-size: larger;}
+.user-dl-pdf-info-value { flex: 1; padding-left: 5px; color: var(--user-dl-black); font-size: larger;}
 .user-dl-pdf-photo-box {
   width: 90mm; /* More proportional for an A4 */
   max-width: 100px; /* Max pixel width */
@@ -539,8 +568,8 @@
 .user-dl-pdf-details-column-left, .user-dl-pdf-details-column-right { flex: 1; }
 
 .user-dl-pdf-details-row { display: flex; margin-bottom: 4px; font-size: 11px; }
-.user-dl-pdf-details-label { font-weight: bold; width: 170px; flex-shrink: 0; color: #000000; }
-.user-dl-pdf-details-value { flex: 1; padding-left: 5px; word-break: break-word; color: var(--user-dl-black); }
+.user-dl-pdf-details-label { font-weight: bold; width: 170px; flex-shrink: 0; color: #000000;font-size: larger; }
+.user-dl-pdf-details-value { flex: 1; padding-left: 5px; word-break: break-word; color: var(--user-dl-black); font-size: larger; }
 .user-dl-pdf-vaccine-link { color: var(--user-dl-secondary); text-decoration: underline; }
 
 .user-dl-pdf-owner-details-table .user-dl-pdf-details-label { width: 250px; }
@@ -552,6 +581,7 @@
   font-size: 10px;
   margin-top: 10px;
   border-radius: var(--user-dl-border-radius);
+  text-align: center;
   line-height: 1.4;
   color: var(--user-dl-provisional-text);
 }
@@ -746,84 +776,150 @@
 .user-dl-rejected-notice { background-color: rgba(192, 57, 43, 0.08); color: var(--user-dl-danger); border: 1px solid rgba(192, 57, 43, 0.25); }
 .user-dl-notice p { margin: 0 0 0.5rem 0; }
 .user-dl-notice p:last-child { margin-bottom: 0; }
-.user-dl-rejection-reason-box {
-  margin-top: 8px;
-  padding: 8px 10px;
-  background-color: rgba(255, 255, 255, 0.6);
-  border-radius: var(--user-dl-border-radius);
-  font-size: 0.9em;
-  border-left: 3px solid var(--user-dl-danger);
-}
-.user-dl-rejection-reason-box strong { color: var(--user-dl-danger); }
 
-/* Responsive Styles */
-@media screen and (max-width: 768px) {
-  .user-dl-page-container { padding: 1rem; }
-  .user-dl-certificate-focused-view { padding: 0.5rem; }
+/* Responsive Adjustments for original Download.css */
+@media (max-width: 768px) {
+  .user-dl-page-container {
+    margin: 1rem auto;
+    padding: 1rem;
+  }
 
-  .user-dl-page-header { 
-    flex-direction: column; 
-    align-items: flex-start; 
-    gap: 1rem; 
+  .user-dl-page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
   }
-  .user-dl-main-title { 
-    font-size: 1.6rem; 
-    margin-bottom: 0.5rem; /* Add some space if dropdown is directly below */
-  }
-  .user-dl-filter-controls { 
-    /* This will be hidden on mobile by JSX logic, 
-       but good to ensure it doesn't interfere if logic changes */
-    display: none; 
-    width: 100%; 
-    overflow-x: auto; 
-    padding-bottom: 0.5rem; 
-    justify-content: flex-start; 
-  }
-  .user-dl-filter-label-text { margin-bottom: 0.5rem; } /* If it wraps */
-  .user-dl-back-button { font-size: 0.9rem; }
 
-  .user-dl-data-table th, .user-dl-data-table td { font-size: 0.85rem; padding: 0.75rem 0.5rem; }
-  .user-dl-status-badge { padding: 0.25rem 0.6rem; font-size: 0.75rem; gap: 0.25rem; }
-  .user-dl-status-badge svg { width: 13px; height: 13px; }
-  
-  /* Mobile PDF Adjustments */
+  .user-dl-main-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .user-dl-filter-controls {
+    display: none; /* Hide desktop filter buttons on mobile */
+  }
+
+  /* Table Adjustments for mobile */
+  .user-dl-table-container {
+    margin-bottom: 1rem;
+  }
+  .user-dl-data-table {
+    min-width: unset; /* Remove min-width for mobile */
+  }
+  .user-dl-data-table th,
+  .user-dl-data-table td {
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  /* Specific mobile column hiding/showing (adjust as needed) */
+  .user-dl-data-table th:nth-child(2), /* Owner */
+  .user-dl-data-table td:nth-child(2),
+  .user-dl-data-table th:nth-child(4), /* Animal Type */
+  .user-dl-data-table td:nth-child(4),
+  .user-dl-data-table th:nth-child(5), /* Pay Ref No. */
+  .user-dl-data-table td:nth-child(5),
+  .user-dl-data-table th:nth-child(7), /* Applied Date */
+  .user-dl-data-table td:nth-child(7),
+  .user-dl-data-table th:nth-child(8), /* View/Download Button Column */
+  .user-dl-data-table td:nth-child(8) {
+    /* Hide these columns on mobile if not needed, or make them responsive */
+    /* display: none; */
+  }
+
+  .user-dl-table-view-button span,
+  .user-dl-verify-payment-button span {
+    display: none; /* Hide text, show only icon on mobile for buttons in table */
+  }
+
+  .user-dl-table-view-button, .user-dl-verify-payment-button {
+    padding: 0.5rem; /* Make button smaller */
+    margin-left: 0.2rem;
+  }
+
+  .user-dl-status-badge {
+    padding: 0.2rem 0.6rem;
+    font-size: 0.7rem;
+  }
+
+  /* Certificate view adjustments for smaller screens */
+  .user-dl-certificate-focused-view {
+    padding: 0.5rem;
+  }
+
+  .user-dl-pdf-layout {
+    width: 100%; /* Allow PDF display to be responsive on screen, but print will still be A4 */
+    min-height: auto;
+    box-shadow: none;
+    margin: 0 auto;
+  }
+
   .user-dl-outer-pdf-border {
-    height: 297mm; /* Maintain fixed height even on mobile */
+    border: none;
+    padding: 0;
+    height: auto;
   }
-  
-  .user-dl-pdf-border { 
-    padding: 8mm 5mm;
-    padding-bottom: 15mm; /* Extra bottom padding for contact footer */
-  }
-  .user-dl-pdf-header { flex-direction: column; align-items: flex-start; gap: 6px; margin-bottom:8px; padding-bottom: 6px;}
-  .user-dl-pdf-logo-icon { width: 40px; height: 40px; margin-right: 8px; }
-  .user-dl-pdf-org-name h3 { font-size: 12px; }
-  .user-dl-pdf-org-name h4 { font-size: 10px; }
-  .user-dl-pdf-header-right { align-self: flex-end; margin-top: 5px;}
-  .user-dl-pdf-header-right .user-dl-pdf-logo-icon { width: 40px; height: 40px;}
 
-  .user-dl-pdf-certificate-title h2 { font-size: 15px; }
+  .user-dl-pdf-border {
+    border: none;
+    padding: 5mm;
+    height: auto;
+  }
+
+  .user-dl-pdf-header {
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+  }
+  .user-dl-pdf-header-left, .user-dl-pdf-header-right {
+    flex-direction: column;
+    margin-bottom: 5px;
+  }
+  .user-dl-pdf-logo-icon {
+    height: 35px;
+    width: 35px;
+    margin-right: 0;
+    margin-bottom: 5px;
+  }
+  .user-dl-pdf-org-name h3 { font-size: 18px; }
+  .user-dl-pdf-org-name h4 { font-size: 14px; }
+
+  .user-dl-pdf-certificate-title h2 { font-size: 16px; }
   .user-dl-pdf-certificate-title h3 { font-size: 14px; }
-  .user-dl-pdf-provisional-notice-banner { font-size: 8px; padding: 5px 7px; gap: 4px; margin-bottom:8px; max-width: 85%;}
-  .user-dl-pdf-provisional-notice-banner svg { width: 11px; height: 11px; }
 
-  .user-dl-pdf-body { 
-    font-size: 10px; 
-    line-height: 1.4; 
-    margin-bottom: 25mm; /* More space for mobile footer elements */
+  .user-dl-pdf-body {
+    font-size: 9px;
+    margin-bottom: 10mm; /* Adjust for mobile footer */
   }
-  .user-dl-pdf-photo-section { flex-direction: column; align-items: center; gap: 10px; margin-bottom: 10px;}
-  .user-dl-pdf-info-block { width: 100%; }
-  .user-dl-pdf-info-row { margin-bottom: 3px; font-size: 10px; }
-  .user-dl-pdf-info-label { min-width: 120px; }
-  .user-dl-pdf-photo-box { max-width: 90px; max-height: 110px; }
 
-  .user-dl-pdf-section-title { font-size: 11px; padding: 4px 6px; margin-bottom: 6px; }
-  .user-dl-pdf-details-columns { flex-direction: column; gap: 0; }
-  .user-dl-pdf-details-row { font-size: 10px; margin-bottom: 3px; padding-bottom: 2px; }
-  .user-dl-pdf-details-label { width: 130px; }
+  .user-dl-pdf-photo-section {
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  .user-dl-pdf-info-block { margin-right: 0; width: 100%; }
+  .user-dl-pdf-info-row { font-size: 9px; margin-bottom: 2px; flex-wrap: wrap;}
+  .user-dl-pdf-info-label { min-width: 100px; font-size: 9px; }
+  .user-dl-pdf-info-value { font-size: 9px; }
+
+  .user-dl-pdf-photo-box {
+    width: 80px;
+    height: 90px;
+    max-width: 80px;
+    max-height: 90px;
+    margin-top: 10px;
+  }
+
+  .user-dl-pdf-details-section { margin-bottom: 5px; }
+  .user-dl-pdf-section-title { font-size: 11px; padding: 3px 5px; }
+  .user-dl-pdf-details-columns { flex-direction: column; gap: 5px; }
+  .user-dl-pdf-details-row { font-size: 9px; margin-bottom: 2px; flex-wrap: wrap;}
+  .user-dl-pdf-details-label { width: 120px; font-size: 9px;}
+  .user-dl-pdf-details-value { font-size: 9px;}
   .user-dl-pdf-owner-details-table .user-dl-pdf-details-label { width: 180px;}
-  .user-dl-pdf-provisional-instructions { font-size: 9px; padding: 6px; margin-top: 8px;}
+  .user-dl-pdf-provisional-instructions { font-size: 9px; padding: 6px; margin-top: 8px;text-align: center;}
 
   .user-dl-pdf-declaration { font-size: 9px; padding: 6px; }
   
@@ -843,27 +939,71 @@
   .user-dl-pdf-footer-bottom { 
     flex-direction: column; 
     align-items: center; 
-    gap: 10px; 
-    bottom: 25mm; /* Adjust for mobile stacked layout */
+    gap: 5px;
+    min-height: 60px;
+    bottom: 20mm; /* Adjust for mobile */
     left: 5mm;
     right: 5mm;
   }
-  .user-dl-pdf-qr-placeholder { width: 45px; height: 45px; }
-  .user-dl-pdf-stamp-placeholder { width: 55px; height: 55px; font-size: 8px; }
-  
-  .user-dl-pdf-contact-footer { 
-    bottom: 3mm; /* Slightly higher on mobile */
-    font-size: 8px; 
-  }
-  
-  .user-dl-pdf-rules-footer {
-    bottom: 3mm;
+  .user-dl-pdf-qr-code-area { width: 60px; }
+  .user-dl-pdf-qr-code-area p { font-size: 8px; }
+  .user-dl-pdf-stamp-area { margin-left: 0; margin-top: 5px; }
+  .user-dl-pdf-stamp-placeholder { width: 50px; height: 50px; font-size: 8px; }
+  .user-dl-pdf-provisional-notice-banner {
+    max-width: 90%;
     font-size: 8px;
-  }
-  
-  .user-dl-pdf-rules-box {
-    margin-bottom: 20mm; /* Adjust for mobile footer positioning */
+    padding: 5px 8px;
   }
 
-  .user-dl-notice { padding: 0.75rem; font-size: 0.9rem; }
+  .user-dl-pdf-contact-footer {
+    font-size: 8px;
+    bottom: 2mm;
+    padding-top: 3px;
+  }
+
+  .user-dl-pdf-rules-page {
+    margin-top: 10px;
+  }
+  .user-dl-pdf-rules-page .user-dl-outer-pdf-border {
+    height: auto;
+  }
+  .user-dl-pdf-rules-box {
+    padding: 5mm;
+    font-size: 9px;
+    margin-top: 5mm;
+    margin-bottom: 15mm;
+  }
+  .user-dl-pdf-rules-title {
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+  .user-dl-pdf-rules-list {
+    padding-left: 15px;
+    font-size: 12px;
+  }
+  .user-dl-pdf-rules-list li {
+    margin-bottom: 5px;
+  }
+
+  .user-dl-action-button.user-dl-certificate-download-btn {
+    width: calc(100% - 2rem);
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    margin-top: 15px;
+  }
+
+  .user-dl-notice {
+    width: calc(100% - 2rem);
+    margin: 10px auto 0;
+    font-size: 0.85rem;
+    gap: 8px;
+  }
+  .user-dl-notice svg {
+    width: 16px;
+    height: 16px;
+  }
+  .user-dl-rejection-reason-box {
+    font-size: 0.8rem;
+    padding: 0.5rem;
+  }
 }
