@@ -1,49 +1,72 @@
+/* Root Variables - Harmonized with Verify.css and PdfDownloadView.css */
 :root {
   --primary: #2c3e50;
   --primary-light: #34495e;
   --secondary: #3498db;
-  --secondary-light: #5dade2;
+  --secondary-light: #287ab8; /* Darker shade for hover */
   --accent: #1abc9c;
   --success: #23814a; 
-  --danger: #d84e3f;
+  --danger: #c0392b; /* Matching Verify.css */
   --warning: #f39c12;
   --pending: #f1c40f;
+
+  --provisional-bg: #fff8e1; /* Matching Verify/PdfDownloadView provisional */
+  --provisional-text: #b48b0b; /* Matching Verify/PdfDownloadView provisional */
+
+  --gray-lightest: #f8f9fa; /* Matching Verify/PdfDownloadView */
   --gray-light: #ecf0f1;
   --gray: #bdc3c7;
   --gray-dark: #7f8c8d;
   --white: #ffffff;
   --black: #2c3e50;
   --shadow: rgba(0, 0, 0, 0.1);
-  --border-radius: 4px;
-  --font-main: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Oxygen', 'Ubuntu', sans-serif;
+  --border-radius: 6px; /* Matching Verify/PdfDownloadView */
+  --font-main: 'Roboto', 'Arial', sans-serif; /* Matching Verify/PdfDownloadView */
+
+  --pdf-border-color: #0a0a0a; /* From Verify/PdfDownloadView */
+  --pdf-gov-maroon: #8b0000; /* From Verify/PdfDownloadView */
+  --pdf-gov-blue: #005ea5; /* From Verify/PdfDownloadView */
 }
 
+/* Main Update Provisional Container */
 .update-provisional-container {
+  max-width: 100vw;
+  min-height: 70vh;
+  margin: 2rem auto;
+  padding: 2rem;
+  font-family: var(--font-main);
+  color: var(--black);
+  background-color: var(--gray-light); /* Lighter background for the overall page */
+  box-sizing: border-box;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 2rem;
-  background-color: var(--gray-light);
-  min-height: 100vh;
-  font-family: var(--font-main);
 }
 
 .update-provisional-card {
   background: var(--white);
   padding: 2.5rem;
   border-radius: var(--border-radius);
-  box-shadow: 0 4px 15px var(--shadow);
+  box-shadow: 0 4px 12px var(--shadow); /* Increased shadow for consistency */
   width: 100%;
-  max-width: 550px;
-  border-top: 5px solid var(--secondary);
+ border-top: 5px solid var(--secondary);
+  box-sizing: border-box;
 }
 
 .update-provisional-title {
-  color: var(--primary);
-  text-align: center;
-  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   font-size: 2rem;
   font-weight: 500;
+  color: var(--primary);
+  margin: 0 0 1rem 0;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.update-title-icon {
+  color: var(--secondary);
 }
 
 .update-provisional-subtitle {
@@ -53,11 +76,24 @@
   font-size: 1rem;
 }
 
-.update-provisional-form .form-group {
-  margin-bottom: 1.5rem;
+/* Input Section - Styled similarly to Verify.css input section */
+.update-input-section {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: var(--gray-lightest);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--gray-light);
 }
 
-.update-provisional-form label {
+.update-input-section .form-group {
+  flex: 1;
+  margin-bottom: 0; /* Override default margin */
+}
+
+.update-input-section label {
   display: block;
   margin-bottom: 0.5rem;
   color: var(--primary-light);
@@ -65,7 +101,7 @@
   font-size: 0.9rem;
 }
 
-.update-provisional-form .form-control {
+.update-input-section .form-control {
   width: 100%;
   padding: 0.75rem 1rem;
   border: 1px solid var(--gray);
@@ -74,20 +110,84 @@
   color: var(--black);
   transition: border-color 0.2s, box-shadow 0.2s;
   text-transform: uppercase;
+  box-sizing: border-box;
 }
 
-.update-provisional-form .form-control::placeholder {
+.update-input-section .form-control::placeholder {
     text-transform: none;
 }
 
-
-.update-provisional-form .form-control:focus {
+.update-input-section .form-control:focus {
   outline: none;
   border-color: var(--secondary);
   box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
 }
 
-.btn-submit {
+.btn-fetch {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--secondary);
+  color: var(--white);
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-fetch:hover:not(:disabled) {
+  background-color: var(--secondary-light);
+  transform: translateY(-1px);
+}
+
+.btn-fetch:disabled {
+  background-color: var(--gray);
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Provisional Details Section (for fetched license) */
+.provisional-details-section {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed var(--gray);
+}
+
+.provisional-details-section h2 {
+    color: var(--primary);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    font-weight: 500;
+}
+
+/* Certificate Display Area - Reusing Verify.css styles */
+.update-provisional-certificate-display-area {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 0;
+  box-sizing: border-box;
+  background-color: var(--gray-lightest); /* Lighter background for this section */
+  border-radius: var(--border-radius);
+  margin-top: 1rem;
+  overflow-x: auto; /* Allow horizontal scrolling if PDF layout overflows */
+}
+
+/* Existing .verify-pdf-layout styles from Verify.css are reused directly */
+/* Ensure Verify.css is loaded or copy relevant styles */
+
+/* Upgrade Form and Button */
+.upgrade-form {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed var(--gray);
+    text-align: center;
+}
+
+.upgrade-form .btn-submit {
   display: block;
   width: 100%;
   padding: 0.8rem 1rem;
@@ -98,39 +198,22 @@
   font-size: 1.1rem;
   font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
-  margin-top: 1rem;
+  transition: background-color 0.2s ease-in-out, transform 0.2s ease;
 }
 
-.btn-submit:hover:not(:disabled) {
+.upgrade-form .btn-submit:hover:not(:disabled) {
   background-color: var(--secondary-light);
+  transform: translateY(-1px);
 }
 
-.btn-submit:disabled {
+.upgrade-form .btn-submit:disabled {
   background-color: var(--gray);
   cursor: not-allowed;
+  transform: none;
 }
 
-.message {
-  padding: 1rem;
-  margin-top: 1.5rem;
-  border-radius: var(--border-radius);
-  text-align: center;
-  font-weight: 500;
-}
 
-.message.success {
-  background-color: #d4edda;
-  color: var(--success);
-  border: 1px solid #c3e6cb;
-}
-
-.message.error {
-  background-color: #f8d7da;
-  color: var(--danger);
-  border: 1px solid #f5c6cb;
-}
-
+/* Updated License Details (after successful upgrade) */
 .updated-license-details {
     margin-top: 2rem;
     padding: 1.5rem;
@@ -139,12 +222,14 @@
     border-radius: var(--border-radius);
     background-color: #f9f9f9;
     text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .updated-license-details h3 {
     color: var(--success);
     margin-top: 0;
     margin-bottom: 1rem;
+    font-size: 1.5rem;
 }
 
 .updated-license-details p {
@@ -166,4 +251,544 @@
 .success-icon {
     color: var(--success);
     margin-bottom: 1rem;
+}
+
+/* --- Replicated styles from Verify.css to ensure consistency --- */
+/* These styles are necessary for the embedded certificate view to render correctly */
+
+.verify-pdf-layout {
+  width: 210mm;
+  min-height: 297mm;
+  background-color: var(--white);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  overflow: hidden;
+  box-sizing: border-box;
+  position: relative;
+  margin: 0 auto 20px auto;
+  transform: scale(0.8); /* Scale down for better fit in the card */
+  transform-origin: top center; /* Scale from top center */
+  margin-bottom: -50px; /* Adjust margin after scaling */
+}
+
+.verify-outer-pdf-border {
+  border: 2px solid var(--pdf-border-color);
+  padding: 4mm;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.verify-pdf-border {
+  border: 1px solid var(--pdf-border-color);
+  padding: 15mm 10mm;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.verify-pdf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--pdf-border-color);
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+}
+
+.verify-pdf-header-left { 
+  display: flex; 
+  align-items: center; 
+}
+
+.verify-pdf-logo-icon { 
+  height: 45px; 
+  width: 45px; 
+  margin-right: 10px; 
+}
+
+.verify-pdf-logo-icon img { 
+  max-width: 100%; 
+  max-height: 100%; 
+  object-fit: contain; 
+}
+
+.verify-pdf-org-name h3 { 
+  font-size: 14px; 
+  color: var(--pdf-gov-blue); 
+  margin: 0 0 2px 0; 
+  font-weight: bold;
+}
+
+.verify-pdf-org-name h4 { 
+  font-size: 12px; 
+  font-weight: 500; 
+  margin: 0; 
+}
+
+.verify-pdf-header-right { 
+  text-align: right; 
+}
+
+.verify-pdf-certificate-title { 
+  text-align: center; 
+  margin-bottom: 10px; 
+}
+
+.verify-pdf-certificate-title h2 { 
+  font-size: 18px; 
+  font-weight: bold; 
+  margin: 0 0 4px 0; 
+  color: var(--black); 
+}
+
+.verify-pdf-certificate-title h3 { 
+  font-size: 16px; 
+  font-weight: bold; 
+  margin-bottom: 8px; 
+  text-decoration: underline; 
+  color: var(--pdf-gov-maroon); 
+  letter-spacing: 0.5px; 
+}
+
+.verify-pdf-provisional-notice-banner {
+  background-color: var(--provisional-bg);
+  border: 1px solid #ffe0b2;
+  border-radius: var(--border-radius);
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 5px auto 10px auto;
+  color: var(--provisional-text);
+  font-size: 9px;
+  font-weight: 500;
+  text-align: center;
+  max-width: 70%;
+}
+
+.verify-pdf-provisional-notice-banner svg { 
+  flex-shrink: 0; 
+}
+
+.verify-pdf-body {
+  font-size: 11px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  line-height: 1.5;
+}
+
+.verify-pdf-photo-section {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  align-items: flex-start;
+}
+
+.verify-pdf-info-block { 
+  flex: 2; 
+  margin-right: 15px; 
+}
+
+.verify-pdf-info-row { 
+  display: flex; 
+  margin-bottom: 5px; 
+  font-size: 11px; 
+}
+
+.verify-pdf-info-label { 
+  font-weight: bold; 
+  min-width: 170px; 
+  color: var(--gray-dark); 
+}
+
+.verify-pdf-info-value { 
+  flex: 1; 
+  padding-left: 5px; 
+  color: var(--black); 
+}
+
+.verify-pdf-photo-box {
+  width: 90mm;
+  max-width: 100px;
+  height: 110mm;
+  max-height: 120px;
+  border: 1.5px solid var(--pdf-border-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  background-color: var(--gray-lightest);
+}
+
+.verify-pdf-photo { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+}
+
+.verify-pdf-photo-placeholder { 
+  text-align: center; 
+  font-size: 10px; 
+  color: var(--gray); 
+  padding: 5px; 
+}
+
+.verify-pdf-details-section { 
+  margin-bottom: 8px; 
+}
+
+.verify-pdf-section-title {
+  font-weight: bold;
+  font-size: 13px;
+  border-bottom: 1px solid var(--pdf-border-color);
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  color: var(--pdf-gov-blue);
+  background-color: var(--gray-lightest);
+  padding: 4px 8px;
+  border-left: 3px solid var(--pdf-gov-maroon);
+}
+
+.verify-pdf-details-columns { 
+  display: flex; 
+  gap: 20px; 
+}
+
+.verify-pdf-details-column-left, 
+.verify-pdf-details-column-right { 
+  flex: 1; 
+}
+
+.verify-pdf-details-row { 
+  display: flex; 
+  margin-bottom: 4px; 
+  font-size: 11px; 
+}
+
+.verify-pdf-details-label { 
+  font-weight: bold; 
+  width: 170px; 
+  flex-shrink: 0; 
+  color: var(--gray-dark); 
+}
+
+.verify-pdf-details-value { 
+  flex: 1; 
+  padding-left: 5px; 
+  word-break: break-word; 
+  color: var(--black); 
+}
+
+.verify-pdf-vaccine-link { 
+  color: var(--secondary); 
+  text-decoration: underline; 
+}
+
+.verify-pdf-owner-details-table .verify-pdf-details-label { 
+  width: 250px; 
+}
+
+.verify-pdf-provisional-instructions {
+  background-color: var(--provisional-bg);
+  border: 1px solid #ffe0b2;
+  padding: 8px 10px;
+  font-size: 10px;
+  margin-top: 10px;
+  border-radius: var(--border-radius);
+  line-height: 1.4;
+  color: var(--provisional-text);
+}
+
+.verify-pdf-provisional-instructions p { 
+  margin: 0; 
+}
+
+.verify-pdf-declaration {
+  margin: 15px 0 10px 0;
+  font-size: 10px;
+  text-align: left;
+  border: 1px solid var(--gray-light);
+  background-color: var(--gray-lightest);
+  border-radius: var(--border-radius);
+  padding: 8px 10px;
+  line-height: 1.4;
+}
+
+.verify-pdf-declaration p { 
+  margin: 0; 
+}
+
+.verify-pdf-signatures {
+  display: flex;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 15px;
+  margin-bottom: 10px;
+}
+
+.verify-pdf-signature-block { 
+  text-align: center; 
+  width: 45%; 
+}
+
+.verify-pdf-signature-line { 
+  border-bottom: 1px solid var(--pdf-border-color); 
+  height: 30px; 
+  margin-bottom: 5px; 
+}
+
+.verify-pdf-signature-block p { 
+  font-size: 10px; 
+  margin: 0; 
+  font-style: italic; 
+}
+
+.verify-pdf-footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-top: 10px;
+  border-top: 1px solid var(--gray-light);
+  margin-top: 10px;
+}
+
+.verify-pdf-qr-code-area { 
+  width: 70px; 
+  text-align: center; 
+}
+
+/* Specific styling for the QR code */
+.verify-pdf-qr-code-area svg {
+  border: 1px solid var(--pdf-border-color); /* Add border to QR code */
+  padding: 3px; /* Add padding inside the border */
+  background-color: var(--white);
+  margin: 0 auto 5px;
+  display: block; /* Ensure it takes up full width for centering */
+}
+
+.verify-pdf-qr-code-area p { 
+  font-size: 9px; 
+  margin: 0; 
+}
+
+.verify-pdf-stamp-area { 
+  text-align: center; 
+}
+
+.verify-pdf-stamp-placeholder {
+  width: 65px; 
+  height: 65px;
+  border: 1.5px dashed var(--pdf-gov-maroon);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  color: var(--pdf-gov-maroon);
+  font-weight: bold;
+  font-size: 9px;
+  transform: rotate(-12deg);
+  text-transform: uppercase;
+}
+
+.verify-pdf-stamp-placeholder p { 
+  margin: 0; 
+}
+
+.verify-pdf-contact-footer {
+  margin-top: 8px;
+  padding-top: 5px;
+  text-align: center;
+  font-size: 9px;
+  color: var(--gray-dark);
+  border-top: 1px solid var(--gray-light);
+}
+
+/* Responsive Styles for the embedded PDF view */
+@media screen and (max-width: 768px) {
+  .verify-pdf-layout { 
+    width: 100%; /* Make it fluid on smaller screens */
+    transform: none; /* Remove scaling */
+    margin: 0 auto 15px auto; /* Adjust margin */
+  }
+
+  .verify-outer-pdf-border { 
+    padding: 2mm; 
+  }
+
+  .verify-pdf-border { 
+    padding: 6mm 4mm; 
+  }
+
+  .verify-pdf-header { 
+    flex-direction: column; 
+    align-items: flex-start; 
+    gap: 6px; 
+    margin-bottom: 8px; 
+    padding-bottom: 6px;
+  }
+
+  .verify-pdf-logo-icon { 
+    width: 35px; 
+    height: 35px; 
+    margin-right: 8px; 
+  }
+
+  .verify-pdf-org-name h3 { 
+    font-size: 11px; 
+  }
+
+  .verify-pdf-org-name h4 { 
+    font-size: 9px; 
+  }
+
+  .verify-pdf-header-right { 
+    align-self: flex-end; 
+    margin-top: 5px;
+  }
+
+  .verify-pdf-header-right .verify-pdf-logo-icon { 
+    width: 35px; 
+    height: 35px;
+  }
+
+  .verify-pdf-certificate-title h2 { 
+    font-size: 14px; 
+  }
+
+  .verify-pdf-certificate-title h3 { 
+    font-size: 12px; 
+  }
+
+  .verify-pdf-provisional-notice-banner { 
+    font-size: 7px; 
+    padding: 4px 6px; 
+    gap: 3px; 
+    margin-bottom: 6px; 
+    max-width: 90%;
+  }
+
+  .verify-pdf-provisional-notice-banner svg { 
+    width: 10px; 
+    height: 10px; 
+  }
+
+  .verify-pdf-body { 
+    font-size: 9px; 
+    line-height: 1.3; 
+  }
+
+  .verify-pdf-photo-section { 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 8px; 
+    margin-bottom: 8px;
+  }
+
+  .verify-pdf-info-block { 
+    width: 100%; 
+  }
+
+  .verify-pdf-info-row { 
+    margin-bottom: 2px; 
+    font-size: 9px; 
+  }
+
+  .verify-pdf-info-label { 
+    min-width: 100px; 
+  }
+
+  .verify-pdf-photo-box { 
+    max-width: 70px; 
+    max-height: 90px; 
+  }
+
+  .verify-pdf-section-title { 
+    font-size: 11px; 
+    padding: 4px 6px; 
+    margin-bottom: 6px; 
+  }
+
+  .verify-pdf-details-columns { 
+    flex-direction: column; 
+    gap: 0; 
+  }
+
+  .verify-pdf-details-row { 
+    font-size: 9px; 
+    margin-bottom: 2px; 
+    padding-bottom: 1px; 
+  }
+
+  .verify-pdf-details-label { 
+    width: 100px; 
+  }
+
+  .verify-pdf-owner-details-table .verify-pdf-details-label { 
+    width: 150px;
+  }
+
+  .verify-pdf-provisional-instructions { 
+    font-size: 8px; 
+    padding: 5px; 
+    margin-top: 6px;
+  }
+
+  .verify-pdf-declaration { 
+    font-size: 8px; 
+    padding: 5px; 
+  }
+
+  .verify-pdf-signatures { 
+    flex-direction: column; 
+    gap: 8px; 
+    margin-top: 10px; 
+    margin-bottom: 6px; 
+  }
+
+  .verify-pdf-signature-block { 
+    width: 100%; 
+  }
+
+  .verify-pdf-signature-line { 
+    height: 20px; 
+    margin-bottom: 3px; 
+  }
+
+  .verify-pdf-signature-block p { 
+    font-size: 8px; 
+  }
+
+  .verify-pdf-footer-bottom { 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 8px; 
+    margin-top: 6px; 
+  }
+
+  .verify-pdf-qr-code-area { 
+    width: 60px; 
+  }
+
+  .verify-pdf-qr-code-area svg {
+    width: 40px !important; /* Adjust SVG size for smaller screens */
+    height: 40px !important;
+  }
+
+  .verify-pdf-stamp-placeholder { 
+    width: 45px; 
+    height: 45px; 
+    font-size: 7px; 
+  }
+
+  .verify-pdf-contact-footer { 
+    font-size: 7px; 
+    margin-top: 6px; 
+  }
 }

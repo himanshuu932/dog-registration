@@ -7,6 +7,7 @@ import {
   Search, User, Dog, Calendar, Phone, MapPin, Home, FileText, Award, Clock,
   CheckCircle, XCircle, AlertCircle // Added for certificate status icons
 } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react'; // Import QRCodeSVG
 
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A';
@@ -45,6 +46,9 @@ const renderCertificateView = (lic) => {
         new Date(lic.pet.dateOfVaccination).getFullYear() + 1
       )).toLocaleDateString('en-GB') : "N/A";
 
+  // Construct QR code value to only use the license_Id
+  const qrCodeValue = `${lic.license_Id}`;
+
   // Text content for the certificate (simplified to English for Verify.jsx)
   const certificateText = {
     orgNameEn: 'Nagar Nigam Gorakhpur',
@@ -55,7 +59,8 @@ const renderCertificateView = (lic) => {
     provisionalCertificateTitleHi: 'अस्थायी पशु लाइसेंस प्रमाणपत्र',
     dateLabel: 'Date:',
     photoPlaceholder: 'Pet\'s Photo',
-    declaration: <>I declare that the information provided above is true to the best of my knowledge. <b>/</b> मैं घोषणा करता/करती हूँ कि उपरोक्त दी गई जानकारी मेरी जानकारी के अनुसार सत्य है।</>,
+    // Removed declaration text as requested
+    // declaration: <>I declare that the information provided above is true to the best of my knowledge. <b>/</b> मैं घोषणा करता/करती हूँ कि उपरोक्त दी गई जानकारी मेरी जानकारी के अनुसार सत्य है।</>,
     applicantSignature: 'Applicant\'s Signature / आवेदक के हस्ताक्षर',
     issuingAuthority: 'Issuing Authority / जारीकर्ता अधिकारी',
     qrCodeLabel: 'QR Code',
@@ -68,6 +73,7 @@ const renderCertificateView = (lic) => {
     vetAddressLabel: 'Address:',
     provisionalInstructions: 'You must visit the approved veterinary clinic within 30 days to vaccinate your pet and convert this to a full license.',
     animalTypeLabelBilingual: 'Animal Type / पशु का प्रकार',
+    paymentReferenceNoLabel: 'Payment Reference No. / भुगतान संदर्भ संख्या' // Added payment reference label
   };
 
   const certTitleEn = lic.isProvisional ? certificateText.provisionalCertificateTitleEn : certificateText.certificateTitleEn;
@@ -142,20 +148,20 @@ const renderCertificateView = (lic) => {
                 <div className="verify-pdf-section-title">पशु का विवरण / Pet Details</div>
                 <div className="verify-pdf-details-columns">
                   <div className="verify-pdf-details-column-left">
-                    <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">{certificateText.animalTypeLabelBilingual}</div><div className="verify-pdf-details-value">: {getAnimalLabel(lic.animalType) || "N/A"}</div></div>
-                    <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">पशु का नाम / Pet Name</div><div className="verify-pdf-details-value">: {lic.pet?.name || "N/A"}</div></div>
-                    <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">नस्ल / Breed</div><div className="verify-pdf-details-value">: {lic.pet?.breed || "N/A"}</div></div>
-                    <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">वर्ग / Category</div><div className="verify-pdf-details-value">: {lic.pet?.category || "N/A"}</div></div>
-                    <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">रंग / Color</div><div className="verify-pdf-details-value">: {lic.pet?.color || "N/A"}</div></div>
-                    <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">आयु / Age</div><div className="verify-pdf-details-value">: {lic.pet?.age || "N/A"}</div></div>
+                    <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">{certificateText.animalTypeLabelBilingual}</div><div className="verify-pdf-info-value">: {getAnimalLabel(lic.animalType) || "N/A"}</div></div>
+                    <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">पशु का नाम / Pet Name</div><div className="verify-pdf-info-value">: {lic.pet?.name || "N/A"}</div></div>
+                    <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">नस्ल / Breed</div><div className="verify-pdf-info-value">: {lic.pet?.breed || "N/A"}</div></div>
+                    <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">वर्ग / Category</div><div className="verify-pdf-info-value">: {lic.pet?.category || "N/A"}</div></div>
+                    <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">रंग / Color</div><div className="verify-pdf-info-value">: {lic.pet?.color || "N/A"}</div></div>
+                    <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">आयु / Age</div><div className="verify-pdf-info-value">: {lic.pet?.age || "N/A"}</div></div>
                   </div>
                   <div className="verify-pdf-details-column-right">
-                    <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">लिंग / Gender</div><div className="verify-pdf-details-value">: {lic.pet?.sex || "N/A"}</div></div>
-                    <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">टीकाकरण की तारीख / Vaccination Date</div><div className="verify-pdf-details-value">: {formatDate(lic.pet?.dateOfVaccination)}</div></div>
-                    <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">टीकाकरण / Vaccinated</div><div className="verify-pdf-details-value">: {lic.pet?.dateOfVaccination ? 'Yes' : 'No'}</div></div>
-                    {lic.pet?.vaccinationProofUrl && (<div className="verify-pdf-details-row"><div className="verify-pdf-details-label">टीकाकरण प्रमाणपत्र / Vaccination Certificate</div><div className="verify-pdf-details-value"><a href={lic.pet.vaccinationProofUrl} target="_blank" rel="noreferrer noopener" className="verify-pdf-vaccine-link">View</a></div></div>)}
-                    <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">माइक्रोचिप / Microchipped</div><div className="verify-pdf-details-value">: No</div></div>
-                    <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">अगला टीकाकरण / Next Vaccination</div><div className="verify-pdf-details-value">: {formatDate(lic.pet?.dueVaccination)}</div></div>
+                    <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">लिंग / Gender</div><div className="verify-pdf-info-value">: {lic.pet?.sex || "N/A"}</div></div>
+                    <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">टीकाकरण की तारीख / Vaccination Date</div><div className="verify-pdf-info-value">: {formatDate(lic.pet?.dateOfVaccination)}</div></div>
+                    <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">टीकाकरण / Vaccinated</div><div className="verify-pdf-info-value">: {lic.pet?.dateOfVaccination ? 'Yes' : 'No'}</div></div>
+                    {lic.pet?.vaccinationProofUrl && (<div className="verify-pdf-details-row"><div className="verify-pdf-details-label">टीकाकरण प्रमाणपत्र / Vaccination Certificate</div><div className="verify-pdf-info-value"><a href={lic.pet.vaccinationProofUrl} target="_blank" rel="noreferrer noopener" className="verify-pdf-vaccine-link">View</a></div></div>)}
+                    <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">माइक्रोचिप / Microchipped</div><div className="verify-pdf-info-value">: No</div></div>
+                    <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">अगला टीकाकरण / Next Vaccination</div><div className="verify-pdf-info-value">: {formatDate(lic.pet?.dueVaccination)}</div></div>
                   </div>
                 </div>
               </div>
@@ -163,24 +169,34 @@ const renderCertificateView = (lic) => {
               <div className="verify-pdf-details-section verify-pdf-owner-details-section">
                 <div className="verify-pdf-section-title">मालिक का विवरण / Owner Details</div>
                 <div className="verify-pdf-owner-details-table">
-                  <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">पता / Address</div><div className="verify-pdf-details-value">: {`${lic.address?.streetName || ""}, ${lic.address?.city || ""}, ${lic.address?.state || ""} - ${lic.address?.pinCode || "N/A"}`}</div></div>
-                  <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">फोन नंबर / Phone Number</div><div className="verify-pdf-details-value">: {lic.phoneNumber || "N/A"}</div></div>
-                  <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">{`जानवरों की संख्या / No. of ${getAnimalLabel(lic.animalType)}s`}</div><div className="verify-pdf-details-value">:{lic.numberOfAnimals || "N/A"}</div></div>
-                  <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">घर का क्षेत्रफल / House Area</div><div className="verify-pdf-details-value">: {lic.totalHouseArea ? `${lic.totalHouseArea} sq meter` : "N/A"}</div></div>
+                  <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">पता / Address</div><div className="verify-pdf-info-value">: {`${lic.address?.streetName || ""}, ${lic.address?.city || ""}, ${lic.address?.state || ""} - ${lic.address?.pinCode || "N/A"}`}</div></div>
+                  <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">फोन नंबर / Phone Number</div><div className="verify-pdf-info-value">: {lic.phoneNumber || "N/A"}</div></div>
+                  <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">{`जानवरों की संख्या / No. of ${getAnimalLabel(lic.animalType)}s`}</div><div className="verify-pdf-info-value">:{lic.numberOfAnimals || "N/A"}</div></div>
+                  <div className="verify-pdf-details-row"><div className="verify-pdf-details-label">घर का क्षेत्रफल / House Area</div><div className="verify-pdf-info-value">: {lic.totalHouseArea ? `${lic.totalHouseArea} sq meter` : "N/A"}</div></div>
+                  {/* Added Payment Reference No. similar to PdfDownloadView.jsx */}
+                  <div className="verify-pdf-details-row">
+                    <div className="verify-pdf-details-label">{certificateText.paymentReferenceNoLabel}</div>
+                    <div className="verify-pdf-info-value">: {lic.paymentReferenceNo || "N/A"}</div>
+                  </div>
                 </div>
               </div>
 
+              {/* Removed Declaration as requested
               <div className="verify-pdf-declaration"><p>{certificateText.declaration}</p></div>
+              */}
             </div>
 
+            {/* Removed Signatures block as requested
             <div className="verify-pdf-signatures">
               <div className="verify-pdf-signature-block"><div className="verify-pdf-signature-line"></div><p>{certificateText.applicantSignature}</p></div>
               <div className="verify-pdf-signature-block"><div className="verify-pdf-signature-line"></div><p>{certificateText.issuingAuthority}</p></div>
             </div>
+            */}
 
             <div className="verify-pdf-footer-bottom">
               <div className="verify-pdf-qr-code-area">
-                <div className="verify-pdf-qr-placeholder"></div>
+                {/* Replaced placeholder with QRCodeSVG component */}
+                <QRCodeSVG value={qrCodeValue} size={65} level="H" /> 
                 <p>{certificateText.qrCodeLabel}</p>
               </div>
               {lic.isProvisional && (
@@ -211,7 +227,8 @@ const Verify = () => {
   const [error, setError] = useState('');
 
   const backend = "http://localhost:5000";
-  const token = localStorage.getItem("token"); // Assuming token is stored in localStorage
+  // Assuming token is stored in localStorage and available for admin endpoint
+  const token = localStorage.getItem("token"); 
 
   const handleInputChange = (e) => {
     setLicenseIdInput(e.target.value);
@@ -231,6 +248,7 @@ const Verify = () => {
     setError('');
 
     try {
+      // Using the /api/admin endpoint with Authorization header as specified
       const res = await axios.get(`${backend}/api/admin/${licenseIdInput}`, {
         headers: { Authorization: `Bearer ${token}` },
       });

@@ -14,120 +14,172 @@
   --white: #ffffff;
   --black: #2c3e50;
   --shadow: rgba(0, 0, 0, 0.1);
-  --border-radius: 4px;
+  --border-radius: 8px; /* Slightly increased for softer look */
   --font-main: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Oxygen', 'Ubuntu', sans-serif;
+  --transition-speed: 0.3s ease; /* Define a general transition speed */
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-main);
+  background-color: var(--gray-light);
 }
 
 .fee-setup-container {
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center; /* Changed to center for vertical alignment */
   padding: 2rem;
   background-color: var(--gray-light);
   min-height: 100vh;
-  font-family: var(--font-main);
+  box-sizing: border-box; /* Ensures padding doesn't add to total width/height */
 }
 
 .fee-setup-card {
   background: var(--white);
-  padding: 2.5rem;
+  padding: 3rem; /* Increased padding */
   border-radius: var(--border-radius);
-  box-shadow: 0 4px 15px var(--shadow);
+  box-shadow: 0 8px 25px var(--shadow); /* More pronounced shadow */
   width: 100%;
-  max-width: 500px;
-  border-top: 5px solid var(--primary);
+  max-width: 550px; /* Slightly wider card */
+  border-top: 6px solid var(--primary); /* Slightly thicker border-top */
+  box-sizing: border-box;
+  animation: fadeIn 0.5s ease-out; /* Add a fade-in animation */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .fee-setup-title {
   color: var(--primary);
   text-align: center;
-  margin-bottom: 0.5rem;
-  font-size: 2rem;
-  font-weight: 500;
+  margin-bottom: 0.75rem; /* Increased margin */
+  font-size: 2.2rem; /* Slightly larger title */
+  font-weight: 700; /* Bolder title */
 }
 
 .fee-setup-subtitle {
   text-align: center;
   color: var(--gray-dark);
-  margin-bottom: 2rem;
-  font-size: 1rem;
+  margin-bottom: 2.5rem; /* Increased margin */
+  font-size: 1.05rem; /* Slightly larger subtitle */
+  line-height: 1.5;
 }
 
 .fee-setup-form .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.8rem; /* Increased margin */
 }
 
 .fee-setup-form label {
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.6rem; /* Increased margin */
   color: var(--primary-light);
-  font-weight: bold;
-  font-size: 0.9rem;
+  font-weight: 600; /* Bolder label */
+  font-size: 0.95rem; /* Slightly larger label */
 }
 
 .fee-setup-form .form-control {
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 0.85rem 1.1rem; /* Slightly more padding */
   border: 1px solid var(--gray);
   border-radius: var(--border-radius);
-  font-size: 1rem;
+  font-size: 1.05rem; /* Slightly larger font */
   color: var(--black);
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+  box-sizing: border-box;
 }
 
 .fee-setup-form .form-control:focus {
   outline: none;
   border-color: var(--secondary);
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+  box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.3); /* More prominent shadow on focus */
 }
 
 .btn-submit {
   display: block;
   width: 100%;
-  padding: 0.8rem 1rem;
+  padding: 1rem 1.2rem; /* More padding for a bigger button */
   background-color: var(--accent);
   color: var(--white);
   border: none;
   border-radius: var(--border-radius);
-  font-size: 1.1rem;
+  font-size: 1.2rem; /* Larger font */
   font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
-  margin-top: 1rem;
+  transition: background-color var(--transition-speed), transform 0.1s ease-in-out;
+  margin-top: 2rem; /* Increased margin top */
+  letter-spacing: 0.5px;
 }
 
 .btn-submit:hover:not(:disabled) {
   background-color: #16a085; /* A slightly darker shade of accent */
+  transform: translateY(-2px); /* Slight lift effect on hover */
+}
+
+.btn-submit:focus:not(:disabled) {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(26, 188, 156, 0.4); /* Focus ring for accessibility */
 }
 
 .btn-submit:disabled {
   background-color: var(--gray);
   cursor: not-allowed;
+  opacity: 0.7; /* Make disabled state more apparent */
 }
 
 .loader {
   text-align: center;
-  padding: 2rem;
+  padding: 3rem; /* More padding */
   color: var(--primary);
-  font-size: 1.2rem;
-}
-
-.message {
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  border-radius: var(--border-radius);
-  text-align: center;
+  font-size: 1.3rem; /* Larger font */
   font-weight: 500;
 }
 
+.message {
+  padding: 1.2rem; /* More padding */
+  margin-bottom: 2rem; /* Increased margin */
+  border-radius: var(--border-radius);
+  text-align: center;
+  font-weight: 600; /* Bolder message text */
+  font-size: 1rem;
+  display: flex; /* For icon alignment */
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* Space between text and icon */
+}
+
 .message.success {
-  background-color: #d4edda;
+  background-color: #e6ffe6; /* Lighter success background */
   color: var(--success);
-  border: 1px solid #c3e6cb;
+  border: 1px solid var(--success);
 }
 
 .message.error {
-  background-color: #f8d7da;
+  background-color: #ffe6e6; /* Lighter error background */
   color: var(--danger);
-  border: 1px solid #f5c6cb;
+  border: 1px solid var(--danger);
+}
+
+/* Optional: Add basic responsive adjustments */
+@media (max-width: 600px) {
+  .fee-setup-card {
+    padding: 2rem;
+    margin: 1rem;
+  }
+
+  .fee-setup-title {
+    font-size: 1.8rem;
+  }
+
+  .fee-setup-subtitle {
+    font-size: 0.95rem;
+  }
 }
