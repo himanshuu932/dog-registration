@@ -324,7 +324,7 @@ const RenewRegistration = ({ languageType = 'en' }) => {
   const [captchaInput, setCaptchaInput] = useState("");
   const [captchaError, setCaptchaError] = useState("");
 
-  const backendUrl = "http://localhost:5000";
+  const backendUrl = "https://dog-registration-yl8x.onrender.com";
   const authToken = localStorage.getItem('token');
 
   const textContent = {

@@ -109,7 +109,7 @@ const AdminPanel = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   
-  const backend = "http://localhost:5000";
+  const backend = "https://dog-registration-yl8x.onrender.com";
   const token = localStorage.getItem("token");
 
   const fetchLicenses = async () => {

@@ -226,7 +226,7 @@ const Verify = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const backend = "http://localhost:5000";
+  const backend = "https://dog-registration-yl8x.onrender.com";
   // Assuming token is stored in localStorage and available for admin endpoint
   const token = localStorage.getItem("token"); 
 

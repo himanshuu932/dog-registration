@@ -6,7 +6,7 @@ function Profile() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
-   const backend = "http://localhost:5000";
+   const backend = "https://dog-registration-yl8x.onrender.com";
 
   useEffect(() => {
     const fetchProfile = async () => {

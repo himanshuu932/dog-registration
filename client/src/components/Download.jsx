@@ -118,7 +118,7 @@ const DogLicenseDownload = ({ languageType = 'en' }) => {
   const filterDropdownRef = useRef(null);
   const pdfDownloadRef = useRef(null); // Ref for the PdfDownloadView component
 
-  const backend = "http://localhost:5000";
+  const backend = "https://dog-registration-yl8x.onrender.com";
   const token = localStorage.getItem('token');
 
   const textContent = {

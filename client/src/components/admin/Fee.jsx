@@ -7,7 +7,7 @@ const FeeSetup = () => {
     const [message, setMessage] = useState({ type: '', text: '' });
     const [originalFees, setOriginalFees] = useState(null);
 
-    const backend = "http://localhost:5000";
+    const backend = "https://dog-registration-yl8x.onrender.com";
 
     const fetchFees = async () => {
         setIsLoading(true);
