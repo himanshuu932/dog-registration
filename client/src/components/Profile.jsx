@@ -5,7 +5,7 @@ function Profile() {
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
- /// ye rha profile.jsx"
+ 
    const backend = "https://dog-registration-yl8x.onrender.com";
 
   useEffect(() => {
