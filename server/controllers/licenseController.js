@@ -129,6 +129,23 @@ exports.applyLicense = async (req, res) => {
 
     const uniqueRefNo = `REF${Date.now()}`;
 
+
+   const now = new Date();
+const year = now.getMonth() > 2 || (now.getMonth() === 2 && now.getDate() > 31)
+  ? now.getFullYear() + 1
+  : now.getFullYear();
+
+const expiryDate = isProvisional ? null : new Date(year, 2, 31); // 31st March
+
+  let provisionalExpiryDate = null;
+    if (isProvisional) {
+      const thirtyDaysLater = new Date(now.getTime() + 30 * 86400000);
+      const march31 = new Date(year, 2, 31);
+      provisionalExpiryDate = thirtyDaysLater < march31 ? thirtyDaysLater : march31;
+    }
+
+
+
     const newLicense = new DogLicense({
       owner: req.user.userId,
       license_Id,
@@ -141,8 +158,8 @@ exports.applyLicense = async (req, res) => {
       numberOfAnimals,
       pet,
       isProvisional,
-      provisionalExpiryDate: isProvisional ? new Date(Date.now() + 30 * 86400000) : null,
-      expiryDate: isProvisional ? null : new Date(Date.now() + 365 * 86400000),
+      provisionalExpiryDate,
+      expiryDate,
       status: 'payment_processing',
       fees: {
         total: totalFees,
@@ -253,7 +270,7 @@ exports.applyLicense = async (req, res) => {
 
 // --- 4. Modified Endpoint to Initiate Renewal with Payment ---
 exports.requestLicenseRenewal = async (req, res) => {
-    const { licenseNumber } = req.body;
+    const { licenseNumber, vaccinationProofUrl, vaccinationProofPublicId } = req.body;
     if (!licenseNumber) {
         return res.status(400).json({ message: "License number is required" });
     }
@@ -286,6 +303,25 @@ exports.requestLicenseRenewal = async (req, res) => {
         if (!owner) {
             await session.abortTransaction();
             return res.status(404).json({ message: "Owner not found." });
+        }
+
+        // Update vaccination proof if new one is provided
+        if (vaccinationProofUrl && vaccinationProofPublicId) {
+            // Delete old vaccination proof from Cloudinary if exists
+            if (license.pet?.vaccinationProofPublicId) {
+                try {
+                    await cloudinary.uploader.destroy(license.pet.vaccinationProofPublicId);
+                } catch (cleanupError) {
+                    console.error("Failed to delete old vaccination proof:", cleanupError);
+                }
+            }
+            
+            // Update with new vaccination proof
+            license.pet.vaccinationProofUrl = vaccinationProofUrl;
+            license.pet.vaccinationProofPublicId = vaccinationProofPublicId;
+            
+            // Update vaccination date to current date if certificate is updated
+            license.pet.dateOfVaccination = new Date();
         }
 
         const ownerCredits = owner.credits?.amt || 0;
@@ -326,7 +362,6 @@ exports.requestLicenseRenewal = async (req, res) => {
             license.status = 'renewal_pending'; // Move to pending approval
             license.paymentReferenceNo = "Credit Pay"; // Indicate credit payment
             license.lastpaymentReferenceNo = owner.credits.paymentReferenceNo;
-
 
             await owner.save({ session });
             await license.save({ session });

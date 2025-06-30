@@ -60,7 +60,7 @@ const StatusBadge = ({ status, isMobile, languageType = 'en' }) => {
     case 'payment_processing':
         badgeClass += " user-rr-status-payment-processing";
         Icon = Clock;
-        iconColor = 'var(--user-rr-info-text)'; // Or another suitable color
+        iconColor = 'var(--user-rr-info-text)';
         break;
     default:
       badgeClass += " user-rr-status-default";
@@ -99,7 +99,6 @@ const renderCertificateView = (lic, languageType = 'en', currentTextArg) => {
 
     const animalTypeLabelBilingual = currentCertText.animalTypeLabelBilingual || `Animal Type / पशु का प्रकार`;
     const animalDetailsTitleBilingual = currentCertText.animalDetailsTitleBilingual(getAnimalLabel(lic.animalType));
-
 
     return (
        <div className="user-rr-certificate-display-area">
@@ -251,7 +250,15 @@ const RenewalConfirmationModal = ({
   loadCaptchaFn,
   captchaError,
   isConfirming,
-  currentText
+  currentText,
+  onVaccinationUpload,
+  vaccinationFile,
+  setVaccinationFile,
+  isUploadingVaccination,
+  vaccinationProofUrl,
+  vaccinationProofPublicId,
+  setVaccinationProofUrl,
+  setVaccinationProofPublicId
 }) => {
   if (!isOpen) return null;
 
@@ -260,6 +267,50 @@ const RenewalConfirmationModal = ({
       <div className="user-rr-modal-content">
         <h3 className="user-rr-modal-title">{currentText.modalTitle}</h3>
         <p>{currentText.renewalConfirm(licenseNumber)} This will proceed to payment after verification.</p>
+
+        {/* Vaccination Upload Section */}
+        <div className="user-rr-vaccination-upload">
+          <h4>{currentText.updateVaccinationTitle}</h4>
+          <p>{currentText.updateVaccinationDesc}</p>
+          
+          {vaccinationProofUrl ? (
+            <div className="user-rr-vaccination-preview">
+              <a href={vaccinationProofUrl} target="_blank" rel="noopener noreferrer">
+                {currentText.viewUploadedCertificate}
+              </a>
+              <button 
+                onClick={() => {
+                  setVaccinationFile(null);
+                  setVaccinationProofUrl('');
+                  setVaccinationProofPublicId('');
+                }}
+                className="user-rr-action-button user-rr-remove-btn"
+              >
+                {currentText.removeCertificate}
+              </button>
+            </div>
+          ) : (
+            <div className="user-rr-file-upload-area">
+              <input
+                type="file"
+                id="vaccination-upload"
+                accept=".pdf,.jpg,.jpeg,.png"
+                onChange={(e) => {
+                  if (e.target.files && e.target.files[0]) {
+                    setVaccinationFile(e.target.files[0]);
+                    onVaccinationUpload(e.target.files[0]);
+                  }
+                }}
+                disabled={isUploadingVaccination}
+              />
+              <label htmlFor="vaccination-upload" className="user-rr-upload-label">
+                {isUploadingVaccination ? 
+                  currentText.uploadingCertificate : 
+                  currentText.chooseCertificate}
+              </label>
+            </div>
+          )}
+        </div>
 
         {captchaSvg && (
           <div className="user-rr-captcha-container">
@@ -290,14 +341,14 @@ const RenewalConfirmationModal = ({
           <button
             onClick={onClose}
             className="user-rr-action-button user-rr-modal-cancel-btn"
-            disabled={isConfirming}
+            disabled={isConfirming || isUploadingVaccination}
           >
             {currentText.modalCancelButton}
           </button>
           <button
             onClick={onConfirm}
             className="user-rr-action-button user-rr-modal-confirm-btn"
-            disabled={isConfirming || !captchaInput}
+            disabled={isConfirming || !captchaInput || isUploadingVaccination}
           >
             {isConfirming ? currentText.renewalSubmissionInProgress : "Verify & Proceed to Pay"}
           </button>
@@ -306,7 +357,6 @@ const RenewalConfirmationModal = ({
     </div>
   );
 };
-
 
 const RenewRegistration = ({ languageType = 'en' }) => {
   const [licenses, setLicenses] = useState([]);
@@ -323,6 +373,11 @@ const RenewRegistration = ({ languageType = 'en' }) => {
   const [captchaToken, setCaptchaToken] = useState("");
   const [captchaInput, setCaptchaInput] = useState("");
   const [captchaError, setCaptchaError] = useState("");
+
+  const [vaccinationFile, setVaccinationFile] = useState(null);
+  const [vaccinationProofUrl, setVaccinationProofUrl] = useState('');
+  const [vaccinationProofPublicId, setVaccinationProofPublicId] = useState('');
+  const [isUploadingVaccination, setIsUploadingVaccination] = useState(false);
 
   const backendUrl = "https://dog-registration-yl8x.onrender.com";
   const authToken = localStorage.getItem('token');
@@ -385,7 +440,13 @@ const RenewRegistration = ({ languageType = 'en' }) => {
         failedToLoadCaptcha: "Failed to load CAPTCHA. Please refresh.",
         refreshCaptcha: "Refresh CAPTCHA",
         renewalSubmissionInProgress: "Verifying...",
-        verifyPaymentButton: 'Verify Payment Status'
+        verifyPaymentButton: 'Verify Payment Status',
+        updateVaccinationTitle: 'Update Vaccination Certificate',
+        updateVaccinationDesc: 'You can optionally upload a new vaccination certificate for this renewal.',
+        viewUploadedCertificate: 'View Uploaded Certificate',
+        removeCertificate: 'Remove',
+        chooseCertificate: 'Choose Vaccination Certificate',
+        uploadingCertificate: 'Uploading...'
     },
     hi: {
         pageTitle: 'पालतू पशु लाइसेंस नवीनीकृत करें',
@@ -436,7 +497,6 @@ const RenewRegistration = ({ languageType = 'en' }) => {
         contactPhone: 'N/A',
         contactEmail: 'info@example.org',
         contactWebsite: 'www.example.org',
-        // New for Modal and CAPTCHA
         modalTitle: "नवीनीकरण अनुरोध की पुष्टि करें",
         modalConfirmButton: "पुष्टि करें और नवीनीकृत करें",
         modalCancelButton: "रद्द करें",
@@ -444,10 +504,15 @@ const RenewRegistration = ({ languageType = 'en' }) => {
         invalidCaptcha: "अमान्य कैप्चा। कृपया पुन प्रयास करें।",
         failedToLoadCaptcha: "कैप्चा लोड करने में विफल। कृपया रीफ़्रेश करें।",
         refreshCaptcha: "कैप्चा रीफ़्रेश करें",
-        captchaVerifiedProceeding: "कैप्चा सत्यापित। नवीनीकरण सबमिट किया जा रहा है...",
         renewalSubmissionInProgress: "सबमिट हो रहा है...",
         captchaVerificationFailed: "कैप्चा सत्यापन विफल रहा।",
-        verifyPaymentButton: 'भुगतान स्थिति सत्यापित करें'
+        verifyPaymentButton: 'भुगतान स्थिति सत्यापित करें',
+        updateVaccinationTitle: 'टीकाकरण प्रमाणपत्र अपडेट करें',
+        updateVaccinationDesc: 'आप इस नवीनीकरण के लिए वैकल्पिक रूप से एक नया टीकाकरण प्रमाणपत्र अपलोड कर सकते हैं।',
+        viewUploadedCertificate: 'अपलोड किया गया प्रमाणपत्र देखें',
+        removeCertificate: 'हटाएं',
+        chooseCertificate: 'टीकाकरण प्रमाणपत्र चुनें',
+        uploadingCertificate: 'अपलोड हो रहा है...'
     }
   };
   const currentText = textContent[languageType] || textContent.en;
@@ -470,39 +535,65 @@ const RenewRegistration = ({ languageType = 'en' }) => {
       });
   }, [currentText, backendUrl]);
 
-const fetchUserLicenses = useCallback(async () => {
-  setLoading(true);
-  setError('');
-  if (!authToken) {
-      setError("User not authenticated. Please log in.");
-      setLoading(false);
-      setLicenses([]);
-      return;
-  }
-  try {
-    const response = await fetch(`${backendUrl}/api/license/user`, {
-      headers: { Authorization: `Bearer ${authToken}` }
-    });
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to fetch licenses');
+  const handleVaccinationUpload = async (file) => {
+    if (!file) return;
+    
+    setIsUploadingVaccination(true);
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const response = await axios.post(`${backendUrl}/api/license/upload`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
+        
+        setVaccinationProofUrl(response.data.url);
+        setVaccinationProofPublicId(response.data.publicId);
+        toast.success(languageType === 'en' ? 'Vaccination certificate uploaded successfully!' : 'टीकाकरण प्रमाणपत्र सफलतापूर्वक अपलोड किया गया!');
+    } catch (error) {
+        console.error('Vaccination upload error:', error);
+        toast.error(languageType === 'en' ? 'Failed to upload vaccination certificate' : 'टीकाकरण प्रमाणपत्र अपलोड करने में विफल');
+    } finally {
+        setIsUploadingVaccination(false);
     }
-    const data = await response.json();
-    // Filter licenses: only 'approved' status and not 'isProvisional'
-    const filteredLicenses = (data || []).filter(
-      (license) => license.status === 'approved' && license.isProvisional === false
-    );
-    const sortedLicenses = filteredLicenses.sort((a, b) =>
-      new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt)
-    );
-    setLicenses(sortedLicenses);
-  } catch (err) {
-    setError(err.message || currentText.fetchError);
-    setLicenses([]);
-  } finally {
-    setLoading(false);
-  }
-}, [backendUrl, authToken, currentText.fetchError]);
+  };
+
+  const fetchUserLicenses = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    if (!authToken) {
+        setError("User not authenticated. Please log in.");
+        setLoading(false);
+        setLicenses([]);
+        return;
+    }
+    try {
+      const response = await fetch(`${backendUrl}/api/license/user`, {
+        headers: { Authorization: `Bearer ${authToken}` }
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to fetch licenses');
+      }
+      const data = await response.json();
+      // Filter licenses: only 'approved' status and not 'isProvisional'
+      const filteredLicenses = (data || []).filter(
+        (license) => license.status === 'approved' && license.isProvisional === false
+      );
+      const sortedLicenses = filteredLicenses.sort((a, b) =>
+        new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt)
+      );
+      setLicenses(sortedLicenses);
+    } catch (err) {
+      setError(err.message || currentText.fetchError);
+      setLicenses([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [backendUrl, authToken, currentText.fetchError]);
 
   useEffect(() => {
     fetchUserLicenses();
@@ -531,6 +622,10 @@ const fetchUserLicenses = useCallback(async () => {
     loadCaptcha();
     setIsConfirmModalOpen(true);
     setCaptchaError('');
+    // Reset vaccination upload state when opening modal
+    setVaccinationFile(null);
+    setVaccinationProofUrl('');
+    setVaccinationProofPublicId('');
   };
 
   const handleCloseConfirmModal = () => {
@@ -539,6 +634,10 @@ const fetchUserLicenses = useCallback(async () => {
     setCaptchaError("");
     setSelectedLicenseForRenewal(null);
     setIsConfirmingRenewal(false);
+    // Reset vaccination upload state when closing modal
+    setVaccinationFile(null);
+    setVaccinationProofUrl('');
+    setVaccinationProofPublicId('');
   };
 
   const handleConfirmRenewalWithPayment = async () => {
@@ -558,26 +657,33 @@ const fetchUserLicenses = useCallback(async () => {
       }
 
       // 2. If CAPTCHA is good, close modal and call renewal initiation endpoint
-      toast.info("CAPTCHA verified. Processing renewal...");
+      toast.info(languageType === 'en' ? "CAPTCHA verified. Processing renewal..." : "कैप्चा सत्यापित। नवीनीकरण प्रक्रिया जारी...");
       handleCloseConfirmModal();
 
       const response = await axios.post(`${backendUrl}/api/license/renew-registration/request`,
-        { licenseNumber: selectedLicenseForRenewal.number },
+        { 
+          licenseNumber: selectedLicenseForRenewal.number,
+          ...(vaccinationProofUrl && vaccinationProofPublicId && {
+            vaccinationProofUrl,
+            vaccinationProofPublicId
+          })
+        },
         { headers: { 'Authorization': `Bearer ${authToken}` } }
       );
 
       if (response.data && response.data.paymentUrl) {
-        toast.success("Redirecting to payment gateway...");
+        toast.success(languageType === 'en' ? "Redirecting to payment gateway..." : "भुगतान गेटवे पर रीडायरेक्ट किया जा रहा है...");
         window.open(response.data.paymentUrl, '_blank');
         console.log("Payment URL:", response.data.paymentUrl);
       } else {
-        toast.success(response.data.message || "License renewed successfully using credits!");
+        toast.success(response.data.message || (languageType === 'en' ? "License renewed successfully using credits!" : "क्रेडिट का उपयोग करके लाइसेंस सफलतापूर्वक नवीनीकृत!"));
         fetchUserLicenses(); // Refresh list after credit payment
       }
 
     } catch (err) {
       console.error("Renewal/CAPTCHA error:", err);
-      const errorMessage = err.response?.data?.message || "Renewal request failed. Please try again.";
+      const errorMessage = err.response?.data?.message || 
+                          (languageType === 'en' ? "Renewal request failed. Please try again." : "नवीनीकरण अनुरोध विफल। कृपया पुनः प्रयास करें।");
       toast.error(errorMessage);
     } finally {
       setIsConfirmingRenewal(false);
@@ -618,7 +724,6 @@ const fetchUserLicenses = useCallback(async () => {
       setLoading(false);
     }
   };
-
 
   const toggleViewLicense = (id) => {
     setViewingLicenseId(prevId => prevId === id ? null : id);
@@ -757,6 +862,14 @@ const fetchUserLicenses = useCallback(async () => {
         captchaError={captchaError}
         isConfirming={isConfirmingRenewal}
         currentText={currentText}
+        onVaccinationUpload={handleVaccinationUpload}
+        vaccinationFile={vaccinationFile}
+        setVaccinationFile={setVaccinationFile}
+        isUploadingVaccination={isUploadingVaccination}
+        vaccinationProofUrl={vaccinationProofUrl}
+        vaccinationProofPublicId={vaccinationProofPublicId}
+        setVaccinationProofUrl={setVaccinationProofUrl}
+        setVaccinationProofPublicId={setVaccinationProofPublicId}
       />
     </main>
   );

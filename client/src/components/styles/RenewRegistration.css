@@ -11,6 +11,8 @@
   --user-rr-danger-text: #c0392b;
   --user-rr-warning-bg: rgba(243, 156, 18, 0.15); /* For pending, renewal_pending */
   --user-rr-warning-text: #b48b0b; /* Darker yellow for text on light warning bg */
+  --user-rr-info-bg: rgba(52, 152, 219, 0.15); /* For payment processing */
+  --user-rr-info-text: #1a6ea8; /* Darker blue for text */
   --user-rr-default-bg: rgba(127, 140, 141, 0.15);
   
   --user-rr-gray-lightest: #f8f9fa;
@@ -239,8 +241,8 @@
 .user-rr-status-approved { background-color: var(--user-rr-success-bg); color: var(--user-rr-success-text); }
 .user-rr-status-renewal-pending, .user-rr-status-pending { background-color: var(--user-rr-warning-bg); color: var(--user-rr-warning-text); }
 .user-rr-status-rejected { background-color: var(--user-rr-danger-bg); color: var(--user-rr-danger-text); }
+.user-rr-status-payment-processing { background-color: var(--user-rr-info-bg); color: var(--user-rr-info-text); }
 .user-rr-status-default { background-color: var(--user-rr-default-bg); color: var(--user-rr-gray-dark); }
-
 
 /* Action Buttons (Renew, View) */
 .user-rr-action-button {
@@ -286,6 +288,28 @@
   flex-shrink: 0;
 }
 
+/* Verify Payment Button */
+.user-rr-verify-payment-button {
+  background: none;
+  border: none;
+  color: var(--user-rr-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--user-rr-border-radius);
+  font-size: 0.8rem;
+  transition: background-color 0.2s ease;
+}
+.user-rr-verify-payment-button:hover {
+  background-color: rgba(52, 152, 219, 0.1);
+}
+.user-rr-verify-payment-button svg {
+  width: 14px;
+  height: 14px;
+}
+
 /* Success Message Display (after renewal request) */
 .user-rr-success-message-display {
   text-align: center;
@@ -323,7 +347,6 @@
 .user-rr-action-button.user-rr-back-to-list-action-btn:hover {
   background-color: #17a78a; /* Darken accent */
 }
-
 
 /* CERTIFICATE DISPLAY AREA */
 .user-rr-certificate-display-area {
@@ -537,60 +560,7 @@
 }
 .user-rr-rejection-reason-box strong { color: var(--user-rr-danger-text); }
 
-
-/* Responsive Styles */
-@media screen and (max-width: 768px) {
-  .user-rr-page-container { padding: 1rem; }
-  .user-rr-certificate-focused-view { padding: 0.5rem; }
-
-  .user-rr-page-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
-  .user-rr-main-title { font-size: 1.6rem; }
-  .user-rr-back-button { font-size: 0.9rem; }
-
-  .user-rr-data-table th, .user-rr-data-table td { font-size: 0.85rem; padding: 0.75rem 0.5rem; }
-  .user-rr-status-badge { padding: 0.25rem 0.6rem; font-size: 0.75rem; gap: 0.25rem; }
-  .user-rr-status-badge svg { width: 13px; height: 13px; }
-  
-  .user-rr-action-button { padding: 0.4rem 0.7rem; font-size: 0.8rem; }
-  
-  .user-rr-pdf-border { padding: 8mm 5mm; }
-  .user-rr-pdf-header { flex-direction: column; align-items: flex-start; gap: 6px; margin-bottom:8px; padding-bottom: 6px;}
-  .user-rr-pdf-logo-icon { width: 40px; height: 40px; margin-right: 8px; }
-  .user-rr-pdf-org-name h3 { font-size: 12px; }
-  .user-rr-pdf-org-name h4 { font-size: 10px; }
-  .user-rr-pdf-header-right { align-self: flex-end; margin-top: 5px;}
-  .user-rr-pdf-header-right .user-rr-pdf-logo-icon { width: 40px; height: 40px;}
-
-  .user-rr-pdf-certificate-title h2 { font-size: 15px; }
-  .user-rr-pdf-certificate-title h3 { font-size: 14px; }
-
-  .user-rr-pdf-body { font-size: 10px; line-height: 1.4; }
-  .user-rr-pdf-photo-section { flex-direction: column; align-items: center; gap: 10px; margin-bottom: 10px;}
-  .user-rr-pdf-info-block { width: 100%; }
-  .user-rr-pdf-info-row { margin-bottom: 3px; font-size: 10px; }
-  .user-rr-pdf-info-label { min-width: 120px; }
-  .user-rr-pdf-photo-box { max-width: 90px; max-height: 110px; }
-
-  .user-rr-pdf-section-title { font-size: 11px; padding: 4px 6px; margin-bottom: 6px; }
-  .user-rr-pdf-details-columns { flex-direction: column; gap: 0; }
-  .user-rr-pdf-details-row { font-size: 10px; margin-bottom: 3px; padding-bottom: 2px; }
-  .user-rr-pdf-details-label { width: 130px; }
-  .user-rr-pdf-owner-details-table .user-rr-pdf-details-label { width: 180px;}
-
-
-  .user-rr-pdf-declaration { font-size: 9px; padding: 6px; }
-  .user-rr-pdf-signatures { flex-direction: column; gap: 10px; margin-top:12px; margin-bottom: 8px; }
-  .user-rr-pdf-signature-block { width: 100%; }
-  .user-rr-pdf-signature-line { height: 25px; margin-bottom: 4px; }
-  .user-rr-pdf-signature-block p { font-size: 9px; }
-
-  .user-rr-pdf-footer-bottom { flex-direction: column; align-items: center; gap: 10px; margin-top: 8px; }
-  .user-rr-pdf-qr-placeholder { width: 45px; height: 45px; }
-  .user-rr-pdf-stamp-placeholder { width: 55px; height: 55px; font-size: 8px; }
-  .user-rr-pdf-contact-footer { font-size: 8px; margin-top: 8px; }
-
-  .user-rr-notice { padding: 0.75rem; font-size: 0.9rem; }
-}
+/* Modal Styles */
 .user-rr-modal-overlay {
   position: fixed;
   top: 0;
@@ -631,6 +601,88 @@
   margin-bottom: 1rem;
 }
 
+/* Vaccination Upload Section */
+.user-rr-vaccination-upload {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border: 1px dashed var(--user-rr-gray);
+  border-radius: var(--user-rr-border-radius);
+  background-color: var(--user-rr-gray-lightest);
+}
+
+.user-rr-vaccination-upload h4 {
+  margin-top: 0;
+  color: var(--user-rr-primary);
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.user-rr-vaccination-upload p {
+  font-size: 0.9rem;
+  color: var(--user-rr-gray-dark);
+  margin-bottom: 1rem;
+}
+
+.user-rr-file-upload-area {
+  margin-top: 0.5rem;
+}
+
+.user-rr-file-upload-area input[type="file"] {
+  display: none;
+}
+
+.user-rr-upload-label {
+  display: inline-block;
+  padding: 0.75rem 1.25rem;
+  background-color: var(--user-rr-gray-lightest);
+  color: var(--user-rr-primary);
+  border-radius: var(--user-rr-border-radius);
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid var(--user-rr-gray);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.user-rr-upload-label:hover {
+  background-color: var(--user-rr-gray-light);
+}
+
+.user-rr-vaccination-preview {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.user-rr-vaccination-preview a {
+  color: var(--user-rr-secondary);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.user-rr-vaccination-preview a:hover {
+  text-decoration: underline;
+}
+
+.user-rr-remove-btn {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+  background-color: var(--user-rr-danger-bg);
+  color: var(--user-rr-danger-text);
+  border: none;
+  border-radius: var(--user-rr-border-radius);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.user-rr-remove-btn:hover {
+  background-color: var(--user-rr-danger-text);
+  color: var(--user-rr-white);
+}
+
+/* CAPTCHA Styles */
 .user-rr-captcha-container {
   display: flex;
   flex-direction: column;
@@ -662,7 +714,6 @@
     width: 100%;
     height: auto;
 }
-
 
 .user-rr-captcha-refresh-btn {
   background: var(--user-rr-gray-light);
@@ -710,7 +761,7 @@
   margin-top: 0.5rem;
 }
 
-
+/* Modal Actions */
 .user-rr-modal-actions {
   display: flex;
   justify-content: flex-end;
@@ -719,21 +770,105 @@
 }
 
 .user-rr-modal-cancel-btn {
-  background-color: #d71515;
-  color: #fff;
-  border: 1px solid var(--user-rr-gray);
+  background-color: var(--user-rr-gray);
+  color: var(--user-rr-white);
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--user-rr-border-radius);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
 }
 .user-rr-modal-cancel-btn:hover {
-  background-color: var(--user-rr-gray);
+  background-color: var(--user-rr-gray-dark);
 }
 
 .user-rr-modal-confirm-btn {
   background-color: var(--user-rr-success-text);
+  color: var(--user-rr-white);
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--user-rr-border-radius);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
 }
 .user-rr-modal-confirm-btn:hover {
-  background-color: #207343; 
+  background-color: #207343;
 }
 .user-rr-modal-confirm-btn:disabled {
   background-color: var(--user-rr-gray);
   cursor: not-allowed;
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 768px) {
+  .user-rr-page-container { padding: 1rem; }
+  .user-rr-certificate-focused-view { padding: 0.5rem; }
+
+  .user-rr-page-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .user-rr-main-title { font-size: 1.6rem; }
+  .user-rr-back-button { font-size: 0.9rem; }
+
+  .user-rr-data-table th, .user-rr-data-table td { font-size: 0.85rem; padding: 0.75rem 0.5rem; }
+  .user-rr-status-badge { padding: 0.25rem 0.6rem; font-size: 0.75rem; gap: 0.25rem; }
+  .user-rr-status-badge svg { width: 13px; height: 13px; }
+  
+  .user-rr-action-button { padding: 0.4rem 0.7rem; font-size: 0.8rem; }
+  
+  .user-rr-pdf-border { padding: 8mm 5mm; }
+  .user-rr-pdf-header { flex-direction: column; align-items: flex-start; gap: 6px; margin-bottom:8px; padding-bottom: 6px;}
+  .user-rr-pdf-logo-icon { width: 40px; height: 40px; margin-right: 8px; }
+  .user-rr-pdf-org-name h3 { font-size: 12px; }
+  .user-rr-pdf-org-name h4 { font-size: 10px; }
+  .user-rr-pdf-header-right { align-self: flex-end; margin-top: 5px;}
+  .user-rr-pdf-header-right .user-rr-pdf-logo-icon { width: 40px; height: 40px;}
+
+  .user-rr-pdf-certificate-title h2 { font-size: 15px; }
+  .user-rr-pdf-certificate-title h3 { font-size: 14px; }
+
+  .user-rr-pdf-body { font-size: 10px; line-height: 1.4; }
+  .user-rr-pdf-photo-section { flex-direction: column; align-items: center; gap: 10px; margin-bottom: 10px;}
+  .user-rr-pdf-info-block { width: 100%; }
+  .user-rr-pdf-info-row { margin-bottom: 3px; font-size: 10px; }
+  .user-rr-pdf-info-label { min-width: 120px; }
+  .user-rr-pdf-photo-box { max-width: 90px; max-height: 110px; }
+
+  .user-rr-pdf-section-title { font-size: 11px; padding: 4px 6px; margin-bottom: 6px; }
+  .user-rr-pdf-details-columns { flex-direction: column; gap: 0; }
+  .user-rr-pdf-details-row { font-size: 10px; margin-bottom: 3px; padding-bottom: 2px; }
+  .user-rr-pdf-details-label { width: 130px; }
+  .user-rr-pdf-owner-details-table .user-rr-pdf-details-label { width: 180px;}
+
+  .user-rr-pdf-declaration { font-size: 9px; padding: 6px; }
+  .user-rr-pdf-signatures { flex-direction: column; gap: 10px; margin-top:12px; margin-bottom: 8px; }
+  .user-rr-pdf-signature-block { width: 100%; }
+  .user-rr-pdf-signature-line { height: 25px; margin-bottom: 4px; }
+  .user-rr-pdf-signature-block p { font-size: 9px; }
+
+  .user-rr-pdf-footer-bottom { flex-direction: column; align-items: center; gap: 10px; margin-top: 8px; }
+  .user-rr-pdf-qr-placeholder { width: 45px; height: 45px; }
+  .user-rr-pdf-stamp-placeholder { width: 55px; height: 55px; font-size: 8px; }
+  .user-rr-pdf-contact-footer { font-size: 8px; margin-top: 8px; }
+
+  .user-rr-notice { padding: 0.75rem; font-size: 0.9rem; }
+
+  /* Modal Responsive */
+  .user-rr-modal-content {
+    padding: 1.5rem;
+  }
+  .user-rr-modal-title {
+    font-size: 1.3rem;
+  }
+  .user-rr-vaccination-upload {
+    padding: 0.75rem;
+  }
+  .user-rr-modal-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .user-rr-modal-cancel-btn,
+  .user-rr-modal-confirm-btn {
+    width: 100%;
+  }
 }
