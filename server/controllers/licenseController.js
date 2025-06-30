@@ -105,7 +105,7 @@ exports.uploadVaccinationProof = async (req, res) => {
 };
 
 
-// --- 3. Modified applyLicense Endpoint ---
+
 exports.applyLicense = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
