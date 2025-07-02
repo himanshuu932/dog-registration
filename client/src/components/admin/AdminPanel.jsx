@@ -280,10 +280,20 @@ const AdminPanel = () => {
               <div className="grid-item"><strong>Color:</strong> {lic.pet?.color || "N/A"}</div>
               <div className="grid-item"><strong>Age:</strong> {lic.pet?.age || "N/A"}</div>
               <div className="grid-item"><strong>Sex:</strong> {lic.pet?.sex || "N/A"}</div>
+             <div className="grid-item">
+  <strong>Vaccination:</strong>{' '}
+  {lic.pet && lic.pet.vaccinationProofUrl ? (
+    <a href={lic.pet.vaccinationProofUrl}>Link</a>
+  ) : (
+    "NO"
+  )}
+</div>
+
               <div className="grid-item"><strong>Microchipped:</strong> No</div>
             </div>
           </div>
         </div>
+
       </div>
     );
   };
@@ -346,6 +356,14 @@ const AdminPanel = () => {
               <div className="grid-item"><strong>रंग / Color:</strong> {lic.pet?.color || "N/A"}</div>
               <div className="grid-item"><strong>माइक्रोचिप्ड / Microchipped:</strong> No</div>
               <div className="grid-item"><strong>आयु / Age:</strong> {lic.pet?.age || "N/A"}</div>
+               <div className="grid-item">
+  <strong>Vaccination:</strong>{' '}
+  {lic.pet && lic.pet.vaccinationProofUrl ? (
+    <a href={lic.pet.vaccinationProofUrl}>Link</a>
+  ) : (
+    "NO"
+  )}
+</div>
             </div>
           </div>
         </div>

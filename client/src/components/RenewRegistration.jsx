@@ -581,7 +581,7 @@ const RenewRegistration = ({ languageType = 'en' }) => {
       const data = await response.json();
       // Filter licenses: only 'approved' status and not 'isProvisional'
       const filteredLicenses = (data || []).filter(
-        (license) => license.status === 'approved' && license.isProvisional === false
+        (license) => ( license.status === 'approved' || license.status === 'renewal_payment_processing' || license.status === 'renewal_pending')&& license.isProvisional === false
       );
       const sortedLicenses = filteredLicenses.sort((a, b) =>
         new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt)
