@@ -267,46 +267,34 @@ const RenewalConfirmationModal = ({
   return (
     <div className="user-rr-modal-overlay">
       <div className="user-rr-modal-content">
-        <button className="user-rr-modal-close-button" onClick={onClose} aria-label={currentText.closeModal}>
-          <XCircle size={24} />
-        </button>
         <h3 className="user-rr-modal-title">{currentText.modalTitle}</h3>
-        <p className="user-rr-modal-description">{currentText.renewalConfirm(licenseNumber)}</p>
-        <p className="user-rr-modal-note">{currentText.proceedToPaymentNote || "This will proceed to payment after verification."}</p>
+        <p>{currentText.renewalConfirm(licenseNumber)} This will proceed to payment after verification.</p>
 
         <div className="user-rr-fees-summary">
-          <h4 className="user-rr-fees-title">Fees Summary</h4>
-          {isFetchingFees ? (
-            <p className="user-rr-fees-loading">{currentText.fetchingFees || 'Calculating fees...'}</p>
-          ) : (
-            <>
-              <div className="user-rr-fees-row">
-                <span className="user-rr-fees-label">{currentText.registrationFeeLabel || 'Registration Fee:'}</span>
-                <span className="user-rr-fees-value">₹{feesSummary.registrationFee}</span>
-              </div>
-              <div className="user-rr-fees-row">
-                <span className="user-rr-fees-label">{currentText.fineLabel || 'Fine:'}</span>
-                <span className="user-rr-fees-value">₹{feesSummary.fine}</span>
-              </div>
-              <div className="user-rr-fees-row user-rr-fees-total">
-                <span className="user-rr-fees-label">{currentText.totalLabel || 'Total:'}</span>
-                <span className="user-rr-fees-value">₹{feesSummary.total}</span>
-              </div>
-            </>
-          )}
+          <h4>Fees Summary</h4>
+          <div className="user-rr-fees-row">
+            <span className="user-rr-fees-label">{currentText.registrationFeeLabel || 'Registration Fee:'}</span>
+            <span className="user-rr-fees-value">₹{feesSummary.registrationFee}</span>
+          </div>
+          <div className="user-rr-fees-row">
+            <span className="user-rr-fees-label">{currentText.fineLabel || 'Fine:'}</span>
+            <span className="user-rr-fees-value">₹{feesSummary.fine}</span>
+          </div>
+          <div className="user-rr-fees-row user-rr-fees-total">
+            <span className="user-rr-fees-label">{currentText.totalLabel || 'Total:'}</span>
+            <span className="user-rr-fees-value">₹{feesSummary.total}</span>
+          </div>
+          {isFetchingFees && <p className="user-rr-fees-loading">{currentText.fetchingFees || 'Calculating fees...'}</p>}
         </div>
 
         {/* Vaccination Upload Section */}
         <div className="user-rr-vaccination-upload">
-          <h4 className="user-rr-vaccination-upload-title">{currentText.updateVaccinationTitle}</h4>
-          <p className="user-rr-vaccination-upload-desc">{currentText.updateVaccinationDesc}</p>
+          <h4>{currentText.updateVaccinationTitle}</h4>
+          <p>{currentText.updateVaccinationDesc}</p>
           
           {vaccinationProofUrl ? (
             <div className="user-rr-vaccination-preview">
-              <span className="user-rr-uploaded-file-name">
-                <FileText size={18} /> {vaccinationFile ? vaccinationFile.name : currentText.certificateUploaded}
-              </span>
-              <a href={vaccinationProofUrl} target="_blank" rel="noopener noreferrer" className="user-rr-view-certificate-link">
+              <a href={vaccinationProofUrl} target="_blank" rel="noopener noreferrer">
                 {currentText.viewUploadedCertificate}
               </a>
               <button 
@@ -316,9 +304,8 @@ const RenewalConfirmationModal = ({
                   setVaccinationProofPublicId('');
                 }}
                 className="user-rr-action-button user-rr-remove-btn"
-                disabled={isUploadingVaccination}
               >
-                <XCircle size={16} /> {currentText.removeCertificate}
+                {currentText.removeCertificate}
               </button>
             </div>
           ) : (
@@ -334,62 +321,55 @@ const RenewalConfirmationModal = ({
                   }
                 }}
                 disabled={isUploadingVaccination}
-                className="user-rr-hidden-input"
               />
-              <label htmlFor="vaccination-upload" className={`user-rr-upload-label ${isUploadingVaccination ? 'user-rr-uploading' : ''}`}>
-                {isUploadingVaccination ? (
-                  <>
-                    <RefreshCw size={20} className="user-rr-spinner-animation" /> {currentText.uploadingCertificate}
-                  </>
-                ) : (
-                  <>
-                    <UploadCloud size={20} /> {currentText.chooseCertificate}
-                  </>
-                )}
+              <label htmlFor="vaccination-upload" className="user-rr-upload-label">
+                {isUploadingVaccination ? 
+                  currentText.uploadingCertificate : 
+                  currentText.chooseCertificate}
               </label>
-               {vaccinationFile && !isUploadingVaccination && (
-                <span className="user-rr-selected-file-name">{vaccinationFile.name}</span>
-              )}
             </div>
           )}
-           {isUploadingVaccination && <p className="user-rr-upload-status-text">{currentText.uploadInProgress}</p>}
         </div>
 
         {captchaSvg && (
-          <div className="user-rr-captcha-section">
-            <h4 className="user-rr-captcha-title">{currentText.captchaVerification}</h4>
-            <div className="user-rr-captcha-container">
-              <div className="user-rr-captcha-image-refresh">
-                <div className="user-rr-captcha-svg" dangerouslySetInnerHTML={{ __html: captchaSvg }} />
-                <button type="button" onClick={loadCaptchaFn} title={currentText.refreshCaptcha} className="user-rr-captcha-refresh-btn" >
-                  <RefreshCw size={22} />
-                </button>
-              </div>
-              <input
-                type="text"
-                placeholder={currentText.enterCaptcha}
-                value={captchaInput}
-                onChange={onCaptchaInputChange}
-                className="user-rr-captcha-input"
-                aria-label={currentText.enterCaptcha}
-              />
+          <div className="user-rr-captcha-container">
+            <div className="user-rr-captcha-image-refresh">
+              <div className="user-rr-captcha-svg" dangerouslySetInnerHTML={{ __html: captchaSvg }} />
+              <button
+                type="button"
+                onClick={loadCaptchaFn}
+                title={currentText.refreshCaptcha}
+                className="user-rr-captcha-refresh-btn"
+              >
+                <RefreshCw size={22} />
+              </button>
             </div>
-            {captchaError && <p className="user-rr-modal-error-text user-rr-captcha-error-text">{captchaError}</p>}
+            <input
+              type="text"
+              placeholder={currentText.enterCaptcha}
+              value={captchaInput}
+              onChange={onCaptchaInputChange}
+              className="user-rr-captcha-input"
+            />
           </div>
         )}
 
+        {captchaError && <p className="user-rr-modal-error-text">{captchaError}</p>}
+
         <div className="user-rr-modal-actions">
-          <button onClick={onClose} className="user-rr-action-button user-rr-modal-cancel-btn" disabled={isConfirming || isUploadingVaccination} >
+          <button
+            onClick={onClose}
+            className="user-rr-action-button user-rr-modal-cancel-btn"
+            disabled={isConfirming || isUploadingVaccination}
+          >
             {currentText.modalCancelButton}
           </button>
-          <button onClick={onConfirm} className="user-rr-action-button user-rr-modal-confirm-btn" disabled={isConfirming || !captchaInput || isUploadingVaccination || isFetchingFees} >
-            {isConfirming ? (
-              <>
-                <RefreshCw size={18} className="user-rr-spinner-animation" /> {currentText.renewalSubmissionInProgress}
-              </>
-            ) : (
-              currentText.verifyProceedToPay || "Verify & Proceed to Pay"
-            )}
+          <button
+            onClick={onConfirm}
+            className="user-rr-action-button user-rr-modal-confirm-btn"
+            disabled={isConfirming || !captchaInput || isUploadingVaccination}
+          >
+            {isConfirming ? currentText.renewalSubmissionInProgress : "Verify & Proceed to Pay"}
           </button>
         </div>
       </div>
