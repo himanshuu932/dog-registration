@@ -11,7 +11,10 @@ const adminRoutes = require("./routes/adminRoutes.js");
 const captchaRoutes = require('./routes/captchaRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const app = express();
+const {
 
+  getFeeConfig,      // New import
+} = require("./controllers/adminLicenseController");
 // --- Database Connection ---
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
@@ -21,7 +24,7 @@ mongoose.connect(process.env.MONGO_URI)
 app.use(cors({ origin: true, credentials: true }));
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.get("/fees",  getFeeConfig);
 // --- Application Routes ---
 app.use('/api/captcha', captchaRoutes);
 app.use("/api/auth", authRoutes);

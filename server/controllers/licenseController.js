@@ -64,6 +64,17 @@ exports.calculateNewFees = async (req, res) => {
         res.status(500).json({ message: "Error calculating fees", error: error.message });
     }
 };
+exports.calculateRenewFees = async (req, res) => {
+    try {
+        const feeConfig = await FeeConfig.getFees(); // Fetch dynamic fees
+        const fine = calculateFine(new Date(), 'renewal');
+        const registrationFee = feeConfig.renewalFee;
+        const total = registrationFee + fine;
+        res.status(200).json({ registrationFee, fine, total });
+    } catch (error) {
+        res.status(500).json({ message: "Error calculating fees", error: error.message });
+    }
+};
 
 const uploadToCloudinary = async (filePath, mimetype) => {
   const resourceType = mimetype === 'application/pdf' ? 'raw' : 'auto';

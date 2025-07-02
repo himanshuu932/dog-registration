@@ -357,6 +357,7 @@ const AdminPanel = () => {
               <div className="grid-item"><strong>माइक्रोचिप्ड / Microchipped:</strong> No</div>
               <div className="grid-item"><strong>आयु / Age:</strong> {lic.pet?.age || "N/A"}</div>
                <div className="grid-item">
+                
   <strong>Vaccination:</strong>{' '}
   {lic.pet && lic.pet.vaccinationProofUrl ? (
     <a href={lic.pet.vaccinationProofUrl}>Link</a>

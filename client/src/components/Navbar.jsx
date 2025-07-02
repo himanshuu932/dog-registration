@@ -14,7 +14,7 @@ const userNavItems = [
 
 // Navigation items specifically for Admin role with translations
 const adminNavItems = [
-  { hi: 'होम', en: 'Home', path: '/admin/home' },
+  { hi: 'होम', en: 'Home', path: '/home' },
   { hi: 'लाइसेंस', en: 'Licenses', path: '/admin/license' },
   { hi: 'लाइसेंस जोड़ें', en: 'Add License', path: '/admin/add-license' },
   { hi: 'लाइसेंस सत्यापित करें', en: 'Verify License', path: '/admin/verify-license' },

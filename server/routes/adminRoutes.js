@@ -16,7 +16,7 @@ const {
 } = require("../controllers/adminLicenseController");
 
 // Fee management routes
-router.get("/fees", verifyToken, isAdmin, getFeeConfig);
+router.get("/fees",  getFeeConfig);
 router.post("/fees", verifyToken, isAdmin, updateFeeConfig);
 
 // License management routes

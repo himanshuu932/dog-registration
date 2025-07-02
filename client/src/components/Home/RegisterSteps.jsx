@@ -32,7 +32,6 @@ const CertificateIcon = () => (
 const HowToRegister = ({ languageType = 'en' }) => { // Added languageType prop
   const navigate=useNavigate();
 
-  // Define the registration steps content for both languages
   const content = {
       en: {
           title: 'How to Register',
@@ -40,7 +39,7 @@ const HowToRegister = ({ languageType = 'en' }) => { // Added languageType prop
               {
                   id: 'login',
                   title: 'Login',
-                  description: 'Login With your Phone number or E-Mail And OTP',
+                  description: 'Login With your Phone number  And OTP',
                   icon: <MobileIcon />
               },
               {
@@ -70,7 +69,7 @@ const HowToRegister = ({ languageType = 'en' }) => { // Added languageType prop
               {
                   id: 'login',
                   title: 'लॉग इन करें',
-                  description: 'अपने फ़ोन नंबर या ई-मेल और ओटीपी से लॉग इन करें',
+                  description: 'अपने फ़ोन नंबर और ओटीपी से लॉग इन करें',
                   icon: <MobileIcon />
               },
               {

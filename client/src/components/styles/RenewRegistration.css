@@ -560,7 +560,7 @@
 }
 .user-rr-rejection-reason-box strong { color: var(--user-rr-danger-text); }
 
-/* Modal Styles */
+/* --- MODAL STYLES (CORRECTED) --- */
 .user-rr-modal-overlay {
   position: fixed;
   top: 0;
@@ -573,6 +573,8 @@
   justify-content: center;
   z-index: 1000;
   padding: 1rem;
+  /* Added to allow scrolling on very small screens where the modal itself is taller than the viewport */
+  overflow-y: auto; 
 }
 
 .user-rr-modal-content {
@@ -581,10 +583,14 @@
   border-radius: var(--user-rr-border-radius);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   width: 100%;
-  max-width: 500px;
+  max-width: 800px;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+
+  /* --- FIX --- */
+  /* Added max-height and overflow-y to make the modal's content scrollable if it exceeds the viewport height */
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .user-rr-modal-title {
@@ -592,6 +598,14 @@
   color: var(--user-rr-primary);
   margin: 0 0 0.5rem 0;
   text-align: center;
+  /* Make title stick to the top */
+  position: sticky;
+  top: -2rem; /* Should match the padding of the modal content */
+  background: var(--user-rr-white);
+  padding-top: 2rem;
+  padding-bottom: 1rem;
+  margin-top: -2rem; /* Compensate for padding */
+  z-index: 2;
 }
 
 .user-rr-modal-content p {
@@ -601,91 +615,192 @@
   margin-bottom: 1rem;
 }
 
+/* Fees Summary */
+.user-rr-fees-summary {
+  background-color: var(--user-rr-gray-lightest);
+  border-radius: var(--user-rr-border-radius);
+  padding: 1.2rem 1.5rem;
+  border: 1px solid var(--user-rr-gray-light);
+
+}
+
+.user-rr-fees-title {
+  font-size: 1.2rem;
+  color: var(--user-rr-primary-light);
+  margin-top: 0;
+  border-bottom: 1px dashed var(--user-rr-gray);
+  font-weight: 500;
+}
+
+.user-rr-fees-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+  font-size: 1rem;
+  color: var(--user-rr-black);
+}
+
+.user-rr-fees-label {
+  font-weight: 400;
+  color: var(--user-rr-gray-dark);
+}
+
+.user-rr-fees-value {
+  font-weight: 500;
+  color: var(--user-rr-primary);
+}
+
+.user-rr-fees-total {
+  border-top: 1px solid var(--user-rr-gray);
+
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--user-rr-accent);
+}
+
+.user-rr-fees-loading {
+  text-align: center;
+  font-style: italic;
+  color: var(--user-rr-gray);
+  padding: 1rem 0;
+}
+
 /* Vaccination Upload Section */
 .user-rr-vaccination-upload {
-  margin: 1.5rem 0;
-  padding: 1rem;
-  border: 1px dashed var(--user-rr-gray);
-  border-radius: var(--user-rr-border-radius);
   background-color: var(--user-rr-gray-lightest);
+  border-radius: var(--user-rr-border-radius);
+  padding: 1.2rem 1.5rem;
+  border: 1px solid var(--user-rr-gray-light);
+  margin-top: 1rem;
 }
 
-.user-rr-vaccination-upload h4 {
+.user-rr-vaccination-upload-title {
+  font-size: 1.2rem;
+  color: var(--user-rr-primary-light);
   margin-top: 0;
-  color: var(--user-rr-primary);
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
+  font-weight: 500;
 }
 
-.user-rr-vaccination-upload p {
+.user-rr-vaccination-upload-desc {
   font-size: 0.9rem;
   color: var(--user-rr-gray-dark);
-  margin-bottom: 1rem;
+
+  line-height: 1.5;
 }
 
 .user-rr-file-upload-area {
-  margin-top: 0.5rem;
+  display: flex;
+  flex-direction:row;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem;
+  border: 2px dashed var(--user-rr-gray);
+  border-radius: var(--user-rr-border-radius);
+  background-color: var(--user-rr-white);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
-.user-rr-file-upload-area input[type="file"] {
+.user-rr-file-upload-area:hover {
+  border-color: var(--user-rr-secondary);
+  background-color: rgba(52, 152, 219, 0.05);
+}
+
+.user-rr-hidden-input {
   display: none;
 }
 
 .user-rr-upload-label {
-  display: inline-block;
-  padding: 0.75rem 1.25rem;
-  background-color: var(--user-rr-gray-lightest);
-  color: var(--user-rr-primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--user-rr-secondary);
+  color: var(--user-rr-white);
+  padding: 0.7rem 1.2rem;
   border-radius: var(--user-rr-border-radius);
   cursor: pointer;
-  transition: all 0.2s;
-  border: 1px solid var(--user-rr-gray);
-  font-size: 0.9rem;
-  text-align: center;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .user-rr-upload-label:hover {
-  background-color: var(--user-rr-gray-light);
+  background-color: #2980b9;
+  transform: translateY(-1px);
+}
+
+.user-rr-upload-label.user-rr-uploading {
+  background-color: var(--user-rr-gray);
+  cursor: not-allowed;
+}
+
+.user-rr-selected-file-name {
+  font-size: 0.9rem;
+  color: var(--user-rr-primary-light);
+  font-weight: 500;
+}
+
+.user-rr-upload-status-text {
+  font-size: 0.85rem;
+  color: var(--user-rr-info-text);
+  text-align: center;
+  margin-top: 0.5rem;
+  font-style: italic;
 }
 
 .user-rr-vaccination-preview {
-  margin-top: 0.5rem;
   display: flex;
   align-items: center;
   gap: 1rem;
+  background-color: var(--user-rr-info-bg);
+  padding: 0.8rem 1.2rem;
+  border-radius: var(--user-rr-border-radius);
+  border: 1px solid var(--user-rr-info-text);
   flex-wrap: wrap;
+  justify-content: center;
 }
 
-.user-rr-vaccination-preview a {
+.user-rr-uploaded-file-name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--user-rr-info-text);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.user-rr-view-certificate-link {
   color: var(--user-rr-secondary);
-  text-decoration: none;
+  text-decoration: underline;
   font-size: 0.9rem;
+  transition: color 0.2s ease;
 }
 
-.user-rr-vaccination-preview a:hover {
-  text-decoration: underline;
+.user-rr-view-certificate-link:hover {
+  color: var(--user-rr-primary);
 }
 
 .user-rr-remove-btn {
-  padding: 0.5rem 0.75rem;
-  font-size: 0.85rem;
-  background-color: var(--user-rr-danger-bg);
-  color: var(--user-rr-danger-text);
+  background-color: var(--user-rr-danger-text);
+  color: var(--user-rr-white);
   border: none;
   border-radius: var(--user-rr-border-radius);
   cursor: pointer;
   transition: background-color 0.2s ease;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.85rem;
 }
 
 .user-rr-remove-btn:hover {
-  background-color: var(--user-rr-danger-text);
+  background-color: #a33226;
   color: var(--user-rr-white);
 }
+
 
 /* CAPTCHA Styles */
 .user-rr-captcha-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 0.75rem;
   margin: 0.5rem 0;
   align-items: center;
@@ -767,10 +882,17 @@
   justify-content: flex-end;
   gap: 0.75rem;
   margin-top: 1rem;
+  /* Make buttons stick to the bottom */
+  position: sticky;
+  bottom: -2rem; /* Should match the padding of the modal content */
+  background: var(--user-rr-white);
+  padding: 1rem 0;
+  margin-bottom: -2rem; /* Compensate for padding */
+  z-index: 2;
 }
 
 .user-rr-modal-cancel-btn {
-  background-color: var(--user-rr-gray);
+  background-color: #aa1313;
   color: var(--user-rr-white);
   border: none;
   padding: 0.75rem 1.25rem;
@@ -780,7 +902,7 @@
   transition: background-color 0.2s ease;
 }
 .user-rr-modal-cancel-btn:hover {
-  background-color: var(--user-rr-gray-dark);
+  background-color: red;
 }
 
 .user-rr-modal-confirm-btn {
@@ -803,6 +925,20 @@
 
 /* Responsive Styles */
 @media screen and (max-width: 768px) {
+  .user-rr-file-upload-area {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .user-rr-file-upload-area .user-rr-upload-label {
+    width: 100%;
+    text-align: center;
+  }
+  .user-rr-captcha-container
+  {
+    flex-direction: column;
+    align-items: center;
+  }
   .user-rr-page-container { padding: 1rem; }
   .user-rr-certificate-focused-view { padding: 0.5rem; }
 
@@ -859,6 +995,9 @@
   }
   .user-rr-modal-title {
     font-size: 1.3rem;
+    padding-top: 1.5rem;
+    top: -1.5rem;
+    margin-top: -1.5rem;
   }
   .user-rr-vaccination-upload {
     padding: 0.75rem;
@@ -866,6 +1005,8 @@
   .user-rr-modal-actions {
     flex-direction: column;
     gap: 0.5rem;
+    bottom: -1.5rem;
+    margin-bottom: -1.5rem;
   }
   .user-rr-modal-cancel-btn,
   .user-rr-modal-confirm-btn {
